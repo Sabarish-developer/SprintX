@@ -18,11 +18,11 @@ body, html {
 #root {
   font-family: "Poppins", sans-serif;
   background-image: url('./assets/back.png');
-  background-size: cover;              /* Make image cover full screen */
-  background-position: center;         /* Center the image */
-  background-repeat: no-repeat;        /* Prevent repeat */
-  background-attachment: fixed;        /* Keeps background fixed while scrolling */
-  min-height: 100vh;                   /* At least full screen height */
+  background-size: cover;             
+  background-position: center;        
+  background-repeat: no-repeat;       
+  background-attachment: fixed;        
+  min-height: 100vh;                   
   width: 100%;
   margin: 0 auto;
   padding: 2rem;

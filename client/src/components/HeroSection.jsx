@@ -9,10 +9,10 @@ const HeroSection = () => {
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1.2, ease: "easeOut" }}
-      className="min-h-screen bg-transparent"
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="min-h-screen bg-white"
     >
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center bg-transparent">
         <div className="flex justify-center">
             <a href="#" className="inline-flex items-center gap-2 inline-block text-sm font-semibold text-[#a40ff3] bg-[#f3e9fd] py-2 px-6 shadow-md rounded-full hover:bg-[#e9d7fb] transition-colors duration-200">
                 Super Charge your Agile Workflow!<MoveRight size={23} color="#a40ff3" />
