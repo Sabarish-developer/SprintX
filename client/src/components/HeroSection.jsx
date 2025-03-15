@@ -2,9 +2,16 @@ import { ArrowRight } from "lucide-react"
 import { CirclePlay } from 'lucide-react'
 import { MoveRight } from "lucide-react"
 import template from '../assets/template.png'
+import {motion} from 'framer-motion'
 
 const HeroSection = () => {
   return (
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="min-h-screen bg-white"
+    >
     <div className="flex flex-col items-center">
         <div className="flex justify-center">
             <a href="#" className="inline-flex items-center gap-2 inline-block text-sm font-semibold text-[#a40ff3] bg-[#f3e9fd] py-2 px-6 shadow-md rounded-full hover:bg-[#e9d7fb] transition-colors duration-200">
@@ -24,6 +31,7 @@ const HeroSection = () => {
         </div>
         <img src={template} alt="dashboard" className="w-full max-w-4xl mx-auto rounded-2xl shadow-lg object-cover"/>
     </div>
+    </motion.div>
   )
 }
 
