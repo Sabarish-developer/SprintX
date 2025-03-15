@@ -9,7 +9,7 @@ const HeroSection = () => {
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={{ duration: 1.2, ease: "easeOut" }}
       className="min-h-screen bg-transparent"
     >
     <div className="flex flex-col items-center">
