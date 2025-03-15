@@ -1,0 +1,14 @@
+#root {
+  background-image: url('./assets/back.png');
+  max-width: 1600px;
+  padding: 0;
+}
+
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
