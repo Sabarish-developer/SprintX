@@ -11,11 +11,11 @@ const HeroSection = () => {
                 Super Charge your Agile Workflow!<MoveRight size={23} color="#a40ff3" />
             </a>
         </div>
-        <h1 className="mt-13 text-4xl lg:text-7xl tracking-wide font-bold text-center">
-            Accelerate your Agile
-            <span className="bg-gradient-to-r from-[#a40ff3] to-purple-400 text-transparent bg-clip-text">
-                {" "}Streamline your success!!!
-            </span>
+        <h1 className="mt-13 text-3xl lg:text-6xl tracking-wide font-bold text-center">
+            Accelerate your Agile Streamline your success!!!
+            {/* <span className="bg-gradient-to-r from-[#a40ff3] to-purple-400 text-transparent bg-clip-text">
+                {" "}
+            </span> */}
         </h1>
         <p className='mt-13 text-center text-neutral-500 max-w-4xl'>
         Stay ahead with SprintX, the ultimate Scrum project management tool. Plan, track progress,

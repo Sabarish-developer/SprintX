@@ -16,7 +16,7 @@ const Navbar = () => {
                     <img className="h-9 w-9 mr-1 lg:h-12 lg:w-12 lg:mr-2" src={logo} alt="logo"/>
                     <span className="text-xl lg:text-2xl primary font-semibold italic tracking-tight">SprintX</span>
                 </div>
-                <ul className="hidden lg:flex ml-14 space-x-12">
+                <ul className="hidden lg:flex ml-25 space-x-12">
                     {navItems.map((item, index)=> (
                         <li key={index}>
                             <a href={item.href} className='font-semibold text-lg'>{item.label}</a>
@@ -24,10 +24,10 @@ const Navbar = () => {
                     ))}
                 </ul>
                 <div className="hidden lg:flex justify-center space-x-12 items-center">
-                    <a href="#" className="font-semibold pt-0.1 py-2 px-3 border-n shadow-md rounded-r-full rounded-l-full px-6">
+                    <a href="#" className="font-semibold pt-0.1 py-2 px-3 border-n shadow-md rounded-r-full rounded-l-full px-6 hover:bg-purple-500 hover:text-white transition-colors duration-200">
                         Log in
                     </a>
-                    <a href="#" className="text-white font-semibold pt-0.1 border-n shadow-md bg-gradient-to-r from-purple-500 to-purple-800 py-2 px-3 rounded-r-full rounded-l-full px-6">
+                    <a href="#" className="text-white font-semibold pt-0.1 border-n shadow-md bg-[#a40ff3] py-2 px-3 rounded-r-full rounded-l-full px-6 hover:bg-white hover:text-black transition-colors duration-200">
                         Sign up
                     </a>
                 </div>
