@@ -37,7 +37,7 @@ export const data = [
 ];
 
 export const navItems = [
-  { label: "Features", href: "#" },
+  { label: "Features", scrollTo:"features"},
   { label: "About", href: "#" },
   { label: "Contact Us", href: "#" },
   { label: "FAQs", href: "#" },
