@@ -19,7 +19,7 @@ const Navbar = () => {
                 <ul className="hidden lg:flex ml-25 space-x-12">
                     {navItems.map((item, index)=> (
                         <li key={index}>
-                            <a href={item.href} className='font-semibold text-lg'>{item.label}</a>
+                            <a href={item.href} className="relative font-semibold text-lg after:block after:h-[2px] after:bg-[#a40ff3] after:scale-x-0 after:transition-transform after:duration-300 after:origin-center hover:after:scale-x-100">{item.label}</a>
                         </li>
                     ))}
                 </ul>
