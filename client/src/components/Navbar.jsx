@@ -101,7 +101,7 @@ const Navbar = ({ navItems, handleScroll }) => {
             <div className="flex space-x-6 mt-4">
               <a
                 href="#"
-                className="py-2 border-n shadow-md text-white rounded-r-full rounded-l-full px-6"
+                className="py-2 border-n shadow-md text-black rounded-r-full rounded-l-full px-6"
               >
                 Log in
               </a>
