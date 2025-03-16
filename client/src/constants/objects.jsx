@@ -4,6 +4,9 @@ import { Fingerprint } from "lucide-react";
 import { ShieldHalf } from "lucide-react";
 import { PlugZap } from "lucide-react";
 import { GlobeLock } from "lucide-react";
+import { SearchCheck } from "lucide-react";
+import { Puzzle } from "lucide-react";
+import { CloudUpload } from "lucide-react";
 
 // import user1 from "../assets/profile-pictures/user1.jpg";
 // import user2 from "../assets/profile-pictures/user2.jpg";
@@ -11,6 +14,27 @@ import { GlobeLock } from "lucide-react";
 // import user4 from "../assets/profile-pictures/user4.jpg";
 // import user5 from "../assets/profile-pictures/user5.jpg";
 // import user6 from "../assets/profile-pictures/user6.jpg";
+
+export const data = [
+  {
+    icon: Puzzle,
+    title: "Adaptable and Simple",
+    para: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio, tenetur! Nesciunt hic fugiat, blanditiis impedit modi odio asperiores.",
+    label: "1",
+  },
+  {
+    icon: SearchCheck,
+    title: "Zero-learning Curve",
+    para: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio, tenetur! Nesciunt hic fugiat, blanditiis impedit modi odio asperiores.",
+    label: "2",
+  },
+  {
+    icon: CloudUpload,
+    title: "Cloud + self-hosted",
+    para: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio, tenetur! Nesciunt hic fugiat, blanditiis impedit modi odio asperiores.",
+    label: "3",
+  },
+];
 
 export const navItems = [
   { label: "Features", href: "#" },

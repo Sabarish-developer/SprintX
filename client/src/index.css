@@ -5,6 +5,15 @@
   --color-primary:#a40ff3;
 }; */
 
+#slider-boxes{
+  display: flex !important;
+}
+
+.slick-prev,
+.slick-next {
+  display: none !important;
+}
+
 body, html {
   height: 100%;
   margin: 0;
