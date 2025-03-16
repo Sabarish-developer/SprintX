@@ -69,8 +69,8 @@ export const SliderSlick = () => {
   };
 
   return (
-    <div className="w-full h-fit flex flex-col justify-center items-center px-4 py-10 lg:py-20 gap-6">
-      <h1 className="text-6xl text-black font-bold text-center">
+    <div className="w-full h-fit flex flex-col justify-center items-center px-4 lg:py-20 gap-6">
+      <h1 className="text-5xl text-black font-bold text-center">
         Why Choose Us?
       </h1>
       <p className="text-xl text-center">

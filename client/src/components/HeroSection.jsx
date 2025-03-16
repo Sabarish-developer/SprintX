@@ -10,15 +10,14 @@ const HeroSection = () => {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="min-h-screen bg-transparent"
     >
-    <div className="flex flex-col items-center bg-transparent">
+    <div className="flex flex-col items-center">
         <div className="flex justify-center">
             <a href="#" className="inline-flex items-center gap-2 inline-block text-sm font-semibold text-[#a40ff3] bg-[#f3e9fd] py-2 px-6 shadow-md rounded-full hover:bg-[#e9d7fb] transition-colors duration-200">
                 Super Charge your Agile Workflow!<MoveRight size={23} color="#a40ff3" />
             </a>
         </div>
-        <h1 className="font-[Arial] mt-13 text-3xl lg:text-6xl tracking-wide font-bold text-center">
+        <h1 className="font-[Arial] mt-13 text-3xl lg:text-6xl tracking-wide font-bold text-black text-center">
             Accelerate your Agile<br/> Streamline your success!!!
         </h1>
         <p className='mt-13 text-center text-neutral-500 max-w-4xl'>
