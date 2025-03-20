@@ -64,7 +64,7 @@ const SliderSlick = forwardRef((props, ref) => {
 
   return (
     <div ref={ref} className="w-full h-fit flex flex-col justify-center items-center px-4 lg:py-20 gap-6">
-      <h1 className="text-5xl text-black font-bold text-center">Why Choose Us?</h1>
+      <h1 className="text-3xl lg:text-5xl md:text-5xl text-black font-bold text-center">Why Choose Us?</h1>
       <p className="text-xl text-center">
         SprintX is project + knowledge management software that's a <br />
         force multiplier for your existing workflows, methodologies, and best practices.

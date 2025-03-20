@@ -4,7 +4,7 @@ const AboutSection = () => {
   return (
     <section className="pb-12">
       <div className="container mx-auto px-4">
-        <h2 className="text-5xl text-black font-bold text-center mb-13">About Us</h2>
+        <h2 className="text-3xl md:text-5xl lg:text-5xl text-black font-bold text-center mb-13">About Us</h2>
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-8 md:mb-0">
             <img src={template} alt="About Us" className="rounded-lg shadow-lg" />

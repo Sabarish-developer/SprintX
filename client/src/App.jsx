@@ -5,6 +5,7 @@ import HeroSection from './components/HeroSection';
 import SliderSection from './components/SliderSection';
 import { navItems } from './constants/objects';
 import AboutSection from './components/AboutSection';
+import ContactUs from './components/ContactUs';
 
 function App() {
   const featuresRef = useRef(null);
@@ -24,6 +25,7 @@ function App() {
         <HeroSection />
         <SliderSection ref={featuresRef} />
         <AboutSection/>
+        <ContactUs/>
       </div>
     </>
   );
