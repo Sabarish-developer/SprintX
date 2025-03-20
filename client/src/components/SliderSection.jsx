@@ -75,12 +75,12 @@ const SliderSlick = forwardRef((props, ref) => {
       </div>
 
       <div className="w-full h-fit p-8">
-        <Slider {...settings} className="max-w-4xl mx-auto rounded-2xl shadow-lg">
+        <Slider {...settings} className="max-w-4xl mx-auto rounded-2xl lg:shadow-lg md:shadow-lg">
           {data.map((item, index) => (
             <div
               id="slider-boxes"
               key={index}
-              className="p-10 cursor-pointer bg-gradient-to-r from-purple-500 to-purple-200 rounded-xl flex flex-col justify-center items-center border-n"
+              className="p-10 w-full cursor-pointer bg-gradient-to-r from-purple-500 to-purple-200 rounded-xl flex flex-col justify-center items-center border-n"
             >
               <div id="icon-box" className="text-white bg-purple-400 p-6 rounded-full hover:bg-purple-500 cursor-pointer">
                 {item.icon && <item.icon className="w-[45px] h-[45px]" />}

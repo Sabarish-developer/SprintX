@@ -11,7 +11,7 @@ const HeroSection = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center mb-10">
         <div className="flex justify-center">
             <a href="#" className="inline-flex items-center gap-2 inline-block text-sm font-semibold text-[#a40ff3] bg-[#f3e9fd] py-2 px-6 shadow-md rounded-full hover:bg-[#e9d7fb] transition-colors duration-200">
                 Super Charge your Agile Workflow!<MoveRight size={23} color="#a40ff3" />
