@@ -24,7 +24,7 @@ const ContactUs = () => {
             <div className="flex flex-col md:flex-row items-center justify-center mt-4 px-4">
                 
                 {/* Form Section or Success Message */}
-                <div className="w-full md:w-1/2 p-6 shadow-lg rounded-lg min-h-[300px] flex items-center justify-center">
+                <div className="w-full md:w-1/2 p-6 shadow-lg rounded-lg min-h-[300px] flex items-center justify-center mb-8">
                     {isSubmitted ? (
                         <h2 className="text-2xl md:text-3xl text-center font-semibold text-[#a40ff3]">
                             Successfully Submitted, We Reach You Soon 😊.

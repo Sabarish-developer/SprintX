@@ -86,7 +86,7 @@ const SliderSlick = forwardRef((props, ref) => {
                 {item.icon && <item.icon className="w-[45px] h-[45px]" />}
               </div>
               <div className="flex flex-col justify-center items-center gap-6 mt-6">
-                <h1 className="text-2xl text-white font-bold tracking-wide">{item.title}</h1>
+                <h1 className="text-2xl text-center text-white font-bold tracking-wide">{item.title}</h1>
                 <p className="text-[17px] text-center text-white">{item.para}</p>
                 <button className="text-white bg-purple-400 px-8 py-3 rounded-xl font-semibold hover:bg-purple-500 hover:text-white">
                   {item.label}
