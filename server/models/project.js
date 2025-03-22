@@ -6,7 +6,7 @@ const projectSchema = new Schema({
     title: {type: String, unique: true, required: true}, 
     description: {type: String},
     start: {type: Date, required: true},
-    end: {type: Date, required: true},
+    end: {type: Date},
     deadline: {type: Date, required: true},
     status: {type: String, enum: ["Active", "Completed"], default: "Active"},
     productOwnerId: {type: ObjectId, ref: "users", required: true},

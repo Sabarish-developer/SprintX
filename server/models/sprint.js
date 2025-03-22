@@ -6,7 +6,7 @@ const sprintSchema = new Schema({
     title: {type:String, required:true},
     start: {type:Date, required:true},
     deadline: {type:Date, required:true},
-    end: {type:Date, required:true},
+    end: {type:Date},
     status: {type:String, enum:["Active", "Completed"], default:"Active"},
     projectId: {type:ObjectId, ref:"projects", required:true},
     scrumMasterId: {type:ObjectId, ref:"users", required:true}
