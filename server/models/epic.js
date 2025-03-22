@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 const ObjectId = mongoose.Types.ObjectId;
 
 const epicSchema = new Schema({
-    title: {type:String, unique:true, required:true},
+    title: {type:String, required:true},
     description: {type:String},
     priority: {type:String, enum:["High", "Medium", "Low"], default: "Medium"},
-    status: {type:String, enum:["Todo", "In Progress", "Testing", "Completed", "Need Review"], default:"Todo"},
+    status: {type:String, enum:["Active", "Completed"], default:"Active"},
     deadline: {type:Date, required:true},
     end: {type:Date},
     productOwnerId: {type:ObjectId, ref:"users", required:true},
