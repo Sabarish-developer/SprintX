@@ -5,10 +5,13 @@ const ObjectId = mongoose.Types.ObjectId;
 const projectSchema = new Schema({
     title: {type: String, required: true}, 
     description: {type: String},
-    start: {type: Date},
-    end: {type: Date},
+    start: {type: Date, required: true},
+    end: {type: Date, required: true},
+    deadline: {type: Date, required: true},
     status: {type: String, enum: ["Active", "Completed"], default: "Active"},
-    productOwnerId: {type: ObjectId, ref: "users", required: true}
+    productOwnerId: {type: ObjectId, ref: "users", required: true},
+    scrumMasterId: {type: ObjectId, ref: "users", required: true},
+    teamMembersId: [{type: ObjectId, ref: "users"}]
 })
 
 //To ensure product owner can't have duplicate project names but different product owner can have that name
