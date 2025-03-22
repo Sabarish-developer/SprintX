@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const ObjectId = mongoose.Types.ObjectId;
 
 const projectSchema = new Schema({
-    title: {type: String, unique: true, required: true}, 
+    title: {type: String, required: true}, 
     description: {type: String},
     start: {type: Date, required: true},
     end: {type: Date},
