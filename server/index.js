@@ -1,22 +1,17 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
-import authRouter from './routes/authRoute';
-import adminRouter from './routes/adminRoute';
-import productOwnerRouter from './routes/productOwnerRoute';
-import scrumMasterRouter from './routes/scrumMasterRoute';
-import teamMemberRouter from './routes/teamMemberRoute';
-import errorHandler from './middleware/errorHandler';
+import errorHandler from './middleware/errorHandler.js';
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 
-app.use("/api/auth", authRouter);
-app.use("/api/teamMember", teamMemberRouter);
-app.use("/api/scrumMaster", scrumMasterRouter);
-app.use("/api/productOwner", productOwnerRouter);
-app.use("/api/admin", adminRouter);
+// app.use("/api/auth", authRouter);
+// app.use("/api/teamMember", teamMemberRouter);
+// app.use("/api/scrumMaster", scrumMasterRouter);
+// app.use("/api/productOwner", productOwnerRouter);
+// app.use("/api/admin", adminRouter);
 
 app.use(errorHandler);
 
