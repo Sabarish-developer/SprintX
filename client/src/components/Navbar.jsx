@@ -3,6 +3,7 @@ import { navItems } from "../constants/objects";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import '../App';
+import { Link } from 'react-router-dom'
 
 const Navbar = ({ navItems, handleScroll }) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -46,18 +47,18 @@ const Navbar = ({ navItems, handleScroll }) => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex justify-center space-x-12 items-center">
-            <a
-              href="#"
+            <Link
+              to='/login'
               className="font-semibold pt-0.1 py-2 px-3 border-n shadow-md rounded-r-full rounded-l-full px-6 hover:bg-purple-500 hover:text-white transition-colors duration-200"
             >
               Log in
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to='/signup'
               className="text-white font-semibold pt-0.1 border-n shadow-md bg-[#a40ff3] py-2 px-3 rounded-r-full rounded-l-full px-6 hover:bg-white hover:text-black transition-colors duration-200"
             >
               Sign up
-            </a>
+            </Link>
           </div>
 
           {/* Hamburger Menu Button (Mobile) */}
@@ -99,18 +100,19 @@ const Navbar = ({ navItems, handleScroll }) => {
 
             {/* Mobile Auth Buttons */}
             <div className="flex space-x-6 mt-4">
-              <a
+              <Link
+                to='/login'
                 href="#"
                 className="py-2 border-n shadow-md text-black rounded-r-full rounded-l-full px-6"
               >
                 Log in
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                to='/signup'
                 className="py-2 text-white bg-gradient-to-r from-purple-500 to-purple-800 rounded-r-full rounded-l-full px-6"
               >
                 Sign up
-              </a>
+              </Link>
             </div>
           </div>
         )}

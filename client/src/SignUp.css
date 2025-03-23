@@ -1,0 +1,29 @@
+@keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .float-slow {
+    animation: float 3s ease-in-out infinite;
+    border-radius: 1rem; /* Ensure the border matches the rounded corners */
+    box-shadow: 0 0 15px 4px rgba(124, 58, 237, 0.5); /* Purple glow effect */
+  }
+
+.input-field {
+    padding: 0.5rem;
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 0.5rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .input-field:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3);
+  }
