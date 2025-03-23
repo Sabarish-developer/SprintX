@@ -8,7 +8,8 @@ const userSchema = new Schema({
     password: {type: String, required: true},
     role: {type: String, enum: ["Team member", "Scrum master", "Product owner", "Admin"], default: "Team member"},
     subrole: {type: String},
-    companyId: {type: ObjectId, ref: "companies", required: true}
+    companyId: {type: ObjectId, ref: "companies", required: true},
+    isDeleted: {type:Boolean, default:false}
 })
 
 const userModel = mongoose.model("users",userSchema);
