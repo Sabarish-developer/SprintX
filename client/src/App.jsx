@@ -6,12 +6,20 @@ import SliderSection from './components/SliderSection';
 import { navItems } from './constants/objects';
 import AboutSection from './components/AboutSection';
 import ContactUs from './components/ContactUs';
+import Faq from './components/Faq';
+import Footer from './components/Footer';
 
 function App() {
   const featuresRef = useRef(null);
+  const aboutRef = useRef(null);
+  const contactusRef = useRef(null);
+  const faqRef = useRef(null);
 
   const sectionRefs = {
     features: featuresRef,
+    about: aboutRef,
+    contactus: contactusRef,
+    faq: faqRef,
   };
 
   const handleScroll = (sectionKey) => {
@@ -24,9 +32,11 @@ function App() {
       <div className='max-w-7xl mx-auto px-6 pt-17'>
         <HeroSection />
         <SliderSection ref={featuresRef} />
-        <AboutSection/>
-        <ContactUs/>
+        <AboutSection ref={aboutRef}/>
+        <ContactUs ref={contactusRef}/>
+        <Faq ref={faqRef}/>
       </div>
+      <Footer/>
     </>
   );
 }

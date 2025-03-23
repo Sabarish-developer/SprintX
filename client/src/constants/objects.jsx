@@ -38,9 +38,9 @@ export const data = [
 
 export const navItems = [
   { label: "Features", scrollTo:"features"},
-  { label: "About", href: "#" },
-  { label: "Contact Us", href: "#" },
-  { label: "FAQs", href: "#" },
+  { label: "About", scrollTo:"about" },
+  { label: "Contact Us", scrollTo:"contactus" },
+  { label: "FAQs", scrollTo:"faq" },
 ];
 
 export const testimonials = [

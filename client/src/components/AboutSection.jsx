@@ -1,8 +1,9 @@
+import React, { forwardRef } from "react";
 import template from '../assets/template.png'
 
-const AboutSection = () => {
+const AboutSection = forwardRef((props, ref) => {
   return (
-    <section className="pb-12">
+    <section ref={ref} className="pb-12">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-5xl lg:text-5xl text-black font-bold text-center mb-13">About Us</h2>
         <div className="flex flex-col md:flex-row items-center">
@@ -24,6 +25,6 @@ const AboutSection = () => {
       </div>
     </section>
   );
-};
+});
 
 export default AboutSection;
