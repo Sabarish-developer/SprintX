@@ -9,11 +9,11 @@
   
   .float-slow {
     animation: float 3s ease-in-out infinite;
-    border-radius: 1rem; /* Ensure the border matches the rounded corners */
-    box-shadow: 0 0 15px 4px rgba(124, 58, 237, 0.5); /* Purple glow effect */
+    border-radius: 1rem;
+    box-shadow: 0 0 15px 4px rgba(124, 58, 237, 0.5);
   }
-
-.input-field {
+  
+  .input-field {
     padding: 0.5rem;
     background-color: white;
     border: 1px solid lightgray;
@@ -27,3 +27,17 @@
     border-color: #7c3aed;
     box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3);
   }
+  
+  /* ✅ Updated signup image styling with only top-left and bottom-left rounded corners */
+  .signup-image {
+    height: 90vh;              /* Increased height */
+    width: auto;              /* Maintain aspect ratio */
+    max-width: 90%;           /* Prevents overflow */
+    object-fit: cover;        /* Ensure image scales correctly */
+    float: right;             /* Align image to right */
+    margin-right: 0rem;
+    border-top-left-radius: 1rem;     /* Only top-left rounded */
+    border-bottom-left-radius: 1rem;  /* Only bottom-left rounded */
+    border-top-right-radius: 0;       /* Keep top-right normal */
+    border-bottom-right-radius: 0;    /* Keep bottom-right normal */
+  }  

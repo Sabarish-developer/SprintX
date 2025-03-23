@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import OTPPopup from './OTPPopup';
 import '../SignUp.css';
-import template from '../assets/template.png';
+import SignImg from '../assets/SignUp.png';
+import logo from '../assets/logo.svg';
 
 const Signup = () => {
   const [showOTP, setShowOTP] = useState(false);
@@ -34,11 +35,16 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center md:flex-col lg:flex-row text-black p-6 lg:mx-20">
-      {/* Form Section started */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-2">
-        <h2 className="text-3xl font-bold mb-6">Create an Account</h2>
+    <>
+    <div className="absolute top-4 left-4 flex items-center space-x-0">
+        <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
+        <span className="text-lg font-semibold text-[#a40ff3] tightly-tracked">SprintX</span>
+    </div>
+    <div className="min-h-screen flex flex-col justify-center items-center md:flex-col lg:flex-row text-black lg:pl-8">
+      {/* Form Section */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-2">
         <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md space-y-4">
+          <h2 className="text-2xl font-bold mb-6 w-full self-start">Welcome to SprintX!</h2>
           <input {...register("name", { required: true })} placeholder="Name" className="input-field" />
           {errors.name && <span className="text-red-500 text-sm">Name is required</span>}
 
@@ -99,17 +105,18 @@ const Signup = () => {
       </div>
 
       {/* Image Section */}
-      <div className="hidden lg:flex w-1/2 justify-center items-center">
+      <div className="hidden lg:flex lg:w-1/2 justify-end items-center">
         <img
-          src={template}
+          src={SignImg}
           alt="Signup Visual"
-          className="rounded-2xl w-[80%] float-slow"
+          className="signup-image float-slow"
         />
       </div>
 
-      {/* OTP Popup intha onverify is at otppopup also frome here only we are simulating that home nav part */}
+      {/* OTP Popup */}
       {showOTP && <OTPPopup onVerify={() => navigate('/home')} onClose={() => setShowOTP(false)} />}
     </div>
+    </>
   );
 };
 
