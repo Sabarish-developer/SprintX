@@ -44,7 +44,7 @@ const Signup = () => {
     <div className="min-h-screen flex flex-col justify-center items-center md:flex-col lg:flex-row text-black lg:pl-8">
       {/* Form Section */}
       <div className="w-full lg:w-1/2 bo flex flex-col justify-center items-center p-2">
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full mt-3 lg:mt-0 border lg:border-2 rounded-lg border-gray-300 shadow-lg max-w-md space-y-4 p-3">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full mt-3 lg:mt-0 border lg:border-2 rounded-xl border-gray-300 shadow-lg max-w-md space-y-4 p-5">
           <h2 className="text-2xl font-bold mb-6 w-full text-center">Welcome to SprintX!</h2>
           <input {...register("name", { required: true })} placeholder="Name" className="input-field" />
           {errors.name && <span className="text-red-500 text-sm">Name is required</span>}
