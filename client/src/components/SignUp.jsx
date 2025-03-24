@@ -26,14 +26,11 @@ const customSelectStyles = {
   }),
   option: (base, state) => ({
     ...base,
-    backgroundColor: state.isSelected
-      ? '#a855f7'
-      : state.isFocused
-      ? '#a40ff3'
-      : '#fff',
-    color: state.isSelected ? '#fff' : '#000',
+    backgroundColor: state.isFocused ? '#a40ff3' : '#fff', // Only on hover
+    color: state.isFocused ? '#fff' : '#000',
     fontSize: '0.95rem',
   }),
+  
 };
 
 
