@@ -20,6 +20,7 @@ const customSelectStyles = {
     borderRadius: '0.5rem',
     border: state.isFocused ? '2px solid #c084fc' : '1px solid light-gray',
     boxShadow: 'none',
+    outline: 'none',
     padding: '2px',
     fontSize: '0.95rem',
   }),
@@ -34,6 +35,7 @@ const customSelectStyles = {
     fontSize: '0.95rem',
   }),
 };
+
 
 const Signup = () => {
   const [showOTP, setShowOTP] = useState(false);
@@ -108,6 +110,7 @@ const Signup = () => {
             <Controller
               name="role"
               control={control}
+              defaultValue={roleOptions[0]}
               rules={{ required: "Role is required" }}
               render={({ field }) => (
                 <Select
@@ -126,11 +129,8 @@ const Signup = () => {
             {errors.company && <span className="text-red-500 text-sm">Company name is required</span>}
 
             <div className="flex gap-4 justify-center">
-              <button type="submit" className="bg-[#a40ff3] text-white px-4 py-2 rounded hover:bg-purple-500">
-                Create Account
-              </button>
-              <button type="button" onClick={() => navigate('/')} className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
-                Cancel
+              <button type="submit" className="bg-[#a40ff3] text-white px-4 py-2 rounded hover:bg-purple-500 hover:cursor-pointer">
+                SignUp
               </button>
             </div>
 
