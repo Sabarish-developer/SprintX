@@ -53,6 +53,23 @@
     box-shadow: 0 0 15px 4px rgba(124, 58, 237, 0.5);
   }
 
+  /* Hide default browser "eye" icon from password fields in WebKit browsers (Chrome, Edge, Safari) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-clear-button,
+input[type="password"]::-webkit-reveal-button {
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  width: 0;
+}
+
+
   /* .pad{
     padding-left: 0 !important;
     padding-right: 0 !important;
