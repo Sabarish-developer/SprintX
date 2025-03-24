@@ -38,14 +38,14 @@ const Signup = () => {
   return (
     <div className="min-h-screen w-full bg-cover w-300 bg-fixed bg-center" style={{ backgroundImage: `url(${circlebg})` }}>
     <div className="absolute top-4 left-4 flex items-center space-x-0">
-        <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
+        <img src={logo} alt="Logo" className="w-8 h-8 border-0 rounded-full object-contain" />
         <span className="text-lg font-semibold text-[#a40ff3] tightly-tracked">SprintX</span>
     </div>
     <div className="min-h-screen flex flex-col justify-center items-center md:flex-col lg:flex-row text-black lg:pl-8">
       {/* Form Section */}
       <div className="w-full lg:w-1/2 bo flex flex-col justify-center items-center p-2">
         <form onSubmit={handleSubmit(onSubmit)} className="w-full mt-3 lg:mt-0 border lg:border-2 rounded-lg border-gray-300 shadow-lg max-w-md space-y-4 p-3">
-          <h2 className="text-2xl font-bold mb-6 w-full self-start">Welcome to SprintX!</h2>
+          <h2 className="text-2xl font-bold mb-6 w-full text-center">Welcome to SprintX!</h2>
           <input {...register("name", { required: true })} placeholder="Name" className="input-field" />
           {errors.name && <span className="text-red-500 text-sm">Name is required</span>}
 
@@ -80,7 +80,6 @@ const Signup = () => {
             <option value="Team member">Team Member</option>
             <option value="Scrum master">Scrum Master</option>
             <option value="Product owner">Product Owner</option>
-            <option value="Admin">Admin</option>
           </select>
 
           <input {...register("subrole", { required: true })} placeholder="Subrole" className="input-field" />
@@ -89,7 +88,7 @@ const Signup = () => {
           <input {...register("company", { required: true })} placeholder="Company Name" className="input-field" />
           {errors.company && <span className="text-red-500 text-sm">Company name is required</span>}
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 justify-center">
             <button type="submit" className="bg-[#a40ff3] text-white px-4 py-2 rounded hover:bg-purple-500">
               Create Account
             </button>
@@ -98,7 +97,7 @@ const Signup = () => {
             </button>
           </div>
 
-          <p className="text-sm mt-2">
+          <p className="text-sm mt-2 text-center">
             Already have an account?
             <span onClick={() => navigate('/login')} className="text-purple-600 cursor-pointer underline ml-1">Login</span>
           </p>
