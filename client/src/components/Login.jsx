@@ -50,7 +50,7 @@ const Login = () => {
                                     onChange={(e) => setIdentifier(e.target.value)}
                                     required
                                     className="input-field"
-                                    placeholder="Enter your user name"
+                                    placeholder="Enter your Username"
                                 />
                             </div>
 
