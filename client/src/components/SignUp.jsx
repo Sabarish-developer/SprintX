@@ -78,7 +78,7 @@ const Signup = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="w-full mt-3 lg:mt-0 border lg:border rounded-2xl border-purple-300 max-w-md space-y-3 p-4 bg-white">
             <h2 className="text-2xl font-bold mb-1 w-full text-center">SignUp</h2><p className="text-sm text-gray-500 text-center mb-6">Welcome to SprintX! Please enter your details</p>
 
-            <input {...register("name", { required: true })} placeholder="Name" className="input-field" />
+            <input {...register("name", { required: true })} placeholder="user name" className="input-field" />
             {errors.name && <span className="text-red-500 text-sm">Name is required</span>}
 
             <input {...register("email", { required: true })} type="email" placeholder="Email" className="input-field" />

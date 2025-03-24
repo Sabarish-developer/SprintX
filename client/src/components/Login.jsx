@@ -43,14 +43,14 @@ const Login = () => {
 
                         <form onSubmit={handleLogin} className="space-y-4">
                             <div>
-                                <label className="text-sm text-black">Email / Name</label>
+                                <label className="text-sm text-black">user name</label>
                                 <input
                                     type="text"
                                     value={identifier}
                                     onChange={(e) => setIdentifier(e.target.value)}
                                     required
                                     className="input-field"
-                                    placeholder="Enter your email"
+                                    placeholder="Enter your user name"
                                 />
                             </div>
 
