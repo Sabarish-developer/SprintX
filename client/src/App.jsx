@@ -8,6 +8,7 @@ import AboutSection from './components/AboutSection';
 import ContactUs from './components/ContactUs';
 import Faq from './components/Faq';
 import Footer from './components/Footer';
+import bgImage from './assets/back.png'; // ✅ imported correctly
 
 function App() {
   const featuresRef = useRef(null);
@@ -27,17 +28,17 @@ function App() {
   };
 
   return (
-    <>
+    <div className="min-h-screen w-full bg-cover bg-fixed bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
       <Navbar navItems={navItems} handleScroll={handleScroll} />
-      <div className='max-w-7xl mx-auto px-6 pt-17'>
+      <div className="max-w-7xl mx-auto px-6 pt-17">
         <HeroSection />
         <SliderSection ref={featuresRef} />
-        <AboutSection ref={aboutRef}/>
-        <ContactUs ref={contactusRef}/>
-        <Faq ref={faqRef}/>
+        <AboutSection ref={aboutRef} />
+        <ContactUs ref={contactusRef} />
+        <Faq ref={faqRef} />
       </div>
-      <Footer/>
-    </>
+      <Footer />
+    </div>
   );
 }
 

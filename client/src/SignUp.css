@@ -30,9 +30,9 @@
   
   /* ✅ Updated signup image styling with only top-left and bottom-left rounded corners */
   .signup-image {
-    height: 90vh;              /* Increased height */
+    height: 80vh;              /* Increased height */
     width: auto;              /* Maintain aspect ratio */
-    max-width: 90%;           /* Prevents overflow */
+    max-width: 80%;           /* Prevents overflow */
     object-fit: cover;        /* Ensure image scales correctly */
     float: right;             /* Align image to right */
     margin-right: 0rem;
@@ -41,3 +41,8 @@
     border-top-right-radius: 0;       /* Keep top-right normal */
     border-bottom-right-radius: 0;    /* Keep bottom-right normal */
   }  
+
+  /* .pad{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  } */
