@@ -22,25 +22,36 @@
     outline: none;
     transition: border-color 0.3s ease;
   }
+
+  .input-field + span {
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
   
   .input-field:focus {
     border-color: #7c3aed;
     box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3);
   }
+
   
-  /* ✅ Updated signup image styling with only top-left and bottom-left rounded corners */
   .signup-image {
-    height: 80vh;              /* Increased height */
-    width: auto;              /* Maintain aspect ratio */
-    max-width: 80%;           /* Prevents overflow */
-    object-fit: cover;        /* Ensure image scales correctly */
-    float: right;             /* Align image to right */
+    height: 80vh;             
+    width: auto;              
+    max-width: 80%;       
+    object-fit: cover;     
+    float: right;           
     margin-right: 0rem;
-    border-top-left-radius: 1rem;     /* Only top-left rounded */
-    border-bottom-left-radius: 1rem;  /* Only bottom-left rounded */
-    border-top-right-radius: 0;       /* Keep top-right normal */
-    border-bottom-right-radius: 0;    /* Keep bottom-right normal */
+    border-top-left-radius: 1rem;    
+    border-bottom-left-radius: 1rem; 
+    border-top-right-radius: 0;       
+    border-bottom-right-radius: 0;   
   }  
+
+  .shadow-custom{
+    box-shadow: 0 0 15px 4px rgba(124, 58, 237, 0.5);
+  }
 
   /* .pad{
     padding-left: 0 !important;

@@ -38,7 +38,7 @@ const Signup = () => {
   return (
     <div className="min-h-screen w-full bg-cover w-300 bg-fixed bg-center" style={{ backgroundImage: `url(${circlebg})` }}>
     <div className="absolute top-4 left-4 flex items-center space-x-0">
-        <img src={logo} alt="Logo" className="w-8 h-8 border-0 rounded-full object-contain" />
+        <img src={logo} alt="Logo" className="w-8 h-8 border border-[#a40ff3] shadow-custom rounded-full object-contain mr-2" />
         <span className="text-lg font-semibold text-[#a40ff3] tightly-tracked">SprintX</span>
     </div>
     <div className="min-h-screen flex flex-col justify-center items-center md:flex-col lg:flex-row text-black lg:pl-8">
@@ -82,8 +82,9 @@ const Signup = () => {
             <option value="Product owner">Product Owner</option>
           </select>
 
-          <input {...register("subrole", { required: true })} placeholder="Subrole" className="input-field" />
-          {errors.subrole && <span className="text-red-500 text-sm">Subrole is required</span>}
+          <input placeholder="Subrole" className="input-field" />
+          {/* <input {...register("subrole", { required: true })} placeholder="Subrole" className="input-field" /> */}
+          {/* {errors.subrole && <span className="text-red-500 text-sm">Subrole is required</span>} */}
 
           <input {...register("company", { required: true })} placeholder="Company Name" className="input-field" />
           {errors.company && <span className="text-red-500 text-sm">Company name is required</span>}
