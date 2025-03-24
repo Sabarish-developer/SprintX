@@ -82,7 +82,7 @@ const Login = () => {
                             <div className="flex gap-4 mt-6">
                                 <button
                                     type="submit"
-                                    className="bg-[#a40ff3] hover:bg-purple-400 text-white py-2 px-4 rounded-md w-full"
+                                    className="bg-[#a40ff3] hover:bg-purple-400 hover:cursor-pointer text-white py-2 px-4 rounded-md w-full"
                                 >
                                     Sign In
                                 </button>
