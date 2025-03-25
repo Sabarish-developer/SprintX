@@ -11,7 +11,7 @@ const userSchema = new Schema({
     companyId: {type: ObjectId, ref: "companies", required: true},
     isDeleted: {type:Boolean, default:false},
     otp: {type:String},
-    otpExpired: {type:Date},
+    otpExpires: {type:Date},
     isVerified: {type:Boolean, default:false}
 })
 

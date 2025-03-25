@@ -2,16 +2,14 @@ import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
 import errorHandler from './middleware/errorHandler.js';
+import authRouter from './routes/authRoute.js';
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 
-// app.use("/api/auth", authRouter);
-// app.use("/api/teamMember", teamMemberRouter);
-// app.use("/api/scrumMaster", scrumMasterRouter);
-// app.use("/api/productOwner", productOwnerRouter);
-// app.use("/api/admin", adminRouter);
+app.use("/api/auth", authRouter);
+
 
 app.use(errorHandler);
 
