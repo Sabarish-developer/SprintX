@@ -6,9 +6,9 @@ const generateOTP = ()=>{
     }
     
     //Expires is set for 5 minutes
-    const expires = Date.now() + 1000 * 60 * 5;
+    const otpExpires = Date.now() + 1000 * 60 * 5;
 
-    return {otp,expires};
+    return {otp,otpExpires};
 };
 
 export default generateOTP;

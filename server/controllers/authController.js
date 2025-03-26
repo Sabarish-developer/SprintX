@@ -118,6 +118,25 @@ const signupHandler = async(req,res)=>{
     }
 
     //OTP generation
+    try{
+        const {otp,otpExpires} = generateOTP();
+        if(!otp || !otpExpires){
+            return res.status(500).json({message: "Internal Server Error. Please try agin later."});
+        }
+    }catch(e){
+        console.log("Error in otp generation block: ",e);
+        return res.status(500).json({message: "Internal Server Error. Please try agin later."});
+    }
+
+    //Sending the OTP to the user
+    try{
+        await sendOTPEmail(email,otp);
+        console.log("OTP sent successfully via email.");
+    }catch(e){
+        console.log("Error is sending OTP to user block : ",e);
+        return res.status(500).json({message: "Internal Server Error. Please try again later."});
+    }
+
 
     //Inserting user details in the database
     try{
@@ -127,7 +146,9 @@ const signupHandler = async(req,res)=>{
             password: hashedPassword,
             role,
             subrole,
-            companyId
+            companyId,
+            otp,
+            otpExpires
         });
         console.log("Inserted successfully in db");
         return res.status(201).json({message: "Signed up successfully"});
