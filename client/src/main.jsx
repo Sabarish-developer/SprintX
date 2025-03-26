@@ -7,11 +7,15 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import Login from './components/Login.jsx'
 import  Home  from './components/Home.jsx'
 import ForgotPassword from './components/ForgotPassword.jsx'
+import SideBarLayout from './components/DashboardLayout.jsx'
+import  Settings  from './components/Settings.jsx'
+import ErrorPage from './components/ErrorPage.jsx'
 
 const router = createBrowserRouter([
   {
   path : '/',
-  element: <App />
+  element: <App />,
+  errorElement: <ErrorPage/>
   },
   {
     path: '/signup',
@@ -21,13 +25,27 @@ const router = createBrowserRouter([
     path: '/login',
     element: <Login/>
   },
-  {
-    path: '/home',
-    element: <Home/>
-  },
+  // {
+  //   path: '/home',
+  //   element: <Home/>
+  // },
   {
     path: '/forgotpassword',
     element: <ForgotPassword/>
+  },
+  {
+    path: '/home',
+    element: <SideBarLayout/>,
+    children:[
+      {
+        path:'/home',
+        element:<Home/>
+      },
+      {
+        path:'/home/settings',
+        element:<Settings/>
+      },
+    ]
   }
 
 ]);
