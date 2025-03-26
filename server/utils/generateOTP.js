@@ -4,7 +4,11 @@ const generateOTP = ()=>{
     for(let i=0; i<6; i++){
         otp += characters.charAt(Math.floor(Math.random() * characters.length));
     }
-    return otp;
+    
+    //Expires is set for 5 minutes
+    const expires = Date.now() + 1000 * 60 * 5;
+
+    return {otp,expires};
 };
 
 export default generateOTP;

@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import {z} from 'zod';
+import generateOTP from '../utils/generateOTP.js';
+import sendOTPEmail from '../utils/email.js';
 
 const signupHandler = async(req,res)=>{
 
@@ -114,6 +116,8 @@ const signupHandler = async(req,res)=>{
     if (!hashedPassword) {
         return res.status(500).json({ message: "Failed to hash password. Try again later." });
     }
+
+    //OTP generation
 
     //Inserting user details in the database
     try{
