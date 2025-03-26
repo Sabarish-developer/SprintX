@@ -195,6 +195,43 @@ const emailVerificationHandler = async(req,res)=>{
     }
 }
 
+const resendOTPHandler = async(req,res)=>{
+
+    const {email} = req.body;
+
+    if(!email){
+        return res.status(400).json({message: "Email is required."});
+    }
+    
+    try{
+        const user = await userModel.findOne({email});
+
+        if(!user){
+            return res.status(400).json({message: "User not found."});
+        }
+
+        //Ratelimit or stopping unwanted requests
+        const minDelay = 30 * 1000 //30 seconds
+        if(user.otp && (user.otpExpires-Date.now())>minDelay){
+            return res.status(400).json({message: "Please wait before requesting otp."})
+        }
+
+        //Generating otp
+        const {otp,otpExpires} = generateOTP();
+        user.otp = otp;
+        user.otpExpires = otpExpires;
+        await user.save();
+
+        //Sending otp to the user
+        await sendOTPEmail(email,otp);
+
+        return res.status(200).json({message: "New OTP has been sent successfully."});
+    }catch(e){
+        console.log("Error in resend otp block : ",e);
+        return res.status(500).json({message: "Internal Server Error. Please try again later."});
+    }
+}
+
 const signinHandler = async(req,res)=>{
 
 }
@@ -204,4 +241,4 @@ const forgotPasswordHandler = async(req,res)=>{
 }
 
 
-export {signupHandler,signinHandler,emailVerificationHandler,forgotPasswordHandler}
+export {signupHandler,signinHandler,emailVerificationHandler,forgotPasswordHandler,resendOTPHandler};
