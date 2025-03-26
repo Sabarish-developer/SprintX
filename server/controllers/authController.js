@@ -161,6 +161,38 @@ const signupHandler = async(req,res)=>{
 
 const emailVerificationHandler = async(req,res)=>{
 
+    const {email,otp} = req.body;
+
+    if(!email || !otp){
+        console.log("All fields are required.");
+        return res.status(400).json({message: "Email and OTP are required."});
+    }
+
+    try{
+        const user = await userModel.findOne({email});
+
+        if(!user){
+            return res.status(400).json({message: "User doesn't exist."});
+        }
+
+        if(otp !== user.otp){
+            return res.status(400).json({message: "Invalid OTP."});
+        }
+
+        if(Date.now() > user.otpExpires){
+            return res.status(400).json({message: "OTP has been expired. Request another OTP."});
+        }
+
+        user.isVerified = true;
+        user.otp = null;
+        user.otpExpires = null;
+        await user.save();
+
+        return res.status(200).json({message: "Email verification is successful."});
+    }catch(e){
+        console.log("Error is email verification block : ",e);
+        return res.status(500).json({message: "Internal Server Error. Please try again later."});
+    }
 }
 
 const signinHandler = async(req,res)=>{
