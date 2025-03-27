@@ -9,10 +9,7 @@ const userSchema = new Schema({
     role: {type: String, enum: ["Team member", "Scrum master", "Product owner", "Admin"], default: "Team member"},
     subrole: {type: String},
     companyId: {type: ObjectId, ref: "companies", required: true},
-    isDeleted: {type:Boolean, default:false},
-    otp: {type:String},
-    otpExpires: {type:Date},
-    isVerified: {type:Boolean, default:false}
+    isDeleted: {type:Boolean, default:false}
 })
 
 const userModel = mongoose.model("users",userSchema);

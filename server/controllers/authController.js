@@ -210,9 +210,9 @@ const resendOTPHandler = async(req,res)=>{
             return res.status(400).json({message: "User not found."});
         }
 
-        //Ratelimit or stopping unwanted requests
-        const minDelay = 30 * 1000 //30 seconds
-        if(user.otp && (user.otpExpires-Date.now())>minDelay){
+        //Request another otp after 60 seconds
+        const minDelay = 60 * 1000 //30 seconds
+        if(user.otp && (user.otpExpires-Date.now())<minDelay){
             return res.status(400).json({message: "Please wait before requesting otp."})
         }
 
