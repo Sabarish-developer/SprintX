@@ -1,22 +1,23 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+    service: "gmail",
     auth: {
-        user: process.env.EMAIL,
-        pass: process.env.APP_PASSWORD
+        user: "220701239@rajalakshmi.edu.in" , 
+        pass: "jbfi hrwn njyb ezqs"
     }
 });
 
 const sendOTPEmail = async(email,otp)=>{
+    /*
+    console.log(process.env.EMAIL,process.env.APP_PASSWORD);
     if(!process.env.EMAIL || !process.env.APP_PASSWORD){
         console.log("Email credentials are missing.");
         return;
     }
+    */
     const mailOptions = {
-        from: process.env.EMAIL,
+        from: "220701239@rajalakshmi.edu.in",
         to: email,
         subject: "Sprintx OTP Verification",
         text: `Your OTP for verification is ${otp}. It is valid for only 5 minutes`

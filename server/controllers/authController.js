@@ -158,6 +158,7 @@ const otpGenerator = async(req,res)=>{
 
     try{
         const {otp,otpExpires} = generateOTP();
+        console.log(otp, otpExpires);
         if(!otp || !otpExpires){
             return res.status(500).json({message: "Internal Server Error. Please try agin later."});
         }
@@ -168,6 +169,7 @@ const otpGenerator = async(req,res)=>{
         });
         await sendOTPEmail(email,otp);
         console.log("OTP sent successfully via email.");
+        res.status(200).json({message: "OTP sent successfully to email."});
     }catch(e){
         console.log("Error in otp generation block: ",e);
         return res.status(500).json({message: "Internal Server Error. Please try agin later."});
