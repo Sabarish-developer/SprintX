@@ -1,5 +1,6 @@
 import userModel from '../models/user.js';
 import companyModel from '../models/company.js';
+import otpModel from '../models/otp.js';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
@@ -117,27 +118,6 @@ const signupHandler = async(req,res)=>{
         return res.status(500).json({ message: "Failed to hash password. Try again later." });
     }
 
-    //OTP generation
-    try{
-        const {otp,otpExpires} = generateOTP();
-        if(!otp || !otpExpires){
-            return res.status(500).json({message: "Internal Server Error. Please try agin later."});
-        }
-    }catch(e){
-        console.log("Error in otp generation block: ",e);
-        return res.status(500).json({message: "Internal Server Error. Please try agin later."});
-    }
-
-    //Sending the OTP to the user
-    try{
-        await sendOTPEmail(email,otp);
-        console.log("OTP sent successfully via email.");
-    }catch(e){
-        console.log("Error is sending OTP to user block : ",e);
-        return res.status(500).json({message: "Internal Server Error. Please try again later."});
-    }
-
-
     //Inserting user details in the database
     try{
         await userModel.create({
@@ -146,9 +126,7 @@ const signupHandler = async(req,res)=>{
             password: hashedPassword,
             role,
             subrole,
-            companyId,
-            otp,
-            otpExpires
+            companyId
         });
         console.log("Inserted successfully in db");
         return res.status(201).json({message: "Signed up successfully"});
@@ -159,17 +137,38 @@ const signupHandler = async(req,res)=>{
 
 }
 
+const otpGenerator = async(req,res)=>{
+ 
+    //OTP generation and sending to the user
+    const {email} = req.body;
+    if(!email){
+        return res.status(400).json({message: "Email is required."});
+    }
+
+    try{
+        const {otp,otpExpires} = generateOTP();
+        if(!otp || !otpExpires){
+            return res.status(500).json({message: "Internal Server Error. Please try agin later."});
+        }
+        await otpModel.create({
+            email,
+            otp,
+            otpExpires
+        });
+        await sendOTPEmail(email,otp);
+        console.log("OTP sent successfully via email.");
+    }catch(e){
+        console.log("Error in otp generation block: ",e);
+        return res.status(500).json({message: "Internal Server Error. Please try agin later."});
+    }
+}
+
 const emailVerificationHandler = async(req,res)=>{
 
     const {email,otp} = req.body;
 
-    if(!email || !otp){
-        console.log("All fields are required.");
-        return res.status(400).json({message: "Email and OTP are required."});
-    }
-
     try{
-        const user = await userModel.findOne({email});
+        const user = await otpModel.findOne({email});
 
         if(!user){
             return res.status(400).json({message: "User doesn't exist."});
@@ -198,20 +197,19 @@ const emailVerificationHandler = async(req,res)=>{
 const resendOTPHandler = async(req,res)=>{
 
     const {email} = req.body;
-
     if(!email){
         return res.status(400).json({message: "Email is required."});
     }
     
     try{
-        const user = await userModel.findOne({email});
+        const user = await otpModel.findOne({email});
 
         if(!user){
             return res.status(400).json({message: "User not found."});
         }
 
         //Request another otp after 60 seconds
-        const minDelay = 60 * 1000 //30 seconds
+        const minDelay = 60 * 1000 //60 seconds
         if(user.otp && (user.otpExpires-Date.now())<minDelay){
             return res.status(400).json({message: "Please wait before requesting otp."})
         }
@@ -241,4 +239,4 @@ const forgotPasswordHandler = async(req,res)=>{
 }
 
 
-export {signupHandler,signinHandler,emailVerificationHandler,forgotPasswordHandler,resendOTPHandler};
+export {signupHandler,signinHandler,otpGenerator,forgotPasswordHandler,resendOTPHandler,emailVerificationHandler};
