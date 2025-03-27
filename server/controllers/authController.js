@@ -265,7 +265,7 @@ const signinHandler = async(req,res)=>{
             const token = jwt.sign({
                 email: email,
                 role: user.role
-            },process.env.SECRET_KEY, {expiresIn: '1h'});
+            },process.env.JWT_SECRET_KEY, {expiresIn: '1h'});
             return res.status(200).json({message: "Login successful.", token: token});
         }
         else{
