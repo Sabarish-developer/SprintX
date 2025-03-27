@@ -6,7 +6,7 @@ const otpSchema = new Schema({
     email: {type:String, unique:true, required:true},
     otp: {type:String, default:null},
     otpExpires: {type:Date, default:null},
-    isVerified: {type:Boolean, default:null}
+    isVerified: {type:Boolean, default:false}
 });
 
 const otpModel = mongoose.model("otps",otpSchema);
