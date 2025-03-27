@@ -252,13 +252,16 @@ const signinHandler = async(req,res)=>{
     try{
         const user = await userModel.findOne({email});
 
+        //User didn't signup mean
         if(!user){
             return res.status(404).json({message: "User not found."});
         }
 
+        //Checking whether passwords match
         const validUser = await bcrypt.compare(password,user.password);
         if(validUser){
 
+            //Generating jsonwebtoken
             const token = jwt.sign({
                 email: email,
                 role: user.role
@@ -278,6 +281,63 @@ const signinHandler = async(req,res)=>{
 
 const forgotPasswordHandler = async(req,res)=>{
 
+    const {email,otp,password} = req.body;
+
+    if(!email || !otp || !password){
+        return res.status(400).json({message: "All fields are required."});
+    }
+
+    try{
+        const otpUser = await otpModel.findOne({email});
+
+        if(!otpUser || !otpUser.isVerified){
+            return res.status(400).json({message: "User not found."});
+        }
+        if(otp !== otpUser.otp){
+            return res.status(400).json({message: "Invalid OTP."});
+        }
+        if(Date.now() > otpUser.otpExpires){
+            return res.status(400).json({message: "OTP has been expired. Request new OTP."});
+        }
+
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        //Password validation
+        const passwordSchema = z.string()
+            .min(8, {message: "Password must be atleast 8 characters."})
+            .max(50, {message: "Password must be atmost 50 characters."})
+            .refine(value => /[A-Z]/.test(value), {message: "Password must contain atleast 1 uppercase letter."})
+            .refine(value => /[a-z]/.test(value), {message: "Password must contain atleast 1 lowercase letter."})
+            .refine(value => /[0-9]/.test(value), {message: "Password must contain atleast a number from 0-9."})
+            .refine(value => /[^a-zA-Z0-9]/.test(value), {message: "Password must contain atleast a special character."});
+        const validPassword = passwordSchema.safeParse(password);
+        if(!validPassword.success){
+            console.log("Invalid password");
+            return res.status(400).json({message: validPassword.error.errors[0].message});
+        }
+
+        const hashedPassword = await bcrypt.hash(password,11);
+        if(!hashedPassword){
+            return res.status(500).json({message: "Internal Server Error. Please try again later."});
+        }
+
+        await userModel.updateOne(
+            {email},
+            {$set: {password: hashedPassword}}
+        );
+
+        otpUser.otp = null;
+        otpUser.otpExpires = null;
+        await otpUser.save();
+
+        return res.status(200).json({message: "Password has been changed successfully."});
+    }catch(e){
+        console.log("Error in forgot password block : ",e);
+        return res.status(500).json({message: "Internal Server Error. Please try again later."});
+    }
 }
 
 
