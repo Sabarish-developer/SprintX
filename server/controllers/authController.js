@@ -1,7 +1,6 @@
 import userModel from '../models/user.js';
 import companyModel from '../models/company.js';
 import otpModel from '../models/otp.js';
-import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import {z} from 'zod';
@@ -244,6 +243,36 @@ const resendOTPHandler = async(req,res)=>{
 }
 
 const signinHandler = async(req,res)=>{
+
+    const {email,password} = req.body;
+    if(!email || !password){
+        return res.status(400).json({message: "Email and password is required."});
+    }
+
+    try{
+        const user = await userModel.findOne({email});
+
+        if(!user){
+            return res.status(404).json({message: "User not found."});
+        }
+
+        const validUser = await bcrypt.compare(password,user.password);
+        if(validUser){
+
+            const token = jwt.sign({
+                email: email,
+                role: user.role
+            },process.env.SECRET_KEY, {expiresIn: '1h'});
+            return res.status(200).json({message: "Login successful.", token: token});
+        }
+        else{
+            console.log("Invalid credentials.");
+            return res.status(401).json({message: "Invalid credentials."});
+        }
+    }catch(e){
+        console.log("Error in signin block : ",e);
+        return res.status(500).json({message: "Internal Server Error. Please try again later."});
+    }
 
 }
 
