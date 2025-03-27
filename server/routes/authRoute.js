@@ -3,10 +3,10 @@ import { Router } from "express";
 const authRouter = Router();
 
 
-authRouter.post("/signup",signupHandler);
 authRouter.post("/generateotp",otpGenerator);
 authRouter.post("/emailverification",emailVerificationHandler);
 authRouter.post("/resendotp",resendOTPHandler);
+authRouter.post("/signup",signupHandler);
 authRouter.post("/signin",signinHandler);
 authRouter.post("/forgotpassword",forgotPasswordHandler);
 

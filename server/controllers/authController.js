@@ -40,6 +40,17 @@ const signupHandler = async(req,res)=>{
         return res.status(500).json({message: "Internal Server error. Try again later."});
     }
 
+    //Checking user email has been verified
+    try{
+        const verifiedUser = await otpModel.findOne({email});
+        if(!verifiedUser || !verifiedUser.isVerified){
+            return res.status(400).json({message: "User email has not been verified."});
+        }
+    }catch(e){
+        console.log("Error in checking verified email block : ",e);
+        return res.status(500).json({message: "Internal Server Error. Please try again later."});
+    }
+
     //Input validation
     //Email validation
     const emailSchema = z.string().email({message: "Invalid email format"});
