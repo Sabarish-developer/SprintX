@@ -157,7 +157,6 @@ const otpGenerator = async(req,res)=>{
 
     try{
         const {otp,otpExpires} = generateOTP();
-        console.log(otp, otpExpires);
         if(!otp || !otpExpires){
             return res.status(500).json({message: "Internal Server Error. Please try agin later."});
         }

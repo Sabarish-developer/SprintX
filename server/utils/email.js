@@ -12,7 +12,6 @@ const transporter = nodemailer.createTransport({
 
 const sendOTPEmail = async(email,otp)=>{
     
-    console.log(process.env.EMAIL,process.env.APP_PASSWORD);
     if(!process.env.EMAIL || !process.env.APP_PASSWORD){
         console.log("Email credentials are missing.");
         return;
@@ -21,7 +20,7 @@ const sendOTPEmail = async(email,otp)=>{
         from: process.env.EMAIL,
         to: email,
         subject: "Sprintx OTP Verification",
-        text: `Your OTP for verification is ${otp}. It is valid for only 5 minutes`
+        html: `Your OTP for verification is <b>${otp}</b>. It is valid for only 5 minutes`
     };
 
     try{
