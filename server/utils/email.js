@@ -1,10 +1,12 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    secure: true,
+    host: 'smtp.gmail.com',
+    port: 465,
     auth: {
-        user: "220701239@rajalakshmi.edu.in" , 
-        pass: "jbfi hrwn njyb ezqs"
+        user: process.env.EMAIL , 
+        pass: process.env.APP_PASSWORD
     }
 });
 
@@ -17,7 +19,7 @@ const sendOTPEmail = async(email,otp)=>{
     }
     */
     const mailOptions = {
-        from: "220701239@rajalakshmi.edu.in",
+        from: process.env.EMAIL,
         to: email,
         subject: "Sprintx OTP Verification",
         text: `Your OTP for verification is ${otp}. It is valid for only 5 minutes`
