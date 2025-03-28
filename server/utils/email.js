@@ -11,13 +11,12 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendOTPEmail = async(email,otp)=>{
-    /*
+    
     console.log(process.env.EMAIL,process.env.APP_PASSWORD);
     if(!process.env.EMAIL || !process.env.APP_PASSWORD){
         console.log("Email credentials are missing.");
         return;
     }
-    */
     const mailOptions = {
         from: process.env.EMAIL,
         to: email,
