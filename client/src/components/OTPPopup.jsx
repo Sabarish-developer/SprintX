@@ -36,8 +36,8 @@ const OTPPopup = ({ onClose, onVerify, formData }) => {
   const handleVerify = async() => {
     const finalOtp = otp.join("");
     console.log("Entered OTP:", finalOtp);
-    console.log(formData.username);
-    console.log(formData);
+    // console.log(formData.username);
+    // console.log(formData);
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/emailverification`, 
         { email: formData.email, otp: finalOtp }, 

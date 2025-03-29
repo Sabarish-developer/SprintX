@@ -5,6 +5,7 @@ import circlebg from '../assets/bg-canva.svg';
 import logo from '../assets/logo.svg';
 import SignImg from '../assets/SignUp.png';
 import { Eye, EyeOff } from 'lucide-react';
+import axios from "axios";
 
 const Login = () => {
     const [identifier, setIdentifier] = useState("");
@@ -12,10 +13,17 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async(e) => {
         e.preventDefault();
-        console.log("Login Details:", { identifier, password });
-        navigate("/home");
+        console.log("Login Details:", {identifier, password });
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/signin`, {email:identifier, password});
+            if(response.status === 200){
+                navigate("/home");
+            }
+        } catch (error) {
+            
+        }
     };
 
     const togglePasswordVisibility = () => {
