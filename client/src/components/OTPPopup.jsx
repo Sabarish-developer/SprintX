@@ -1,6 +1,7 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 
-const OTPPopup = ({ onClose, onVerify }) => {
+const OTPPopup = ({ onClose, onVerify, formData }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [resendDisabled, setResendDisabled] = useState(true);
   const [timer, setTimer] = useState(60);
@@ -32,10 +33,34 @@ const OTPPopup = ({ onClose, onVerify }) => {
     }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async() => {
     const finalOtp = otp.join("");
     console.log("Entered OTP:", finalOtp);
-    onVerify();
+    console.log(formData.username);
+    console.log(formData);
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/emailverification`, 
+        { email: formData.email, otp: finalOtp }, 
+        { headers: { "Content-Type": "application/json" } } // Ensure JSON format
+      );
+
+      if(response.status===200){
+        alert(response.data.message);
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/signup`, formData);
+        if(res.status===201){
+          alert("Sign up successful, please log in now.");
+          onVerify();
+        }
+        else{
+          alert(res.data.message);
+        }
+      }
+      else{
+        alert(res.data.message);
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "error bro");
+    }
   };
 
   const handleResend = () => {

@@ -7,6 +7,8 @@ import '../SignUp.css';
 import SignImg from '../assets/SignUp.png';
 import logo from '../assets/logo.svg';
 import circlebg from '../assets/bg-canva.svg';
+import axios from 'axios';
+
 
 const roleOptions = [
   { value: 'Team member', label: 'Team Member' },
@@ -37,6 +39,7 @@ const customSelectStyles = {
 const Signup = () => {
   const [showOTP, setShowOTP] = useState(false);
   const [formData, setFormData] = useState({});
+  //const { setFormData } = useAuth();
   const [confirmMatch, setConfirmMatch] = useState(true);
   const navigate = useNavigate();
 
@@ -52,9 +55,36 @@ const Signup = () => {
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
 
-  const onSubmit = (data) => {
-    setFormData(data);
-    setShowOTP(true);
+  //const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const onSubmit = async(data) => {
+    //e.preventDefault();
+    const formattedData = {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+      companyName: data.companyName,
+      subrole: data.subrole,
+      role: data.role?.value || "", // Extract value or send empty if not selected
+    };
+    setFormData(formattedData); // Updates state, but not needed for API call
+    console.log("form inside signup handle:", formData);
+    
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/generateotp`, data);
+
+      if(response.status===200){
+        alert("otp sent successfully!");
+        setShowOTP(true);
+      }
+      else{
+        alert(response.message);
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "something went wrong :(");
+    }
+
   };
 
   const handleConfirmChange = (e) => {
@@ -77,7 +107,7 @@ const Signup = () => {
                 <h2 className="text-2xl font-bold mb-1 w-full text-center">SignUp</h2>
                 <p className="text-sm text-gray-500 text-center mb-6">Welcome to SprintX! Please enter your details</p>
 
-                <input {...register("name", { required: true })} placeholder="Username" className="input-field" />
+                <input {...register("username", { required: true })} placeholder="Username" className="input-field"/>
                 {errors.name && <span className="text-red-500 text-sm">Name is required</span>}
 
                 <input {...register("email", { required: true })} type="email" placeholder="Email" className="input-field" />
@@ -97,7 +127,7 @@ const Signup = () => {
                 />
                 {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
 
-                <input {...register("chechPass", { required: true })}
+                <input {...register("confirmPassword", { required: true })}
                   type="password"
                   placeholder="Confirm Password"
                   className="input-field"
@@ -122,8 +152,8 @@ const Signup = () => {
                 />
                 {errors.role && <span className="text-red-500 text-sm">{errors.role.message}</span>}
 
-                <input placeholder="Subrole" className="input-field" />
-                <input {...register("company", { required: true })} placeholder="Company Name" className="input-field" />
+                <input {...register("subrole", { required: true })} placeholder="sub role" className="input-field" />
+                <input {...register("companyName", { required: true })} placeholder="Company Name" className="input-field" />
                 {errors.company && <span className="text-red-500 text-sm">Company name is required</span>}
 
                 <div className="flex gap-4 justify-center">
@@ -138,7 +168,7 @@ const Signup = () => {
                 </p>
               </form>
             ) : (
-              <OTPPopup onVerify={() => navigate('/home')} onClose={() => setShowOTP(false)} />
+              <OTPPopup onVerify={() => navigate('/login')} onClose={() => setShowOTP(false)} formData={formData} />
             )}
           </div>
 
