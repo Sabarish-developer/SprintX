@@ -152,7 +152,7 @@ const Signup = () => {
                 />
                 {errors.role && <span className="text-red-500 text-sm">{errors.role.message}</span>}
 
-                <input {...register("subrole", { required: true })} placeholder="sub role" className="input-field" />
+                <input {...register("Sub role")} placeholder="sub role" className="input-field" />
                 <input {...register("companyName", { required: true })} placeholder="Company Name" className="input-field" />
                 {errors.company && <span className="text-red-500 text-sm">Company name is required</span>}
 

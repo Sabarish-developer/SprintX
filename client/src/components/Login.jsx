@@ -20,6 +20,7 @@ const Login = () => {
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/signin`, {email:identifier, password});
             if(response.status === 200){
                 navigate("/home");
+                alert(response.data.message);
             }
         } catch (error) {
             
