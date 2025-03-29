@@ -160,11 +160,22 @@ const otpGenerator = async(req,res)=>{
         if(!otp || !otpExpires){
             return res.status(500).json({message: "Internal Server Error. Please try agin later."});
         }
-        await otpModel.create({
-            email,
-            otp,
-            otpExpires
-        });
+        
+        //To check user already requested otp (Not resend OTP, again clicking otp due to some error)
+        const user = await otpModel.findOne({email});
+        if(user){
+            user.otp = otp;
+            user.otpExpires = otpExpires;
+            await user.save();
+        }
+        else{
+            await otpModel.create({
+                email,
+                otp,
+                otpExpires
+            });
+        }
+        
         await sendOTPEmail(email,otp);
         console.log("OTP sent successfully via email.");
         res.status(200).json({message: "OTP sent successfully to email."});
