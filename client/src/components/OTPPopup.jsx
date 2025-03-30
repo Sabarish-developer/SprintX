@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import Swal from "sweetalert2";
 
 const OTPPopup = ({ onClose, onVerify, formData, setProgress }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -52,61 +51,25 @@ const OTPPopup = ({ onClose, onVerify, formData, setProgress }) => {
 
       if(response.status===200){
         toast.success(response.data.message);
-        // Swal.fire({
-        //   title: 'Success',
-        //   text: response.data.message,
-        //   icon: 'success',
-        //   confirmButtonColor: "#a40ff3"
-        // });
         try {
           const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/signup`, formData);
         } catch (error) {
           toast.error("error on fetching /signup");
-          // Swal.fire({
-          //   title: 'Eror',
-          //   text: 'Something went wrong',
-          //   icon: 'error',
-          //   confirmButtonColor: "#a40ff3"
-          // });
           console.log(error);
         }
         if(res.status===201){
           toast.success("Sign up successful, please log in now.");
-          // Swal.fire({
-          //   title: 'Success',
-          //   text: res.data.message,
-          //   icon: 'success',
-          //   confirmButtonColor: "#a40ff3"
-          // });
           onVerify();
         }
         else{
           toast.error(res.data.message);
-          // Swal.fire({
-          //   title: 'Error',
-          //   text: response.data.message,
-          //   icon: 'error',
-          //   confirmButtonColor: "#a40ff3"
-          // });
         }
       }
       else{
         toast.error(res.data.message);
-        // Swal.fire({
-        //   title: 'Error',
-        //   text: response.data.message,
-        //   icon: 'error',
-        //   confirmButtonColor: "#a40ff3"
-        // });
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "error bro");
-      // Swal.fire({
-      //   title: 'Error',
-      //   text: 'uncaught error --',
-      //   icon: 'error',
-      //   confirmButtonColor: "#a40ff3"
-      // });
     }
     finally{
       setProgress(100);
@@ -122,32 +85,14 @@ const OTPPopup = ({ onClose, onVerify, formData, setProgress }) => {
 
       if(res2.status === 200){
         toast.success(res2.data.message);
-        // Swal.fire({
-        //   title: 'Success',
-        //   text: res2.data.message,
-        //   icon: 'success',
-        //   confirmButtonColor: "#a40ff3"
-        // });
         console.log("OTP Resent");
       }
       else{
         toast.error(res2.data.message);
-        // Swal.fire({
-        //   title: 'Error',
-        //   text: res2.data.message,
-        //   icon: 'error',
-        //   confirmButtonColor: "#a40ff3"
-        // });
         console.log("error at backend");
       }
     } catch (error) {
       toast.error("error from otp 81");
-      // Swal.fire({
-      //   title: 'Error',
-      //   text: 'error from otp 81',
-      //   icon: 'error',
-      //   confirmButtonColor: "#a40ff3"
-      // });
       console.log(error);
     }
   };

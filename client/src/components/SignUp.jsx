@@ -9,7 +9,6 @@ import logo from '../assets/logo.svg';
 import circlebg from '../assets/bg-canva.svg';
 import axios from 'axios';
 import ProgressBar from './ProgressBar';
-import swal from 'sweetalert2';
 import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 
@@ -86,31 +85,13 @@ const Signup = () => {
 
       if(response.status===200){
         toast.success("otp sent successfully!");
-        // swal.fire({
-        //   title: "Success",
-        //   text: "otp sent successfully!",
-        //   icon: "success",
-        //   confirmButtonColor: "#a40ff3"
-        // });
         setShowOTP(true);
       }
       else{
         toast.error(response.message);
-        // swal.fire({
-        //   title: "Message",
-        //   text: response.data.message,
-        //   icon:'error',
-        //   confirmButtonColor: "#a40ff3"
-        // });
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "something went wrong :(");
-      // swal.fire({
-      //   title: "Error",
-      //   text: "something went wrong :(",
-      //   icon: 'error',
-      //   confirmButtonColor: "#a40ff3"
-      // });
     }
     finally{
       setProgress(100);

@@ -7,8 +7,7 @@ import SignImg from '../assets/SignUp.png';
 import { Eye, EyeOff } from 'lucide-react';
 import axios from "axios";
 import ProgressBar from "./ProgressBar";
-import { progress } from "framer-motion";
-import Swal from "sweetalert2";
+//import { progress } from "framer-motion";
 import { toast } from "react-toastify";
 
 const Login = () => {
@@ -35,33 +34,15 @@ const Login = () => {
             if(response.status === 200){
                 navigate("/home");
                 toast.success(response.data.message);
-                // Swal.fire({
-                //     title:"Success",
-                //     text: response.data.message,
-                //     icon: 'success',
-                //     confirmButtonColor: '#a40ff3'
-                // });
                 localStorage.setItem("token",response.data.token);
                 console.log(localStorage.getItem("token"));
             }
             else{
                 toast.error(response.data.message);
-                // Swal.fire({
-                //     title: 'Error',
-                //     text: response.data.message,
-                //     icon: 'error',
-                //     confirmButtonColor: "#a40ff3"
-                // })
                 console.log(response.data.message);
             }
         } catch (error) {
             toast.error("at login.jsx 31");
-            // Swal.fire({
-            //     title: 'Error',
-            //     text: 'at login.jsx 31',
-            //     icon: 'error',
-            //     confirmButtonColor: "#a40ff3"
-            // })
             console.log(error);
         }
         finally{
@@ -73,12 +54,6 @@ const Login = () => {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
-
-    // const handleCancel = () => {
-    //     setIdentifier("");
-    //     setPassword("");
-    //     navigate('/');
-    // };
 
     return (
         <div className="relative min-h-screen w-full bg-cover bg-fixed bg-center" style={{ backgroundImage: `url(${circlebg})` }}>
