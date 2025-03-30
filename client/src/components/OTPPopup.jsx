@@ -63,10 +63,24 @@ const OTPPopup = ({ onClose, onVerify, formData }) => {
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async() => {
     setResendDisabled(true);
     setOtp(["", "", "", "", "", ""]);
-    console.log("OTP Resent");
+    try {
+      const res2 = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/resendotp`,{email:formData.email});
+
+      if(res2.status === 200){
+        alert(res2.data.message);
+        console.log("OTP Resent");
+      }
+      else{
+        alert(res2.data.message);
+        console.log("error at backend");
+      }
+    } catch (error) {
+      alert("error from otp 81");
+      console.log(error);
+    }
   };
 
   return (
