@@ -8,7 +8,7 @@ import AboutSection from './components/AboutSection';
 import ContactUs from './components/ContactUs';
 import Faq from './components/Faq';
 import Footer from './components/Footer';
-import bgImage from './assets/back.png'; // ✅ imported correctly
+import bgImage from './assets/back.png';
 
 function App() {
   const featuresRef = useRef(null);

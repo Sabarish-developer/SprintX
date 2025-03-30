@@ -5,6 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ProgressBar from "./ProgressBar";
 import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
   const naviagte = useNavigate();
@@ -48,31 +49,31 @@ const ForgotPassword = () => {
     
           if(response.status===200){
             setOtpSent(true);
-            //alert("OTP sent to your email!");
-            Swal.fire({
-              title: 'Success',
-              text: 'OTP sent to your email!',
-              icon: 'success',
-              confirmButtonColor: '#a40ff3'
-            });
+            toast.success("OTP sent to your email!");
+            // Swal.fire({
+            //   title: 'Success',
+            //   text: 'OTP sent to your email!',
+            //   icon: 'success',
+            //   confirmButtonColor: '#a40ff3'
+            // });
           }
           else{
-            //alert(response.data.message);
-            Swal.fire({
-              title: 'Error',
-              text: response.data.message,
-              icon: 'error',
-              confirmButtonColor: '#a40ff3'
-            });
+            toast.error(response.data.message);
+            // Swal.fire({
+            //   title: 'Error',
+            //   text: response.data.message,
+            //   icon: 'error',
+            //   confirmButtonColor: '#a40ff3'
+            // });
           }
         } catch (error) {
-          //alert("");
-          Swal.fire({
-            title: 'Error',
-            text: 'something went wrong, please try agin later.',
-            icon: 'error',
-            confirmButtonColor: '#a40ff3'
-          });
+          toast.error('un caught error at fp.jsx 70');
+          // Swal.fire({
+          //   title: 'Error',
+          //   text: 'something went wrong, please try agin later.',
+          //   icon: 'error',
+          //   confirmButtonColor: '#a40ff3'
+          // });
           console.log(error);
         }
         finally{
@@ -131,7 +132,7 @@ const ForgotPassword = () => {
             setTimeout(() => setProgress(i), i*10);
           }
 
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/forgetpassword`,{
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/forgotpassword`,{
           email,
           otp,
           passord: newPassword,
