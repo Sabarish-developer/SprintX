@@ -98,7 +98,7 @@ const ForgotPassword = () => {
         const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/forgotpassword`,{
           email,
           otp,
-          passord: newPassword,
+          password: newPassword,
         });
 
         if(res.status===200){
@@ -111,7 +111,7 @@ const ForgotPassword = () => {
           toast.error(res.data.message);
         }
         } catch (error){
-          toast.error("slow internet or uncaught error");
+          toast.error(error.response?.data?.message||"slow internet or uncaught error");
           console.log(error);
         }
         finally{

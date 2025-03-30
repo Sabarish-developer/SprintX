@@ -92,7 +92,7 @@ const OTPPopup = ({ onClose, onVerify, formData, setProgress }) => {
         console.log("error at backend");
       }
     } catch (error){
-      toast.error("error from otp 81");
+      toast.error(error.response?.data?.message||"error from otp 81");
       console.log(error.response?.data?.message || "Something went wrong!");
     }
   };
