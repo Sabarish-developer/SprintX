@@ -4,6 +4,7 @@ import AuthLayout from "../components/AuthLayout";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ProgressBar from "./ProgressBar";
+import Swal from "sweetalert2";
 
 const ForgotPassword = () => {
   const naviagte = useNavigate();
@@ -29,7 +30,13 @@ const ForgotPassword = () => {
         e.preventDefault();
         setProgress(10);
         if (!validateEmail(email)) {
-            alert("Enter a valid email address");
+            //alert("Enter a valid email address");
+            Swal.fire({
+              title: 'Error',
+              text: 'Enter a valid email',
+              icon: 'error',
+              confirmButtonColor: '#a40ff3'
+            });
             return;
         }
         try {
@@ -41,13 +48,31 @@ const ForgotPassword = () => {
     
           if(response.status===200){
             setOtpSent(true);
-            alert("OTP sent to your email!");
+            //alert("OTP sent to your email!");
+            Swal.fire({
+              title: 'Success',
+              text: 'OTP sent to your email!',
+              icon: 'success',
+              confirmButtonColor: '#a40ff3'
+            });
           }
           else{
-            alert(response.data.message);
+            //alert(response.data.message);
+            Swal.fire({
+              title: 'Error',
+              text: response.data.message,
+              icon: 'error',
+              confirmButtonColor: '#a40ff3'
+            });
           }
         } catch (error) {
-          alert("something went wrong, please try agin later.");
+          //alert("");
+          Swal.fire({
+            title: 'Error',
+            text: 'something went wrong, please try agin later.',
+            icon: 'error',
+            confirmButtonColor: '#a40ff3'
+          });
           console.log(error);
         }
         finally{
@@ -82,11 +107,23 @@ const ForgotPassword = () => {
         e.preventDefault();
         setProgress(10);
         if (newPassword.length < 6) {
-            alert("Password must be at least 6 characters long");
+            //alert("Password must be at least 6 characters long");
+            Swal.fire({
+              title: 'Error',
+              text: 'Password must be at least 6 characters long',
+              icon: 'error',
+              confirmButtonColor: '#a40ff3'
+            });
             return;
         }
         if (passwordMatchError){
-            alert("Fix password mismatch error first!");
+            //alert("Fix password mismatch error first!");
+            Swal.fire({
+              title: 'Error',
+              text: 'Fix password mismatch error first!',
+              icon: 'error',
+              confirmButtonColor: '#a40ff3'
+            });
             return;
         }
         try {
@@ -102,15 +139,33 @@ const ForgotPassword = () => {
 
         if(res.status===200){
           console.log(res.data.message);
-          alert("Password reset successful! Now, you can log in.");
+          //alert("Password reset successful! Now, you can log in.");
+          Swal.fire({
+            title: 'Success',
+            text: 'Password reset successful! Now, you can log in.',
+            icon: 'success',
+            cancelButtonColor: '#a40ff3'
+          });
           naviagte('/login');
         
         }
         else{
-          alert(res.data.message);
+          //alert(res.data.message);
+          Swal.fire({
+            title: 'Error',
+            text: res.data.message,
+            icon:'error',
+            confirmButtonColor: '#a40ff3'
+          });
         }
         } catch (error){
-          alert("slow internet or uncaught error");
+          //alert("slow internet or uncaught error");
+          Swal.fire({
+            title: 'Error',
+            text: 'slow internet or uncaught error',
+            icon:'error',
+            confirmButtonColor: '#a40ff3'
+          });
           console.log(error);
         }
         finally{
