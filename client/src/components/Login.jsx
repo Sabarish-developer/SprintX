@@ -6,18 +6,25 @@ import logo from '../assets/logo.svg';
 import SignImg from '../assets/SignUp.png';
 import { Eye, EyeOff } from 'lucide-react';
 import axios from "axios";
+import ProgressBar from "./ProgressBar";
+import { progress } from "framer-motion";
 
 const Login = () => {
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const [progress, setProgress] = useState(0);
 
     const handleLogin = async(e) => {
         e.preventDefault();
+        setProgress(10);
         console.log("Login Details:", {identifier, password });
         console.log(`${import.meta.env.VITE_BASE_URL}/api/auth/signin`);
         try {
+            for(let i=10;i<=90;i+=10){
+                setTimeout(() => setProgress(i), i*10);
+            }
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/signin`, 
             {
                 email:identifier,
@@ -37,6 +44,10 @@ const Login = () => {
             alert("at login.jsx 31");
             console.log(error);
         }
+        finally{
+            setProgress(100);
+            setTimeout(() => setProgress(0), 500);
+        }
     };
 
     const togglePasswordVisibility = () => {
@@ -51,6 +62,7 @@ const Login = () => {
 
     return (
         <div className="relative min-h-screen w-full bg-cover bg-fixed bg-center" style={{ backgroundImage: `url(${circlebg})` }}>
+            <ProgressBar progress={progress}/>
             <div className="absolute top-4 left-4 flex items-center space-x-0 z-10">
                 <img src={logo} alt="Logo" className="w-8 h-8 border border-[#a40ff3] shadow-custom rounded-full object-contain mr-2" />
                 <span className="text-lg font-semibold text-[#a40ff3] tightly-tracked">SprintX</span>

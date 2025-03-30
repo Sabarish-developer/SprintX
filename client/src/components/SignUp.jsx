@@ -8,6 +8,7 @@ import SignImg from '../assets/SignUp.png';
 import logo from '../assets/logo.svg';
 import circlebg from '../assets/bg-canva.svg';
 import axios from 'axios';
+import ProgressBar from './ProgressBar';
 
 
 const roleOptions = [
@@ -42,6 +43,7 @@ const Signup = () => {
   //const { setFormData } = useAuth();
   const [confirmMatch, setConfirmMatch] = useState(true);
   const navigate = useNavigate();
+  const [progress, setProgress] = useState(0);
 
   const {
     register,
@@ -58,7 +60,7 @@ const Signup = () => {
   //const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const onSubmit = async(data) => {
-    //e.preventDefault();
+    setProgress(10);
     const formattedData = {
       username: data.username,
       email: data.email,
@@ -72,6 +74,9 @@ const Signup = () => {
     console.log("form inside signup handle:", formData);
     
     try {
+      for(let i=0;i<=90;i++){
+        setTimeout(() => setProgress(i), i*10);
+      }
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/generateotp`, data);
 
       if(response.status===200){
@@ -84,6 +89,10 @@ const Signup = () => {
     } catch (error) {
       alert(error.response?.data?.message || "something went wrong :(");
     }
+    finally{
+      setProgress(100);
+      setTimeout(() => setProgress(0), 500);
+    }
 
   };
 
@@ -94,7 +103,8 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-cover bg-fixed bg-center" style={{ backgroundImage: `url(${circlebg})` }}>
+    <div className="relative min-h-screen w-full bg-cover bg-fixed bg-center" style={{ backgroundImage: `url(${circlebg})` }}>
+      <ProgressBar progress={progress}/>
       <div className="absolute top-4 left-4 flex items-center space-x-0">
         <img src={logo} alt="Logo" className="w-8 h-8 border border-[#a40ff3] shadow-custom rounded-full object-contain mr-2" />
         <span className="text-lg font-semibold text-[#a40ff3] tightly-tracked">SprintX</span>
@@ -152,7 +162,7 @@ const Signup = () => {
                 />
                 {errors.role && <span className="text-red-500 text-sm">{errors.role.message}</span>}
 
-                <input {...register("Sub role")} placeholder="sub role" className="input-field" />
+                <input {...register("Sub role")} placeholder="Sub role" className="input-field" />
                 <input {...register("companyName", { required: true })} placeholder="Company Name" className="input-field" />
                 {errors.company && <span className="text-red-500 text-sm">Company name is required</span>}
 
@@ -168,7 +178,7 @@ const Signup = () => {
                 </p>
               </form>
             ) : (
-              <OTPPopup onVerify={() => navigate('/login')} onClose={() => setShowOTP(false)} formData={formData} />
+              <OTPPopup onVerify={() => navigate('/login')} onClose={() => setShowOTP(false)} formData={formData} setProgress={setProgress} />
             )}
           </div>
 

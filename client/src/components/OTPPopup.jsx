@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const OTPPopup = ({ onClose, onVerify, formData }) => {
+const OTPPopup = ({ onClose, onVerify, formData, setProgress }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [resendDisabled, setResendDisabled] = useState(true);
   const [timer, setTimer] = useState(60);
@@ -34,11 +34,15 @@ const OTPPopup = ({ onClose, onVerify, formData }) => {
   };
 
   const handleVerify = async() => {
+    setProgress(10);
     const finalOtp = otp.join("");
     console.log("Entered OTP:", finalOtp);
     // console.log(formData.username);
     // console.log(formData);
     try {
+      for(let i=10;i<=80;i+=10){
+        setTimeout(() => setProgress(i), i*10);
+      }
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/emailverification`, 
         { email: formData.email, otp: finalOtp }, 
         { headers: { "Content-Type": "application/json" } } // Ensure JSON format
@@ -46,7 +50,12 @@ const OTPPopup = ({ onClose, onVerify, formData }) => {
 
       if(response.status===200){
         alert(response.data.message);
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/signup`, formData);
+        try {
+          const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/signup`, formData);
+        } catch (error) {
+          alert("error on fetching /signup");
+          console.log(error);
+        }
         if(res.status===201){
           alert("Sign up successful, please log in now.");
           onVerify();
@@ -60,6 +69,10 @@ const OTPPopup = ({ onClose, onVerify, formData }) => {
       }
     } catch (error) {
       alert(error.response?.data?.message || "error bro");
+    }
+    finally{
+      setProgress(100);
+      setTimeout(() => setProgress(0), 500);
     }
   };
 
