@@ -1,11 +1,12 @@
-import { MoreVertical, ChevronLast, ChevronFirst, User, LogOutIcon } from "lucide-react";
+import { MoreVertical, ChevronLast, ChevronFirst, User, LogOut } from "lucide-react";
 import { useContext, createContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 
 const SideBarContext = createContext();
 
 export default function SideBar({ children }) {
+    const navigate = useNavigate();
     const [expanded, setExpanded] = useState(window.innerWidth >= 1024); // Expand by default for lg screens
     const [overlay, setOverlay] = useState(false);
 
@@ -26,6 +27,11 @@ export default function SideBar({ children }) {
             setOverlay(false); // Ensure overlay disappears
         }
     };
+
+    const handleLogout = () => {
+        localStorage.removeItem("token"); // Remove token from local storage
+        navigate("/"); // Navigate to home page
+      };
 
     return (
         <>
@@ -79,7 +85,18 @@ export default function SideBar({ children }) {
                                 <h4 className="font-semibold">John Doe</h4>
                                 <span className="text-xs text-gray-600">johndoe@gmail.com</span>
                             </div>
-                            <LogOutIcon size={20} />
+                            {/* <LogOut size={20} /> */}
+                            <button 
+                            onClick={handleLogout}
+                            className="relative group flex items-center p-2 text-red-500 hover:cursor-pointer"
+                            >
+                                <LogOut size={20} />
+
+                                
+                                <span className="absolute -top-0 right-1 -translate-x-1/2 whitespace-nowrap bg-gray-800 text-[#a40ff3] text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all duration-200">
+                                    Logout
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </nav>
