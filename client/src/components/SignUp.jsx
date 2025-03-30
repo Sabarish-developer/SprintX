@@ -11,6 +11,7 @@ import axios from 'axios';
 import ProgressBar from './ProgressBar';
 import swal from 'sweetalert2';
 import { Eye, EyeOff } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 
 const roleOptions = [
@@ -84,32 +85,32 @@ const Signup = () => {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/generateotp`, data);
 
       if(response.status===200){
-        //alert("otp sent successfully!");
-        swal.fire({
-          title: "Success",
-          text: "otp sent successfully!",
-          icon: "success",
-          confirmButtonColor: "#a40ff3"
-        });
+        toast.success("otp sent successfully!");
+        // swal.fire({
+        //   title: "Success",
+        //   text: "otp sent successfully!",
+        //   icon: "success",
+        //   confirmButtonColor: "#a40ff3"
+        // });
         setShowOTP(true);
       }
       else{
-        //alert(response.message);
-        swal.fire({
-          title: "Message",
-          text: response.data.message,
-          icon:'error',
-          confirmButtonColor: "#a40ff3"
-        });
+        toast.error(response.message);
+        // swal.fire({
+        //   title: "Message",
+        //   text: response.data.message,
+        //   icon:'error',
+        //   confirmButtonColor: "#a40ff3"
+        // });
       }
     } catch (error) {
-      //alert(error.response?.data?.message || "something went wrong :(");
-      swal.fire({
-        title: "Error",
-        text: "something went wrong :(",
-        icon: 'error',
-        confirmButtonColor: "#a40ff3"
-      });
+      toast.error(error.response?.data?.message || "something went wrong :(");
+      // swal.fire({
+      //   title: "Error",
+      //   text: "something went wrong :(",
+      //   icon: 'error',
+      //   confirmButtonColor: "#a40ff3"
+      // });
     }
     finally{
       setProgress(100);
