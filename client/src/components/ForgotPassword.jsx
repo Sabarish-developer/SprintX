@@ -131,7 +131,7 @@ const ForgotPassword = () => {
             setTimeout(() => setProgress(i), i*10);
           }
 
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/resendotp`,{
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/forgetpassword`,{
           email,
           otp,
           passord: newPassword,
@@ -194,7 +194,7 @@ const ForgotPassword = () => {
                         placeholder="Enter your registered email"
                     />
                 </div>
-                <button type="submit" className="bg-[#a40ff3] hover:bg-purple-400 text-white py-2 px-4 rounded-md w-full">
+                <button type="submit" className="bg-[#a40ff3] hover:bg-purple-400 cursor-pointer text-white py-2 px-4 rounded-md w-full">
                     Send OTP
                 </button>
             </form>
@@ -254,7 +254,7 @@ const ForgotPassword = () => {
                         )}
                     </div>
 
-                    <button type="submit" className="bg-purple-500 hover:bg-purple-400 hover:cursor:pointer text-white py-2 px-4 rounded-md w-full">
+                    <button type="submit" className="bg-purple-500 hover:bg-purple-400 hover:cursor-pointer text-white py-2 px-4 rounded-md w-full">
                         Reset Password
                     </button>
                     {/* <button type="submit" className="bg-green-500 hover:bg-green-400 text-white py-2 px-4 rounded-md w-full">
