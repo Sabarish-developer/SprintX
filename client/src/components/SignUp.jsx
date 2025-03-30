@@ -167,8 +167,6 @@ const Signup = () => {
                   {errors.password && <span className="text-red-500 text-sm block">{errors.password.message}</span>}
                 </div>
                 
-
-                {/* Confirm Password Field */}
                 <div className="relative mt-2">
                   <input
                     {...register("confirmPassword", { required: true })}
@@ -185,28 +183,6 @@ const Signup = () => {
                   </span>
                   {!confirmMatch && <span className="text-red-500 text-sm block mt-0">Passwords do not match</span>}
                 </div>
-
-                {/* <input
-                  {...register("password", {
-                    required: "Password is required",
-                    pattern: {
-                      value: /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
-                      message: "Password must be 8+ characters with symbol, number & uppercase",
-                    },
-                  })}
-                  type="password"
-                  placeholder="Password"
-                  className="input-field"
-                />
-                {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
-
-                <input {...register("confirmPassword", { required: true })}
-                  type="password"
-                  placeholder="Confirm Password"
-                  className="input-field"
-                  onChange={handleConfirmChange}
-                />
-                {!confirmMatch && <span className="text-red-500 text-sm">Passwords do not match</span>} */}
 
                 {/* Role Dropdown */}
                 <Controller

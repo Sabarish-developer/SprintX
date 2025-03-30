@@ -1,4 +1,4 @@
-import { MoreVertical, ChevronLast, ChevronFirst, User } from "lucide-react";
+import { MoreVertical, ChevronLast, ChevronFirst, User, LogOutIcon } from "lucide-react";
 import { useContext, createContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.svg";
@@ -79,7 +79,7 @@ export default function SideBar({ children }) {
                                 <h4 className="font-semibold">John Doe</h4>
                                 <span className="text-xs text-gray-600">johndoe@gmail.com</span>
                             </div>
-                            <MoreVertical size={20} />
+                            <LogOutIcon size={20} />
                         </div>
                     </div>
                 </nav>
