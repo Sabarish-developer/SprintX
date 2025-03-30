@@ -10,6 +10,7 @@ import circlebg from '../assets/bg-canva.svg';
 import axios from 'axios';
 import ProgressBar from './ProgressBar';
 import swal from 'sweetalert2';
+import { Eye, EyeOff } from 'lucide-react';
 
 
 const roleOptions = [
@@ -42,6 +43,8 @@ const Signup = () => {
   const [showOTP, setShowOTP] = useState(false);
   const [formData, setFormData] = useState({});
   //const { setFormData } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmMatch, setConfirmMatch] = useState(true);
   const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
@@ -137,12 +140,53 @@ const Signup = () => {
                 <p className="text-sm text-gray-500 text-center mb-6">Welcome to SprintX! Please enter your details</p>
 
                 <input {...register("username", { required: true })} placeholder="Username" className="input-field"/>
-                {errors.name && <span className="text-red-500 text-sm">Name is required</span>}
+                {errors.username && <span className="text-red-500 text-sm">Username is required</span>}
 
                 <input {...register("email", { required: true })} type="email" placeholder="Email" className="input-field" />
                 {errors.email && <span className="text-red-500 text-sm">Email is required</span>}
 
-                <input
+                <div className="relative">
+                  <input
+                    {...register("password", {
+                      required: "Password is required",
+                      pattern: {
+                        value: /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
+                        message: "Password must be 8+ characters with symbol, number & uppercase",
+                      },
+                    })}
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    className="input-field pr-10"
+                  />
+                  <span
+                    className="absolute inset-y-5 right-3 flex items-center cursor-pointer text-gray-500"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                  </span>
+                  {errors.password && <span className="text-red-500 text-sm block">{errors.password.message}</span>}
+                </div>
+                
+
+                {/* Confirm Password Field */}
+                <div className="relative mt-2">
+                  <input
+                    {...register("confirmPassword", { required: true })}
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm Password"
+                    className="input-field pr-10"
+                    onChange={handleConfirmChange}
+                  />
+                  <span
+                    className="absolute inset-y-5 right-3 flex items-center cursor-pointer text-gray-500"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                  </span>
+                  {!confirmMatch && <span className="text-red-500 text-sm block mt-0">Passwords do not match</span>}
+                </div>
+
+                {/* <input
                   {...register("password", {
                     required: "Password is required",
                     pattern: {
@@ -162,7 +206,7 @@ const Signup = () => {
                   className="input-field"
                   onChange={handleConfirmChange}
                 />
-                {!confirmMatch && <span className="text-red-500 text-sm">Passwords do not match</span>}
+                {!confirmMatch && <span className="text-red-500 text-sm">Passwords do not match</span>} */}
 
                 {/* Role Dropdown */}
                 <Controller
@@ -183,7 +227,7 @@ const Signup = () => {
 
                 <input {...register("Sub role")} placeholder="Sub role" className="input-field" />
                 <input {...register("companyName", { required: true })} placeholder="Company Name" className="input-field" />
-                {errors.company && <span className="text-red-500 text-sm">Company name is required</span>}
+                {errors.companyName && <span className="text-red-500 text-sm">Company name is required</span>}
 
                 <div className="flex gap-4 justify-center">
                   <button type="submit" disabled={!confirmMatch} className="bg-[#a40ff3] text-white px-4 py-2 rounded hover:bg-purple-500 hover:cursor-pointer">
