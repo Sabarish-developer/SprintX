@@ -16,14 +16,25 @@ const Login = () => {
     const handleLogin = async(e) => {
         e.preventDefault();
         console.log("Login Details:", {identifier, password });
+        console.log(`${import.meta.env.VITE_BASE_URL}/api/auth/signin`);
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/signin`, {email:identifier, password});
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/signin`, 
+            {
+                email:identifier,
+                password:password
+            });
             if(response.status === 200){
                 navigate("/home");
                 alert(response.data.message);
+                localStorage.setItem("token",response.data.token);
+            }
+            else{
+                alert(response.data.message);
+                console.log(response.data.message);
             }
         } catch (error) {
-            
+            alert("at login.jsx 31");
+            console.log(error);
         }
     };
 
@@ -52,14 +63,14 @@ const Login = () => {
 
                         <form onSubmit={handleLogin} className="space-y-4">
                             <div>
-                                <label className="text-sm text-black">Username</label>
+                                <label className="text-sm text-black">Email</label>
                                 <input
                                     type="text"
                                     value={identifier}
                                     onChange={(e) => setIdentifier(e.target.value)}
                                     required
                                     className="input-field"
-                                    placeholder="Enter your Username"
+                                    placeholder="Enter your email"
                                 />
                             </div>
 
@@ -100,9 +111,9 @@ const Login = () => {
 
                         <div className="text-center mt-4 text-sm">
                             Don’t have an account?{" "}
-                            <a href="/signup" className="text-[#a40ff3] hover:underline">
+                            <Link to="/signup" className="text-[#a40ff3] hover:underline">
                                 SignUp
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>
