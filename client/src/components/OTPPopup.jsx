@@ -53,23 +53,23 @@ const OTPPopup = ({ onClose, onVerify, formData, setProgress }) => {
         toast.success(response.data.message);
         try {
           const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/signup`, formData);
+          if(res.status===201){
+            toast.success("Sign up successful, please log in now.");
+            onVerify();
+          }
+          else{
+            toast.error(res.data.message);
+          }
         } catch (error) {
           toast.error("error on fetching /signup");
           console.log(error);
-        }
-        if(res.status===201){
-          toast.success("Sign up successful, please log in now.");
-          onVerify();
-        }
-        else{
-          toast.error(res.data.message);
         }
       }
       else{
         toast.error(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "error bro");
+      toast.error(error.response?.data?.message || "Something went wrong!");
     }
     finally{
       setProgress(100);
@@ -93,7 +93,7 @@ const OTPPopup = ({ onClose, onVerify, formData, setProgress }) => {
       }
     } catch (error) {
       toast.error("error from otp 81");
-      console.log(error);
+      console.log(error.res2?.data?.message || "Something went wrong!");
     }
   };
 
