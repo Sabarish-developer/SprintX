@@ -93,7 +93,7 @@ export default function SideBar({ children }) {
                                 <LogOut size={20} />
 
                                 
-                                <span className="absolute -top-0 right-1 -translate-x-1/2 whitespace-nowrap bg-gray-800 text-[#a40ff3] text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all duration-200">
+                                <span className="absolute -top-0 right-1 -translate-x-1/2 whitespace-nowrap bg-gray-300 text-red text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all duration-200">
                                     Logout
                                 </span>
                             </button>
