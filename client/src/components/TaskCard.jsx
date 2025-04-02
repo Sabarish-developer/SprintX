@@ -29,11 +29,11 @@ const TaskCard = ({ task, status }) => {
   };
   
   const getBackgroundColor = (status) => {
-    if (status === "To Do") return "#fee2e2";
-    if (status === "In Progress") return "#ffedd5"; 
-    if (status === "Testing") return "#dbeafe"; 
-    if (status === "Completed") return "#d1fae5"; 
-    if (status === "Need Review") return "#fef9c3"; 
+    if (status === "To Do") return "#fef2f2";
+    if (status === "In Progress") return "#fff7ed"; 
+    if (status === "Testing") return "#eff6ff"; 
+    if (status === "Completed") return "##ecfdf5"; 
+    if (status === "Need Review") return "#fefce8"; 
     return "#f3f4f6"; 
   };
   
@@ -41,7 +41,7 @@ const TaskCard = ({ task, status }) => {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1, 
-    borderTop: `12px solid ${getBorderColor(status)}`,
+    borderTop: `8px solid ${getBorderColor(status)}`,
     backgroundColor: getBackgroundColor(status),
     padding: '8px',
     marginBottom: '8px',
