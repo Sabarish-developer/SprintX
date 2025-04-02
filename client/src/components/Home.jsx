@@ -179,15 +179,16 @@ const Home = () => {
             onDragOver={onDragOver}
         >
             
-            <div className="overflow-x-auto w-full lg:w-auto h-screen">
+            <div className="overflow-x-auto w-screen lg:w-auto h-screen">
                 <div className="min-w-[900px] md:min-w-full">
                    
                     <div className="grid grid-cols-5 border-b border-gray-300 bg-purple-300 sticky top-0 z-10">
                         {columns.map((columnId) => ( 
-                            <div key={columnId} className="p-3 text-center font-bold border-r border-gray-300 last:border-r-0">
-               
-                                {columnId} ({tasks.filter((task) => task.columnId === columnId).length})
-                            </div>
+                            <div key={columnId} className="p-3 font-semibold border-r border-gray-300 last:border-r-0 flex justify-between">
+                            <span>{columnId}</span>  
+                            <span>({tasks.filter((task) => task.columnId === columnId).length})</span>
+                          </div>
+                          
                         ))}
                     </div>
 

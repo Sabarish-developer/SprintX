@@ -23,14 +23,14 @@ const ColumnContainer = ({ columnId, tasks }) => {
    
     <div
       ref={setNodeRef} 
-      className="bg-gray-100 p-3 border-r border-gray-300 last:border-r-0 h-full flex flex-col"
+      className="p-3 border-r border-gray-300 last:border-r-0 h-screen flex flex-col"
       style={{ minHeight: '150px' }} 
     >
       <SortableContext items={taskIds}>
            <div className="flex flex-col gap-2 flex-grow">
                {tasksInColumn.length > 0 ? (
                    tasksInColumn.map((task) => (
-                      <TaskCard key={task.id} task={task} />
+                      <TaskCard key={task.id} task={task} status={task.columnId} />
                    ))
                ) : (
                    <div className="text-center text-gray-500 py-4">Drop tasks here</div>
