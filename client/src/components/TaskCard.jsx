@@ -1,0 +1,53 @@
+// TaskCard.jsx
+import React from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+const TaskCard = ({ task }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging // Useful for styling while dragging
+  } = useSortable({
+    id: task.id,
+    data: {
+      type: 'Task',
+      task: task, // Pass the whole task object
+    },
+  });
+
+  // Apply transformation styles for dnd-kit
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1, // Make semi-transparent when dragging
+    // Add your existing task card styles here if needed, or rely on Tailwind classes
+    // Example basic styles (adjust with your Tailwind classes)
+    border: '1px solid #ccc',
+    padding: '8px',
+    marginBottom: '8px',
+    backgroundColor: '#ffffff',
+    borderRadius: '4px',
+    cursor: 'grab'
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      // Add your existing Tailwind classes for the task card here
+      className="p-2 rounded shadow bg-white touch-none"
+    >
+      <p className="font-medium">{task.title}</p>
+      <p className="text-sm text-gray-500">{task.dueDate}</p>
+      {/* Keep other elements like edit/delete buttons if you have them */}
+    </div>
+  );
+};
+
+export default TaskCard;
