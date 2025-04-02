@@ -28,18 +28,27 @@ const TaskCard = ({ task, status }) => {
     return "gray"; 
   };
   
-
+  const getBackgroundColor = (status) => {
+    if (status === "To Do") return "#fee2e2";
+    if (status === "In Progress") return "#ffedd5"; 
+    if (status === "Testing") return "#dbeafe"; 
+    if (status === "Completed") return "#d1fae5"; 
+    if (status === "Need Review") return "#fef9c3"; 
+    return "#f3f4f6"; 
+  };
+  
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1, 
-    borderTop: `12px solid ${getBorderColor(status)}` ,
+    borderTop: `12px solid ${getBorderColor(status)}`,
+    backgroundColor: getBackgroundColor(status), // ✅ Set dynamic background color
     padding: '8px',
     marginBottom: '8px',
-    backgroundColor: '#ffffff',
     borderRadius: '4px',
     cursor: 'grab'
   };
+  
 
   return (
     <div
