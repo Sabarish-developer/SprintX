@@ -179,7 +179,7 @@ const Home = () => {
             onDragOver={onDragOver}
         >
             
-            <div className="overflow-x-auto w-screen h-screen">
+            <div className="overflow-x-auto w-full lg:w-auto h-screen">
                 <div className="min-w-[900px] md:min-w-full">
                    
                     <div className="grid grid-cols-5 border-b border-gray-300 bg-purple-300 sticky top-0 z-10">
