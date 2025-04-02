@@ -42,7 +42,7 @@ const TaskCard = ({ task, status }) => {
     transition,
     opacity: isDragging ? 0.5 : 1, 
     borderTop: `12px solid ${getBorderColor(status)}`,
-    backgroundColor: getBackgroundColor(status), // ✅ Set dynamic background color
+    backgroundColor: getBackgroundColor(status),
     padding: '8px',
     marginBottom: '8px',
     borderRadius: '4px',
