@@ -75,8 +75,8 @@ const Home = () => {
                   <td className="border border-gray-300 px-4 py-2">{item.name}</td>
                   <td className="border border-gray-300 px-4 py-2">{item.deadline}</td>
                   <td className={`border border-gray-300 px-4 py-2 font-semibold 
-                    ${item.status === "In Progress" ? "text-blue-600" :
-                      item.status === "Completed" ? "text-green-600" :
+                    ${item.status === "In Progress" ? "text-orange-500" :
+                      item.status === "Completed" ? "text-green-500" :
                       "text-gray-600"}`}>
                     {item.status}
                   </td>
