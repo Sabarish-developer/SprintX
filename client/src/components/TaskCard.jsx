@@ -20,20 +20,20 @@ const TaskCard = ({ task, status }) => {
   });
 
   const getBorderColor = (status) => {
-    if (status === "To Do") return "red";
+    if (status === "To Do") return "yellow";
     if (status === "In Progress") return "orange";
-    if (status === "Testing") return "blue";
-    if (status === "Completed") return "green";
-    if (status === "Need Review") return "yellow";
+    if (status === "Testing") return "#2E67F8";
+    if (status === "Completed") return "#08FF08";
+    if (status === "Need Review") return "#EB212E";
     return "gray"; 
   };
   
   const getBackgroundColor = (status) => {
-    if (status === "To Do") return "#fef2f2";
+    if (status === "To Do") return "#fefce8";
     if (status === "In Progress") return "#fff7ed"; 
     if (status === "Testing") return "#eff6ff"; 
-    if (status === "Completed") return "##ecfdf5"; 
-    if (status === "Need Review") return "#fefce8"; 
+    if (status === "Completed") return "#ecfdf5"; 
+    if (status === "Need Review") return "#fef2f2"; 
     return "#f3f4f6"; 
   };
   
