@@ -29,7 +29,9 @@ export default function SideBar({ children }) {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("token"); // Remove token from local storage
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("email"); // Remove token from local storage
         navigate("/"); // Navigate to home page
       };
 

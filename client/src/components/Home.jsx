@@ -1,229 +1,93 @@
-import { useState } from "react";
-import {
-    DndContext,
-    closestCenter,
-    DragOverlay, 
-    PointerSensor, 
-    useSensor,
-    useSensors,
-    closestCorners
-} from "@dnd-kit/core";
-import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-import ColumnContainer from "./ColumnContainer";
-import TaskCard from "./TaskCard"; 
+import React from "react";
 
 const Home = () => {
-    const initialColumns = ["To Do", "In Progress", "Testing", "Completed", "Need Review"];
-    const [columns, setColumns] = useState(initialColumns); 
+  // Dummy data have to replace with DB.
+  const userRole = "ScrumMaster"; // Change this to "ProductOwner" or "TeamMember" also upadte this from db
+  const activeProject = { name: "Project Alpha", from: "Mar 10", to: "Apr 20" };
+  const activeSprint = { name: "Sprint 3", from: "Mar 15", to: "Apr 10" };
+  const stats = { assigned: 5, completed: 12, pending: 3 };
 
-   
-    const [tasks, setTasks] = useState([
-        { id: "1", title: "Design HomePage", dueDate: "April 12", columnId: "To Do" },
-        { id: "2", title: "Write Tests", dueDate: "April 15", columnId: "In Progress" },
-        { id: "3", title: "Fix Login Bug", dueDate: "April 18", columnId: "Testing" },
-        { id: "4", title: "Code Review", dueDate: "April 20", columnId: "Completed" },
-        { id: "5", title: "Deploy App", dueDate: "April 22", columnId: "Need Review" },
-        { id: "6", title: "Setup CI/CD", dueDate: "April 12", columnId: "To Do" },
-        { id: "7", title: "User Authentication", dueDate: "April 12", columnId: "To Do" },
-        { id: "8", title: "Database Schema", dueDate: "April 12", columnId: "To Do" },
-        { id: "9", title: "Hello1", dueDate: "April 12", columnId: "To Do" },
-        { id: "10", title: "Hello2", dueDate: "April 15", columnId: "In Progress" },
-        { id: "11", title: "Hello3", dueDate: "April 18", columnId: "In Progress" },
-        { id: "12", title: "Hello4", dueDate: "April 20", columnId: "Completed" },
-        { id: "13", title: "Hellow5", dueDate: "April 22", columnId: "Need Review" },
-        { id: "14", title: "Hide", dueDate: "April 12", columnId: "To Do" },
-        { id: "15", title: "Hide", dueDate: "April 15", columnId: "In Progress" },
-        { id: "16", title: "Hide", dueDate: "April 18", columnId: "Testing" },
-        { id: "17", title: "Hide", dueDate: "April 20", columnId: "Completed" },
-        { id: "18", title: "Hide", dueDate: "April 22", columnId: "Need Review" },
-    ]);
+  // Data to display based on role
+  const epics = [
+    { id: 1, name: "Epic 1", deadline: "Apr 5, 2025", status: "In Progress" },
+    { id: 2, name: "Epic 2", deadline: "Apr 10, 2025", status: "Not Started" },
+  ];
+  const userStories = [
+    { id: 1, name: "User Story A", deadline: "Apr 6, 2025", status: "Completed" },
+    { id: 2, name: "User Story B", deadline: "Apr 8, 2025", status: "In Progress" },
+  ];
+  const tasks = [
+    { id: 1, name: "Task X", deadline: "Apr 3, 2025", status: "Not Started" },
+    { id: 2, name: "Task Y", deadline: "Apr 7, 2025", status: "In Progress" },
+  ];
 
-    const [activeTask, setActiveTask] = useState(null);
+  let listItems = [];
+  if (userRole === "ProductOwner") listItems = epics;
+  else if (userRole === "ScrumMaster") listItems = userStories;
+  else listItems = tasks;
 
-   
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                distance: 3, 
-            },
-        })
-    );
+  return (
+    <div className="flex flex-col justify-between p-6">
+      <h2 className="text-center m-6 text-3xl font-semibold">Welcome, {localStorage.getItem("username")} 👋</h2>
 
- 
-    function onDragStart(event) {
-        
-        if (event.active.data.current?.type === "Task") {
-            setActiveTask(event.active.data.current.task);
-        }
-        
-    }
+      <div className="m-6">
+        <p>
+          <strong>Active Project:</strong> {activeProject.name} ({activeProject.from} - {activeProject.to})
+        </p>
+        <p>
+          <strong>Active Sprint:</strong> {activeSprint.name} ({activeSprint.from} - {activeSprint.to})
+        </p>
+      </div>
 
-
-    
-    function onDragEnd(event) {
-        //setActiveColumn(null);
-        setActiveTask(null); // Clear the active task after drop
-        const { active, over } = event;
-
-       
-        if (!over) return;
-
-        const activeId = active.id;
-        const overId = over.id;
-
-       
-        if (activeId === overId) return;
-
-        
-        const isActiveATask = active.data.current?.type === "Task";
-        
-
-        if (!isActiveATask) return; 
-
-        const isOverATask = over.data.current?.type === "Task";
-        const isOverAColumn = over.data.current?.type === "Column";
-
-      
-        if (isActiveATask && isOverATask) {
-            setTasks((currentTasks) => {
-                const activeIndex = currentTasks.findIndex((t) => t.id === activeId);
-                const overIndex = currentTasks.findIndex((t) => t.id === overId);
-
-                // Check if tasks were found
-                if (activeIndex === -1 || overIndex === -1) {
-                    console.error("Task not found in onDragEnd (Task over Task)");
-                    return currentTasks; // Return current state if tasks aren't found
-                }
-
-                // Get the columnId of the task being dropped onto
-                const overTaskColumnId = currentTasks[overIndex].columnId;
-
-                if (currentTasks[activeIndex].columnId !== overTaskColumnId) {
-                   currentTasks[activeIndex].columnId = overTaskColumnId;
-                
-                   return arrayMove(currentTasks, activeIndex, overIndex);
-                } else {
-                    // If in the same column, just reorder
-                    return arrayMove(currentTasks, activeIndex, overIndex);
-                }
-
-            });
-        }
-
-      
-        if (isActiveATask && isOverAColumn) {
-             setTasks((currentTasks) => {
-                const activeIndex = currentTasks.findIndex((t) => t.id === activeId);
-
-                if (activeIndex === -1) {
-                     console.error("Task not found in onDragEnd (Task over Column)");
-                     return currentTasks; // Return current state if task isn't found
-                }
-
-                currentTasks[activeIndex].columnId = overId;
-
-                
-                return arrayMove(currentTasks, activeIndex, activeIndex);
-            });
-        }
-    }
-
-    function onDragOver(DragOverEvent) {
-        const { active, over } = DragOverEvent;
-    
-  
-        if (!over) return;
-    
-        const activeId = active.id;
-        const overId = over.id;
-    
-       
-        if (activeId === overId) return;
-    
-        const isActiveATask = active.data.current && active.data.current.type === "Task";
-        const isOverATask = over.data.current && over.data.current.type === "Task";
-    
-        if (!isActiveATask) return;
-    
-        
-        if (isActiveATask && isOverATask) {
-            setTasks((tasks) => {
-                const activeIndex = tasks.findIndex((t) => t.id === activeId);
-                const overIndex = tasks.findIndex((t) => t.id === overId);
-    
-                
-                // if (tasks[activeIndex].columnId !== tasks[overIndex].columnId) {
-                tasks[activeIndex].columnId = tasks[overIndex].columnId;
-                // }
-    
-                return arrayMove(tasks, activeIndex, overIndex);
-            });
-        }
-    
-        const isOverAColumn = over.data.current && over.data.current.type === "Column";
-    
-        // Dropping a task over a column
-        if (isActiveATask && isOverAColumn) {
-            setTasks((tasks) => {
-                const activeIndex = tasks.findIndex((t) => t.id === activeId);
-                // Uncomment if columnId change condition is required:
-                // if (tasks[activeIndex].columnId !== overId) {
-                tasks[activeIndex].columnId = overId;
-                // }
-    
-                
-                return arrayMove(tasks, activeIndex, activeIndex);
-            });
-        }
-    }
-    
-
-
-    return (
-     
-        <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            onDragOver={onDragOver}
-        >
-            
-            <div className="overflow-x-auto w-screen lg:w-auto h-screen">
-                <div className="min-w-[900px] md:min-w-full">
-                   
-                    <div className="grid grid-cols-5 border-b border-gray-300 bg-gray-300 sticky top-0 z-10">
-                        {columns.map((columnId) => ( 
-                            <div key={columnId} className="p-3 font-semibold border-r border-gray-300 last:border-r-0 flex justify-between">
-                            <span>{columnId}</span>  
-                            <span>({tasks.filter((task) => task.columnId === columnId).length-1})</span>
-                          </div>
-                          
-                        ))}
-                    </div>
-
-                    {/* Task Columns Grid */}
-                    <div className="grid grid-cols-5 h-full">
-                        {/* REMOVED the single SortableContext wrapper */}
-                        {columns.map((columnId) => (
-                            <ColumnContainer
-                                key={columnId}
-                                columnId={columnId} // Pass the name/ID (e.g., "To Do")
-                                tasks={tasks}      // Pass the entire tasks list
-                            />
-                        ))}
-                    </div>
-                </div>
+      {/* Status Boxes */}
+      <div className="grid grid-cols-3 gap-4 mt-6">
+        {["Assigned", "Completed", "Pending"].map((status, index) => {
+          const value = stats[status.toLowerCase()];
+          return (
+            <div
+              key={index}
+              className="relative flex items-center justify-center bg-gray-100 h-24 rounded-lg shadow-md text-xl font-bold"
+            >
+              <span className="absolute text-gray-300 text-6xl font-extrabold">{status}</span>
+              <span className="relative text-black text-7xl font-bold p-2">{value}</span>
             </div>
+          );
+        })}
+      </div>
 
-            <DragOverlay>
-                {activeTask ? (
-                    <TaskCard task={activeTask} /> // Render the captured task
-                ) : null}
-            </DragOverlay>
-
-        </DndContext>
-    );
+      {/* Table Section */}
+      <div className="mt-6">
+        <h3 className="text-lg font-semibold">My {userRole === "ProductOwner" ? "Epics" : userRole === "ScrumMaster" ? "User Stories" : "Tasks"}:</h3>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border border-gray-300 px-4 py-2">S.No</th>
+                <th className="border border-gray-300 px-4 py-2">Name</th>
+                <th className="border border-gray-300 px-4 py-2">Deadline</th>
+                <th className="border border-gray-300 px-4 py-2">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {listItems.map((item, idx) => (
+                <tr key={idx} className="bg-white text-center">
+                  <td className="border border-gray-300 px-4 py-2">{item.id}</td>
+                  <td className="border border-gray-300 px-4 py-2">{item.name}</td>
+                  <td className="border border-gray-300 px-4 py-2">{item.deadline}</td>
+                  <td className={`border border-gray-300 px-4 py-2 font-semibold 
+                    ${item.status === "In Progress" ? "text-blue-600" :
+                      item.status === "Completed" ? "text-green-600" :
+                      "text-gray-600"}`}>
+                    {item.status}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Home;

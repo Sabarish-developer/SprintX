@@ -12,6 +12,7 @@ import ForgotPassword from './components/ForgotPassword.jsx'
 import SideBarLayout from './components/DashboardLayout.jsx'
 import  Settings  from './components/Settings.jsx'
 import ErrorPage from './components/ErrorPage.jsx'
+import Projects from './components/Projects.jsx';
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
         path:'/home/settings',
         element:<Settings/>
       },
+      {
+        path: '/home/projects',
+        element: <Projects/>
+      }
     ]
   }
 
