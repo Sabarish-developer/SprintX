@@ -279,7 +279,7 @@ const signinHandler = async(req,res)=>{
 
             //Sending email,username
             const data = {
-                email: user.email,
+                email: email,
                 username: user.username
             }
             return res.status(200).json({message: "Login successful.", token: token, data: data});

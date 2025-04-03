@@ -9,9 +9,8 @@ dotenv.config();
 const app = express();
 app.use(cors({
     origin: process.env.CLIENT_URL,
-    methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"]
+    allowedHeaders: "*"
 }));
-app.options("*",cors());
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
