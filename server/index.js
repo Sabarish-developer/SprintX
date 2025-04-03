@@ -7,18 +7,7 @@ import authRouter from './routes/authRoute.js';
 
 dotenv.config();
 const app = express();
-app.use(cors({
-    origin: process.env.CLIENT_URL,
-    methods: "GET,POST,PUT,DELETE,OPTIONS",
-    allowedHeaders: "Authorization,Content-Type"
-}));
-app.options("*", (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", CLIENT_URL);
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.status(204).end();
-});
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
