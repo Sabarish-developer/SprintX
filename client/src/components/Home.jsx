@@ -40,7 +40,7 @@ const Home = () => {
       </div>
 
       {/* Status Boxes */}
-      <div className="grid grid-cols-3 gap-4 mt-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
         {["Assigned", "Completed", "Pending"].map((status, index) => {
           const value = stats[status.toLowerCase()];
           return (
@@ -48,8 +48,8 @@ const Home = () => {
               key={index}
               className="relative flex items-center justify-center bg-gray-100 h-24 rounded-lg shadow-md text-xl font-bold"
             >
-              <span className="absolute text-gray-300 text-6xl font-extrabold">{status}</span>
-              <span className="relative text-black text-7xl font-bold p-2">{value}</span>
+              <span className="absolute text-gray-300 text-3xl lg:text-5xl font-extrabold">{status}</span>
+              <span className="relative text-black text-3xl lg:text-5xl font-bold p-2">{value}</span>
             </div>
           );
         })}

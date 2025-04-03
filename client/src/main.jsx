@@ -13,6 +13,7 @@ import SideBarLayout from './components/DashboardLayout.jsx'
 import  Settings  from './components/Settings.jsx'
 import ErrorPage from './components/ErrorPage.jsx'
 import Projects from './components/Projects.jsx';
+import Tasks from './components/Tasks.jsx';
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: '/home/projects',
         element: <Projects/>
+      },
+      {
+        path: '/home/tasks',
+        element: <Tasks/>
       }
     ]
   }

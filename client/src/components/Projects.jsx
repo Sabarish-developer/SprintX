@@ -1,229 +1,80 @@
 import { useState } from "react";
-import {
-    DndContext,
-    closestCenter,
-    DragOverlay, 
-    PointerSensor, 
-    useSensor,
-    useSensors,
-    closestCorners
-} from "@dnd-kit/core";
-import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-import ColumnContainer from "./ColumnContainer";
-import TaskCard from "./TaskCard"; 
+import { Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const Projects = () => {
-    const initialColumns = ["To Do", "In Progress", "Testing", "Completed", "Need Review"];
-    const [columns, setColumns] = useState(initialColumns); 
+const projectsData = [
+  { id: 1, name: "Project 1", owner: "Alice", scrumMaster: "Bob", from: "2025-03-01", to: "2025-06-30", status: "In Progress" },
+  { id: 2, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
+  { id: 3, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
+  { id: 4, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
+  { id: 5, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
+  { id: 6, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
+];
 
-   
-    const [tasks, setTasks] = useState([
-        { id: "1", title: "Design HomePage", dueDate: "April 12", columnId: "To Do" },
-        { id: "2", title: "Write Tests", dueDate: "April 15", columnId: "In Progress" },
-        { id: "3", title: "Fix Login Bug", dueDate: "April 18", columnId: "Testing" },
-        { id: "4", title: "Code Review", dueDate: "April 20", columnId: "Completed" },
-        { id: "5", title: "Deploy App", dueDate: "April 22", columnId: "Need Review" },
-        { id: "6", title: "Setup CI/CD", dueDate: "April 12", columnId: "To Do" },
-        { id: "7", title: "User Authentication", dueDate: "April 12", columnId: "To Do" },
-        { id: "8", title: "Database Schema", dueDate: "April 12", columnId: "To Do" },
-        { id: "9", title: "Hello1", dueDate: "April 12", columnId: "To Do" },
-        { id: "10", title: "Hello2", dueDate: "April 15", columnId: "In Progress" },
-        { id: "11", title: "Hello3", dueDate: "April 18", columnId: "In Progress" },
-        { id: "12", title: "Hello4", dueDate: "April 20", columnId: "Completed" },
-        { id: "13", title: "Hellow5", dueDate: "April 22", columnId: "Need Review" },
-        { id: "14", title: "Hide", dueDate: "April 12", columnId: "To Do" },
-        { id: "15", title: "Hide", dueDate: "April 15", columnId: "In Progress" },
-        { id: "16", title: "Hide", dueDate: "April 18", columnId: "Testing" },
-        { id: "17", title: "Hide", dueDate: "April 20", columnId: "Completed" },
-        { id: "18", title: "Hide", dueDate: "April 22", columnId: "Need Review" },
-    ]);
+export default function Projects() {
+  const [search, setSearch] = useState("");
+  const [showIcon, setShowIcon] = useState(false);
+  const [projects, setProjects] = useState(projectsData);
+  const navigate = useNavigate();
 
-    const [activeTask, setActiveTask] = useState(null);
-
-   
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                distance: 3, 
-            },
-        })
+  const handleSearch = () => {
+    const filtered = projectsData.filter((p) =>
+      p.name.toLowerCase().includes(search.toLowerCase())
     );
+    setProjects(filtered);
+  };
 
- 
-    function onDragStart(event) {
-        
-        if (event.active.data.current?.type === "Task") {
-            setActiveTask(event.active.data.current.task);
-        }
-        
-    }
+  const sortByProjects = () => {
+    setProjects([...projects].sort((a, b) => a.name.localeCompare(b.name)));
+  };
 
+  const sortByDate = () => {
+    setProjects([...projects].sort((a, b) => new Date(a.from) - new Date(b.from)));
+  };
 
-    
-    function onDragEnd(event) {
-        //setActiveColumn(null);
-        setActiveTask(null); // Clear the active task after drop
-        const { active, over } = event;
+  return (
+    <div className="p-4 flex flex-col items-center">
+      {/* Search Box + Buttons (Aligned in one row) */}
+      <div className="flex items-center gap-4 w-full max-w-2xl lg:max-w-5xl justify-center">
+        {/* Search Box */}
+        <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2 flex-1 max-w-lg">
+          {showIcon && <Search className="text-gray-500 mr-2" size={20} />}
+          <input
+            type="text"
+            placeholder="Search projects"
+            className="flex-1 outline-none lg:w-100"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setShowIcon(true)}
+            onBlur={() => setShowIcon(false)}
+          />
+        </div>
 
-       
-        if (!over) return;
+        {/* Buttons (Aligned in one row) */}
+        <button onClick={handleSearch} className="bg-[#a40ff3] text-white px-4 py-2 rounded">Search</button>
+        <button onClick={sortByProjects} className="bg-gray-500 text-white px-4 py-2 rounded w-60">Sort by Projects</button>
+        <button onClick={sortByDate} className="bg-gray-500 text-white px-4 py-2 rounded w-50">Sort by Date</button>
+      </div>
 
-        const activeId = active.id;
-        const overId = over.id;
-
-       
-        if (activeId === overId) return;
-
-        
-        const isActiveATask = active.data.current?.type === "Task";
-        
-
-        if (!isActiveATask) return; 
-
-        const isOverATask = over.data.current?.type === "Task";
-        const isOverAColumn = over.data.current?.type === "Column";
-
-      
-        if (isActiveATask && isOverATask) {
-            setTasks((currentTasks) => {
-                const activeIndex = currentTasks.findIndex((t) => t.id === activeId);
-                const overIndex = currentTasks.findIndex((t) => t.id === overId);
-
-                // Check if tasks were found
-                if (activeIndex === -1 || overIndex === -1) {
-                    console.error("Task not found in onDragEnd (Task over Task)");
-                    return currentTasks; // Return current state if tasks aren't found
-                }
-
-                // Get the columnId of the task being dropped onto
-                const overTaskColumnId = currentTasks[overIndex].columnId;
-
-                if (currentTasks[activeIndex].columnId !== overTaskColumnId) {
-                   currentTasks[activeIndex].columnId = overTaskColumnId;
-                
-                   return arrayMove(currentTasks, activeIndex, overIndex);
-                } else {
-                    // If in the same column, just reorder
-                    return arrayMove(currentTasks, activeIndex, overIndex);
-                }
-
-            });
-        }
-
-      
-        if (isActiveATask && isOverAColumn) {
-             setTasks((currentTasks) => {
-                const activeIndex = currentTasks.findIndex((t) => t.id === activeId);
-
-                if (activeIndex === -1) {
-                     console.error("Task not found in onDragEnd (Task over Column)");
-                     return currentTasks; // Return current state if task isn't found
-                }
-
-                currentTasks[activeIndex].columnId = overId;
-
-                
-                return arrayMove(currentTasks, activeIndex, activeIndex);
-            });
-        }
-    }
-
-    function onDragOver(DragOverEvent) {
-        const { active, over } = DragOverEvent;
-    
-  
-        if (!over) return;
-    
-        const activeId = active.id;
-        const overId = over.id;
-    
-       
-        if (activeId === overId) return;
-    
-        const isActiveATask = active.data.current && active.data.current.type === "Task";
-        const isOverATask = over.data.current && over.data.current.type === "Task";
-    
-        if (!isActiveATask) return;
-    
-        
-        if (isActiveATask && isOverATask) {
-            setTasks((tasks) => {
-                const activeIndex = tasks.findIndex((t) => t.id === activeId);
-                const overIndex = tasks.findIndex((t) => t.id === overId);
-    
-                
-                // if (tasks[activeIndex].columnId !== tasks[overIndex].columnId) {
-                tasks[activeIndex].columnId = tasks[overIndex].columnId;
-                // }
-    
-                return arrayMove(tasks, activeIndex, overIndex);
-            });
-        }
-    
-        const isOverAColumn = over.data.current && over.data.current.type === "Column";
-    
-        // Dropping a task over a column
-        if (isActiveATask && isOverAColumn) {
-            setTasks((tasks) => {
-                const activeIndex = tasks.findIndex((t) => t.id === activeId);
-                // Uncomment if columnId change condition is required:
-                // if (tasks[activeIndex].columnId !== overId) {
-                tasks[activeIndex].columnId = overId;
-                // }
-    
-                
-                return arrayMove(tasks, activeIndex, activeIndex);
-            });
-        }
-    }
-    
-
-
-    return (
-     
-        <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            onDragOver={onDragOver}
-        >
-            
-            <div className="overflow-x-auto w-screen lg:w-auto h-screen">
-                <div className="min-w-[900px] md:min-w-full">
-                   
-                    <div className="grid grid-cols-5 border-b border-gray-300 bg-gray-300 sticky top-0 z-10">
-                        {columns.map((columnId) => ( 
-                            <div key={columnId} className="p-3 font-semibold border-r border-gray-300 last:border-r-0 flex justify-between">
-                            <span>{columnId}</span>  
-                            <span>({tasks.filter((task) => task.columnId === columnId).length-1})</span>
-                          </div>
-                          
-                        ))}
-                    </div>
-
-                    {/* Task Columns Grid */}
-                    <div className="grid grid-cols-5 h-full">
-                        {/* REMOVED the single SortableContext wrapper */}
-                        {columns.map((columnId) => (
-                            <ColumnContainer
-                                key={columnId}
-                                columnId={columnId} // Pass the name/ID (e.g., "To Do")
-                                tasks={tasks}      // Pass the entire tasks list
-                            />
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            <DragOverlay>
-                {activeTask ? (
-                    <TaskCard task={activeTask} /> // Render the captured task
-                ) : null}
-            </DragOverlay>
-
-        </DndContext>
-    );
-};
-
-export default Projects;
+      {/* Project Cards - Responsive Flex Layout */}
+      <div className="mt-9 flex flex-wrap justify-center gap-4">
+        {projects.map((project) => (
+          <div
+            key={project.id}
+            className="border p-2 rounded-lg shadow cursor-pointer hover:shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
+            // onClick={() => navigate(`/tasks/${project.id}`)}
+            onClick={() => navigate(`/home/tasks`)}
+          >
+            <h2 className="text-xl font-bold mb-2">{project.name}</h2>
+            <hr/>
+            <p className="p-1"><strong>Product Owner:</strong> {project.owner}</p>
+            <p className="p-1"><strong>Scrum Master:</strong> {project.scrumMaster}</p>
+            <p className="p-1"><strong>From:</strong> {project.from}</p>
+            <p className="p-1"><strong>To:</strong> {project.to}</p>
+            <p className="p-1"><strong>Status:</strong> {project.status}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
