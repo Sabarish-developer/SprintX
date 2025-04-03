@@ -196,7 +196,7 @@ const Home = () => {
                         {columns.map((columnId) => ( 
                             <div key={columnId} className="p-3 font-semibold border-r border-gray-300 last:border-r-0 flex justify-between">
                             <span>{columnId}</span>  
-                            <span>({tasks.filter((task) => task.columnId === columnId).length})</span>
+                            <span>({tasks.filter((task) => task.columnId === columnId).length-1})</span>
                           </div>
                           
                         ))}

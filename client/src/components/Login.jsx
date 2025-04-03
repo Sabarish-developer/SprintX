@@ -32,9 +32,15 @@ const Login = () => {
                 password:password
             });
             if(response.status === 200){
+                //let mes = ;
                 navigate("/home");
+                console.log(response.data.data);
                 toast.success(response.data.message);
                 localStorage.setItem("token",response.data.token);
+                localStorage.setItem("email",response.data.data.email);
+                localStorage.setItem("username",response.data.data.username);
+                console.log(localStorage.getItem("username"));
+                console.log(localStorage.getItem("email"));
                 console.log(localStorage.getItem("token"));
             }
             else{
