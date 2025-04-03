@@ -276,7 +276,13 @@ const signinHandler = async(req,res)=>{
                 email: email,
                 role: user.role
             },process.env.JWT_SECRET_KEY, {expiresIn: '1h'});
-            return res.status(200).json({message: "Login successful.", token: token});
+
+            //Sending email,username
+            const data = {
+                email: user.email,
+                username: user.username
+            }
+            return res.status(200).json({message: "Login successful.", token: token, data: data});
         }
         else{
             console.log("Invalid credentials.");
