@@ -52,7 +52,7 @@ const TaskCard = ({ task, status }) => {
 
   return (
     <div
-      className="p-2 rounded shadow bg-white touch-none"
+    className={`p-2 rounded shadow bg-white touch-none ${task.title === 'Hide' ? 'invisible' : ''}`}
       ref={setNodeRef}
       style={style}
       {...attributes}

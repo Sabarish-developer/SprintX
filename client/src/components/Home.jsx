@@ -18,14 +18,24 @@ const Home = () => {
 
    
     const [tasks, setTasks] = useState([
-        { id: "1", title: "Design Homepage", dueDate: "April 12", columnId: "To Do" },
-        { id: "2", title: "Fix Login Bug", dueDate: "April 15", columnId: "In Progress" },
-        { id: "3", title: "Write Tests", dueDate: "April 18", columnId: "Testing" },
-        { id: "4", title: "Deploy App", dueDate: "April 20", columnId: "Completed" },
-        { id: "5", title: "Code Review", dueDate: "April 22", columnId: "Need Review" },
+        { id: "1", title: "Design HomePage", dueDate: "April 12", columnId: "To Do" },
+        { id: "2", title: "Write Tests", dueDate: "April 15", columnId: "In Progress" },
+        { id: "3", title: "Fix Login Bug", dueDate: "April 18", columnId: "Testing" },
+        { id: "4", title: "Code Review", dueDate: "April 20", columnId: "Completed" },
+        { id: "5", title: "Deploy App", dueDate: "April 22", columnId: "Need Review" },
         { id: "6", title: "Setup CI/CD", dueDate: "April 12", columnId: "To Do" },
         { id: "7", title: "User Authentication", dueDate: "April 12", columnId: "To Do" },
         { id: "8", title: "Database Schema", dueDate: "April 12", columnId: "To Do" },
+        { id: "9", title: "Hello1", dueDate: "April 12", columnId: "To Do" },
+        { id: "10", title: "Hello2", dueDate: "April 15", columnId: "In Progress" },
+        { id: "11", title: "Hello3", dueDate: "April 18", columnId: "In Progress" },
+        { id: "12", title: "Hello4", dueDate: "April 20", columnId: "Completed" },
+        { id: "13", title: "Hellow5", dueDate: "April 22", columnId: "Need Review" },
+        { id: "14", title: "Hide", dueDate: "April 12", columnId: "To Do" },
+        { id: "15", title: "Hide", dueDate: "April 15", columnId: "In Progress" },
+        { id: "16", title: "Hide", dueDate: "April 18", columnId: "Testing" },
+        { id: "17", title: "Hide", dueDate: "April 20", columnId: "Completed" },
+        { id: "18", title: "Hide", dueDate: "April 22", columnId: "Need Review" },
     ]);
 
     const [activeTask, setActiveTask] = useState(null);

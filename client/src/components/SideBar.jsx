@@ -82,8 +82,8 @@ export default function SideBar({ children }) {
                             }`}
                         >
                             <div className="leading-4">
-                                <h4 className="font-semibold">John Doe</h4>
-                                <span className="text-xs text-gray-600">johndoe@gmail.com</span>
+                                <h4 className="font-semibold">{localStorage.getItem("username")}</h4>
+                                <span className="text-xs text-gray-600">{localStorage.getItem("email")}</span>
                             </div>
                             {/* <LogOut size={20} /> */}
                             <button 
