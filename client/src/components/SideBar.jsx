@@ -81,22 +81,24 @@ export default function SideBar({ children }) {
                                 expanded ? "w-52 ml-3" : "w-0"
                             }`}
                         >
-                            <div className="leading-4">
-                                <h4 className="font-semibold">{localStorage.getItem("username")}</h4>
-                                <span className="text-xs text-gray-600">{localStorage.getItem("email")}</span>
+                            <div className="leading-4 w-10">
+                                <h4 className="font-semibold w-15">{localStorage.getItem("username")}</h4>
+                                <span className="text-xs text-gray-600 w-15">{localStorage.getItem("email")}</span>
                             </div>
                             {/* <LogOut size={20} /> */}
-                            <button 
-                            onClick={handleLogout}
-                            className="relative group flex items-center p-2 text-red-500 hover:cursor-pointer"
-                            >
-                                <LogOut size={20} />
+                            <div>
+                                <button 
+                                onClick={handleLogout}
+                                className="relative group flex items-center pb-2 text-red-500 hover:cursor-pointer"
+                                >
+                                    <LogOut size={20} />
 
-                                
-                                <span className="absolute -top-0 right-1 -translate-x-1/2 whitespace-nowrap bg-gray-300 text-red text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all duration-200">
-                                    Logout
-                                </span>
-                            </button>
+                                    
+                                    <span className="absolute -top-0 right-1 -translate-x-1/2 whitespace-nowrap bg-gray-300 text-red text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all duration-200">
+                                        Logout
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </nav>
