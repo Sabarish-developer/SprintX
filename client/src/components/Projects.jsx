@@ -84,3 +84,122 @@ export default function Projects() {
     </div>
   );
 }
+
+// import React from 'react'
+
+// const Projects = () => {
+//   return (
+//     <>
+//     <div className='w-[1000px]'>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     <div>Projects</div>
+//     </>
+//   )
+// }
+
+// export default Projects
