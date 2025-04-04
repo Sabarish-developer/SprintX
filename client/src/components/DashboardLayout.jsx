@@ -4,7 +4,7 @@ import { FolderKanban, ClipboardPlus, Handshake,Settings,LifeBuoy, HomeIcon } fr
 
 export default function DashboardLayout() {
   return (
-    <div className="flex">
+    <div className="flex items-start">
       {/* Sidebar */}
       <SideBar>
         <SidebarItem icon={<HomeIcon size={20} />} text="Home" path="/home" />
