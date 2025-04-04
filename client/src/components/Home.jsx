@@ -1,4 +1,5 @@
 import React from "react";
+import clsx from 'clsx'
 
 const Home = () => {
   // Dummy data have to replace with DB.
@@ -6,6 +7,12 @@ const Home = () => {
   const activeProject = { name: "Project Alpha", from: "Mar 10", to: "Apr 20" };
   const activeSprint = { name: "Sprint 3", from: "Mar 15", to: "Apr 10" };
   const stats = { assigned: 5, completed: 12, pending: 3 };
+
+  const statusData = [
+    { key: "assigned", label: "Assigned", color: "text-blue-500" },
+    { key: "completed", label: "Completed", color: "text-green-500" },
+    { key: "pending", label: "Pending", color: "text-orange-500" },
+  ];
 
   // Data to display based on role
   const epics = [
@@ -28,53 +35,63 @@ const Home = () => {
 
   return (
     <div className="flex flex-col justify-between p-6">
-      <h2 className="text-center m-6 text-3xl font-semibold">Welcome, {localStorage.getItem("username")} 👋</h2>
+        <div className="flex flex-col lg:flex-row gap-6 p-6 bg-[#4b4bc3] border-0 rounded-lg">
+          {/* Welcome Card */}
+          <div className="bg-[#dbdbff] p-3 lg:p-6 rounded-xl w-auto shadow-lg">
+            <h2 className="text-2xl lg:text-3xl font-semibold text-[#4b4bc3]">Welcome</h2>
+            <h3 className="text-2xl lg:text-3xl font-bold text-[#4b4bc3]">{localStorage.getItem("username")} 👋</h3>
+          </div>
 
-      <div className="m-6">
-        <p>
-          <strong>Active Project:</strong> {activeProject.name} ({activeProject.from} - {activeProject.to})
-        </p>
-        <p>
-          <strong>Active Sprint:</strong> {activeSprint.name} ({activeSprint.from} - {activeSprint.to})
-        </p>
-      </div>
+          {/* Inbox Card */}
+          <div className="bg-[#dbdbff] p-6 rounded-xl w-auto shadow-lg flex items-center">
+              <div>
+                <p className="text-[#4b4bc3] p-2 lg:p-0">
+                  <strong>Active Project:</strong> {activeProject.name} ({activeProject.from} - {activeProject.to})
+                </p>
+                <p className="text-[#4b4bc3] p-2 lg:p-0">
+                  <strong>Active Sprint:</strong> {activeSprint.name} ({activeSprint.from} - {activeSprint.to})
+                </p>
+              </div>
+        </div>
+    </div>
 
       {/* Status Boxes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-        {["Assigned", "Completed", "Pending"].map((status, index) => {
-          const value = stats[status.toLowerCase()];
-          return (
-            <div
-              key={index}
-              className="relative flex items-center justify-center bg-gray-100 h-24 rounded-lg shadow-md text-xl font-bold"
-            >
-              <span className="absolute text-gray-300 text-3xl lg:text-5xl font-extrabold">{status}</span>
-              <span className="relative text-black text-3xl lg:text-5xl font-bold p-2">{value}</span>
-            </div>
-          );
-        })}
-      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-9">
+      {statusData.map((status, index) => (
+        <div
+          key={index}
+          className={`flex flex-col items-center justify-center bg-white h-30 w-auto rounded-lg shadow-md`}
+        >
+          <span className={`text-7xl font-bold ${status.color}`}>
+            {stats[status.key]}
+          </span>
+          <span className={`text-xl font-semibold ${status.color}`}>
+            {status.label}
+          </span>
+        </div>
+      ))}
+    </div>
 
       {/* Table Section */}
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold">My {userRole === "ProductOwner" ? "Epics" : userRole === "ScrumMaster" ? "User Stories" : "Tasks"}:</h3>
+      <div className="mt-9 p-6 bg-[#dbdbff] border-0 rounded-lg shadow-lg">
+        <h3 className="text-lg font-semibold text-[#4b4bc3]">My {userRole === "ProductOwner" ? "Epics" : userRole === "ScrumMaster" ? "User Stories" : "Tasks"}:</h3>
         <div className="mt-4 overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
+          <table className="w-full border-separate border-spacing-0 border-0 rounded-lg">
             <thead>
-              <tr className="bg-gray-200">
-                <th className="border border-gray-300 px-4 py-2">S.No</th>
-                <th className="border border-gray-300 px-4 py-2">Name</th>
-                <th className="border border-gray-300 px-4 py-2">Deadline</th>
-                <th className="border border-gray-300 px-4 py-2">Status</th>
+              <tr className="bg-[#4b4bc3]">
+                <th className="border-r border-b border-gray-300 text-[#dbdbff] px-4 py-2">S.No</th>
+                <th className="border-b border-r border-gray-300 text-[#dbdbff] px-4 py-2">Name</th>
+                <th className="border-b border-r border-gray-300 text-[#dbdbff] px-4 py-2">Deadline</th>
+                <th className="border-b border-r border-gray-300 text-[#dbdbff] px-4 py-2">Status</th>
               </tr>
             </thead>
             <tbody>
               {listItems.map((item, idx) => (
                 <tr key={idx} className="bg-white text-center">
-                  <td className="border border-gray-300 px-4 py-2">{item.id}</td>
-                  <td className="border border-gray-300 px-4 py-2">{item.name}</td>
-                  <td className="border border-gray-300 px-4 py-2">{item.deadline}</td>
-                  <td className={`border border-gray-300 px-4 py-2 font-semibold 
+                  <td className="border-b border-r border-gray-300 px-4 py-2 text-[#1e1e76]">{item.id}</td>
+                  <td className="border-b border-r border-gray-300 px-4 py-2 text-[#1e1e76]">{item.name}</td>
+                  <td className="border-b border-r border-gray-300 px-4 py-2 text-[#1e1e76]">{item.deadline}</td>
+                  <td className={`border-b border-gray-300 px-4 py-2 font-semibold 
                     ${item.status === "In Progress" ? "text-orange-500" :
                       item.status === "Completed" ? "text-green-500" :
                       "text-gray-600"}`}>
@@ -84,6 +101,7 @@ const Home = () => {
               ))}
             </tbody>
           </table>
+
         </div>
       </div>
     </div>

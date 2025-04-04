@@ -41,7 +41,7 @@ export default function Projects() {
   return (
     <div className="p-4 flex flex-col items-center">
       {/* Search Box + Buttons (Aligned in one row) */}
-      <div className="flex items-center gap-4 w-full max-w-2xl lg:max-w-5xl justify-center">
+      <div className="ml-60 flex items-center gap-4 w-full max-w-2xl lg:max-w-5xl justify-center">
         {/* Search Box */}
         <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2 flex-1 max-w-lg">
           {showIcon && <Search className="text-gray-500 mr-2" size={20} />}
@@ -54,12 +54,12 @@ export default function Projects() {
             onFocus={() => setShowIcon(true)}
             onBlur={() => setShowIcon(false)}
           />
+          <button onClick={handleSearch} className="bg-[#a40ff3] text-white px-4 py-2 rounded">Search</button>
         </div>
 
         {/* Buttons (Aligned in one row) */}
-        <button onClick={handleSearch} className="bg-[#a40ff3] text-white px-4 py-2 rounded">Search</button>
-        <button onClick={sortByProjects} className="bg-gray-500 text-white px-4 py-2 rounded w-60">Sort by Projects</button>
-        <button onClick={sortByDate} className="bg-gray-500 text-white px-4 py-2 rounded w-50">Sort by Date</button>
+        <button onClick={sortByProjects} className="bg-gray-500 text-sm text-white px-4 py-2 rounded w-60">Sort by Projects</button>
+        <button onClick={sortByDate} className="bg-gray-500 text-sm text-white px-4 py-2 rounded w-60">Sort by Date</button>
       </div>
 
       {/* Project Cards - Responsive Flex Layout */}
