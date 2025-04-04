@@ -6,18 +6,22 @@ const productOwnerRouter = Router();
 
 
 productOwnerRouter.get("/home", homePageHandler);
+
 productOwnerRouter.get("/projects", projectsPageHandler);
 productOwnerRouter.get("/projects/:id", readProjectHandler);
-productOwnerRouter.post("/project", createProjectHandler);
-productOwnerRouter.put("/project/:id", editProjectHandler);
-productOwnerRouter.delete("/project/:id", deleteProjectHandler);
-productOwnerRouter.get("/epics", epicsPageHandler);
-productOwnerRouter.post("/epic", createEpicHandler);
-productOwnerRouter.put("/epic/:id", editEpicHandler);
-productOwnerRouter.delete("/epic/:id", deleteEpicHandler);
-productOwnerRouter.get("/sprints", sprintsPageHandler);
-productOwnerRouter.get("/sprints/:id", readSprintHandler);
-productOwnerRouter.get("/teammembers", teamMembersHandler);
+productOwnerRouter.post("/projects", createProjectHandler);
+productOwnerRouter.put("/projects/:id", editProjectHandler);
+productOwnerRouter.delete("/projects/:id", deleteProjectHandler);
+
+productOwnerRouter.get("/projects/:id/epics", epicsPageHandler);
+productOwnerRouter.post("/projects/:id/epics", createEpicHandler);
+productOwnerRouter.put("/projects/:id/epics/:epicId", editEpicHandler);
+productOwnerRouter.delete("/projects/:id/epics/:epicId", deleteEpicHandler);
+
+productOwnerRouter.get("/projects/:id/sprints", sprintsPageHandler);
+productOwnerRouter.get("/projects/:id/sprints/:sprintId", readSprintHandler);
+productOwnerRouter.get("/projects/:id/teammembers", teamMembersHandler);
+
 productOwnerRouter.get("/report", reportPageHandler);
 
 
