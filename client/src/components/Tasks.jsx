@@ -47,7 +47,7 @@ const Tasks = () => {
             case "Testing":
                 return "text-[#555555]";
             case "Completed":
-                return "text-[#08FF08]";
+                return "text-[#00b300]";
             case "Need Review":
                 return "text-[#EB212E]";
             default:

@@ -23,7 +23,7 @@ const TaskCard = ({ task, status }) => {
     if (status === "To Do") return "#2E67F8";
     if (status === "In Progress") return "orange";
     if (status === "Testing") return "gray";
-    if (status === "Completed") return "#08FF08";
+    if (status === "Completed") return "#00b300";
     if (status === "Need Review") return "#EB212E";
     return "gray"; 
   };
