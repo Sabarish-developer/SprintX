@@ -73,7 +73,7 @@ const Home = () => {
     </div>
 
       {/* Table Section */}
-      <div className="mt-9 p-6 bg-purple-200 border-0 rounded-lg shadow-lg">
+      <div className="mt-9 p-6">
         <h3 className="text-lg font-semibold text-[#a40ff3]">My {userRole === "ProductOwner" ? "Epics" : userRole === "ScrumMaster" ? "User Stories" : "Tasks"}:</h3>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full border-separate border-spacing-0 border-0 rounded-lg">
