@@ -7,7 +7,7 @@ import { progress } from "framer-motion";
 const projectsData = [
     { id: 1, name: "Seenu", owner: "Aliceee", scrumMaster: "Bob", from: "2025-03-01", to: "2025-06-30", status: "In Progress", progress: 50 },
     { id: 2, name: "Apple", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Completed", progress: 100 },
-    { id: 3, name: "Windows", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Started", progress: 50},
+    { id: 3, name: "Windows", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "In Progress", progress: 50},
     { id: 4, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
     { id: 5, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
     { id: 6, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
@@ -30,6 +30,12 @@ export default function Projects() {
     if (progress === 0) return 'bg-red-500';
     if (progress > 0 && progress < 100) return 'bg-orange-500';
     return 'bg-green-500'; // progress === 100
+  };
+
+  const getCardBg = (progress) => {
+    if (progress === 0) return 'bg-red-100';
+    if (progress > 0 && progress < 100) return 'bg-orange-100';
+    return 'bg-green-100'; // progress === 100
   };
   
 
@@ -141,7 +147,7 @@ export default function Projects() {
         {projects.map((project) => (
           <div
             key={project.id}
-            className="border-0 bg-white rounded-md shadow w-auto h-full p-5 cursor-pointer hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200"
+            className={`border-0 rounded-md shadow w-auto h-full p-5 cursor-pointer hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200 ${getCardBg(project.progress)}`}
             onClick={() => navigate(`/home/tasks`)}
           >
             <h2 className="text-xl font-bold mb-2">{project.name}</h2>
