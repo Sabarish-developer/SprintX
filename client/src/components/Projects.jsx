@@ -1,21 +1,22 @@
 import { useState, useEffect } from "react";
 import { Search, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { progress } from "framer-motion";
 
 // Dummy Projects Data
 const projectsData = [
-    { id: 1, name: "Seenu", owner: "Alice", scrumMaster: "Bob", from: "2025-03-01", to: "2025-06-30", status: "In Progress" },
-    { id: 2, name: "Apple", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
-    { id: 3, name: "Windows", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
-    { id: 4, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
-    { id: 5, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
-    { id: 6, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
-    { id: 7, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
-    { id: 8, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
-    { id: 9, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
-    { id: 10, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
-    { id: 11, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
-    { id: 12, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started" },
+    { id: 1, name: "Seenu", owner: "Aliceee", scrumMaster: "Bob", from: "2025-03-01", to: "2025-06-30", status: "In Progress", progress: 50 },
+    { id: 2, name: "Apple", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Completed", progress: 100 },
+    { id: 3, name: "Windows", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Started", progress: 50},
+    { id: 4, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+    { id: 5, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+    { id: 6, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+    { id: 7, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+    { id: 8, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+    { id: 9, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+    { id: 10, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+    { id: 11, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+    { id: 12, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
   ];
 
 export default function Projects() {
@@ -24,6 +25,13 @@ export default function Projects() {
   const [projects, setProjects] = useState(projectsData);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  const getProgressColor = (progress) => {
+    if (progress === 0) return 'bg-red-500';
+    if (progress > 0 && progress < 100) return 'bg-orange-500';
+    return 'bg-green-500'; // progress === 100
+  };
+  
 
   // Filter projects by search text
   useEffect(() => {
@@ -129,11 +137,11 @@ export default function Projects() {
       </div>
 
       {/* Project Cards */}
-      <div className="bg-gray-50 py-10 flex flex-wrap w-full justify-center gap-10 px-10 lg:px-0">
+      <div className="bg-gray-50 py-10 flex flex-wrap w-full h-auto justify-center gap-10 px-10 lg:px-0">
         {projects.map((project) => (
           <div
             key={project.id}
-            className="border-0 bg-white rounded-md shadow w-auto p-5 cursor-pointer hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200"
+            className="border-0 bg-white rounded-md shadow w-auto h-full p-5 cursor-pointer hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200"
             onClick={() => navigate(`/home/tasks`)}
           >
             <h2 className="text-xl font-bold mb-2">{project.name}</h2>
@@ -153,6 +161,15 @@ export default function Projects() {
             <p className="p-1">
               <strong>Status:</strong> {project.status}
             </p>
+            <div className="p-2">
+            <div className="relative w-full h-1 bg-gray-500 mt-5 rounded overflow-visible">
+              <div className={`absolute -top-7 left-1/2 -translate-x-1/2 text-sm ${getProgressColor(project.progress)} text-white px-2 py-0.5 rounded shadow`} style={{left: `calc(${project.progress}%)`}}>
+                {project.progress}%
+                <div className={`w-2 h-2 ${getProgressColor(project.progress)} rotate-45 absolute left-1/2 -bottom-1 -translate-x-1/2`}></div>
+              </div>
+              <div className={`h-full ${getProgressColor(project.progress)} transition-all duration-300`} style={{width: `${project.progress}%`}} />
+            </div>
+            </div>
           </div>
         ))}
       </div>
