@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Search, Menu, SortAsc } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { X, Menu, SortAsc} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
@@ -23,8 +23,10 @@ export default function Projects() {
   const [search, setSearch] = useState("");
   const [showIcon, setShowIcon] = useState(false);
   const [projects, setProjects] = useState(projectsData);
+  const [pro, setPro] = useState(projectsData);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const [sortType, setSortType] = useState("");
 
 
   const getProgressColor = (progress) => {
@@ -48,6 +50,8 @@ export default function Projects() {
     setProjects(filtered);
   }, [search]);
 
+  //const unsorted = [...Projects];
+
   // Sort by project name
   const sortByProjects = () => {
     const sorted = [...projects].sort((a, b) => a.name.localeCompare(b.name));
@@ -62,18 +66,31 @@ export default function Projects() {
     setProjects(sorted);
   };
 
+  //clear sort see below clear sort
+  const clearSort = () => {
+    setProjects(pro); // this is temp only use below in integeration
+  };
+
+  // use this on integrating with backend not above
+  // const clearSort = async () => {
+  //   const res = await fetch("/api/projects"); // or use Axios
+  //   const fresh = await res.json();
+  //   setProjects(fresh);
+  // };
+  
+
   return (
     <div className="flex flex-col items-center">
       {/* Header */}
       <div className="sticky top-0 z-50 w-full bg-white border-b pb-4">
-        <div className="flex items-center justify-between px-4 pt-4">
+        <div className="flex items-center justify-between w-full px-4 pt-4">
           {/* Title */}
           {/* <div className="text-xl font-bold text-[#a40ff3]">Project Dashboard</div> */}
 
           {/* Desktop Search + Buttons */}
-          <div className="hidden lg:flex items-center gap-4 w-full max-w-5xl ml-6">
-            <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2 flex-1">
-              {showIcon && <Search className="text-gray-500 mr-2" size={20} />}
+          <div className="hidden lg:flex lg:items-center gap-4 w-full max-w-5xl">
+           <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2 ">  {/*flex-1 */}
+              {/* {showIcon && <Search className="text-gray-500 mr-2" size={20} />} */}
               <input
                 type="text"
                 placeholder="Search projects"
@@ -96,7 +113,13 @@ export default function Projects() {
             >
               Sort by Date
             </button> */}
-            <SortDropdown sortByProjects={sortByProjects} sortByDate={sortByDate} />
+            {/* <SortDropdown sortByProjects={sortByProjects} sortByDate={sortByDate} /> */}
+            <SortDropdown
+                sortByProjects={sortByProjects}
+                sortByDate={sortByDate}
+                sortType={sortType}
+                clearSort={clearSort}
+              />
           </div>
 
           {/* Mobile Hamburger */}
@@ -114,7 +137,7 @@ export default function Projects() {
         {menuOpen && (
           <div className="lg:hidden px-4 mt-3 space-y-3">
             <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2">
-              {showIcon && <Search className="text-gray-500 mr-2" size={20} />}
+              {/* {showIcon && <Search className="text-gray-500 mr-2" size={20} />} */}
               <input
                 type="text"
                 placeholder="Search projects"
@@ -228,46 +251,210 @@ function AnimatedProgressLabel({ progress, color }) {
 }
 
 
-function SortDropdown({ sortByProjects, sortByDate }) {
+
+// import { useState, useEffect, useRef } from "react";
+// import { SortAsc, X } from "lucide-react";
+
+function SortDropdown({ sortByProjects, sortByDate, sortType, clearSort }) {
   const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const [clear, setClear] = useState(false);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
-    <div className="relative inline-block text-left">
-      <button
-        onClick={() => setOpen(!open)}
-        className="bg-[#a40ff3] hover:bg-white hover:text-[#a40ff3] text-white px-4 py-2 rounded shadow hover:shadow-md text-sm flex items-center gap-2"
-      >
-        <SortAsc size={16} />
-        Sort
-      </button>
+    <div className="flex items-center gap-2">
+      <div ref={dropdownRef} className="relative inline-block text-left">
+        <button
+          onClick={() => setOpen(!open)}
+          className="bg-[#a40ff3] hover:bg-white cursor-pointer hover:text-[#a40ff3] text-white px-4 py-2 rounded shadow hover:shadow-md text-sm flex items-center gap-2"
+        >
+          <SortAsc size={16} />
+          Sort
+        </button>
 
-      {open && (
-        <div className="absolute z-10 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
-          <div className="py-1">
-            <button
-              onClick={() => {
-                sortByProjects();
-                setOpen(false);
-              }}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            >
-              Projects
-            </button>
-            <button
-              onClick={() => {
-                sortByDate();
-                setOpen(false);
-              }}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            >
-              Date
-            </button>
+        {open && (
+          <div className="absolute z-10 mt-2 w-40 bg-white rounded-sm shadow-sm ring-1 ring-purple-500 ring-opacity-5">
+            <div className="py-1">
+              <button
+                onClick={() => {
+                  sortByProjects();
+                  setOpen(false);
+                  setClear(true);
+                }}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-[#a40ff3]"
+              >
+                Projects
+              </button>
+              <button
+                onClick={() => {
+                  sortByDate();
+                  setOpen(false);
+                  setClear(true);
+                }}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-[#a40ff3]"
+              >
+                Date
+              </button>
+            </div>
           </div>
-        </div>
+        )}
+      </div>
+
+      {clear && (
+        <button
+          onClick={() => {
+            setClear(false);
+            clearSort();
+          }}
+          className="bg-red-500 hover:bg-red-600 cursor-pointer text-white px-3 py-2 rounded text-sm flex items-center gap-1 shadow hover:shadow-md"
+        >
+          <X size={16} />
+          Clear Sort
+        </button>
       )}
     </div>
   );
 }
+
+
+
+// import { SortAsc } from "lucide-react";
+
+// function SortDropdown({ sortByProjects, sortByDate }) {
+//   const [open, setOpen] = useState(false);
+//   const dropdownRef = useRef(null);
+
+//   useEffect(() => {
+//     function handleClickOutside(event) {
+//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+//         setOpen(false);
+//       }
+//     }
+
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     };
+//   }, []);
+
+//   return (
+//     <div ref={dropdownRef} className="relative inline-block text-left">
+//       <button
+//         onClick={() => setOpen(!open)}
+//         className="bg-[#a40ff3] hover:bg-white hover:text-[#a40ff3] text-white px-4 py-2 rounded shadow hover:shadow-md text-sm flex items-center gap-2"
+//       >
+//         <SortAsc size={16} />
+//         Sort
+//       </button>
+
+//       {open && (
+//         <div className="absolute z-10 mt-2 w-40 bg-white rounded-sm shadow-sm ring-1 ring-purple-500 ring-opacity-5">
+//           <div className="py-1">
+//             <button
+//               onClick={() => {
+//                 sortByProjects();
+//                 setOpen(false);
+//               }}
+//               className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-[#a40ff3]"
+//             >
+//               Projects
+//             </button>
+//             <button
+//               onClick={() => {
+//                 sortByDate();
+//                 setOpen(false);
+//               }}
+//               className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-[#a40ff3]"
+//             >
+//               Date
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+
+
+// import { useState, useEffect, useRef } from "react";
+// import { ChevronDown, Check } from "lucide-react";
+
+// function SortDropdown({ currentSort, onSortChange }) {
+//   const [isOpen, setIsOpen] = useState(false);
+//   const dropdownRef = useRef(null);
+
+//   // Close dropdown on outside click
+//   useEffect(() => {
+//     const handleClickOutside = (e) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+//         setIsOpen(false);
+//       }
+//     };
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => document.removeEventListener("mousedown", handleClickOutside);
+//   }, []);
+
+//   const handleSort = (type) => {
+//     onSortChange(type);
+//     setIsOpen(false);
+//   };
+
+//   return (
+//     <div className="relative inline-block text-left" ref={dropdownRef}>
+//       <button
+//         onClick={() => setIsOpen(!isOpen)}
+//         className="bg-[#a40ff3] text-white px-4 py-2 rounded flex items-center gap-2 shadow hover:bg-white hover:text-[#a40ff3] hover:shadow-md transition"
+//       >
+//         Sort
+//         <ChevronDown size={18} />
+//       </button>
+
+//       {/* Dropdown */}
+//       {isOpen && (
+//         <div className="absolute z-10 mt-2 w-48 bg-white rounded shadow-lg border border-gray-200 animate-fade-in">
+//           <button
+//             onClick={() => handleSort("projects")}
+//             className={`flex items-center justify-between w-full text-left px-4 py-2 hover:bg-gray-100 transition ${
+//               currentSort === "projects" ? "font-medium text-[#a40ff3]" : ""
+//             }`}
+//           >
+//             Sort by Projects
+//             {currentSort === "projects" && <Check size={16} />}
+//           </button>
+
+//           <button
+//             onClick={() => handleSort("date")}
+//             className={`flex items-center justify-between w-full text-left px-4 py-2 hover:bg-gray-100 transition ${
+//               currentSort === "date" ? "font-medium text-[#a40ff3]" : ""
+//             }`}
+//           >
+//             Sort by Date
+//             {currentSort === "date" && <Check size={16} />}
+//           </button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default SortDropdown;
+
+
+
 
 
 
