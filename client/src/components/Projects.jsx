@@ -86,13 +86,13 @@ export default function Projects() {
             </div>
             <button
               onClick={sortByProjects}
-              className="bg-gray-500 text-white px-4 py-2 rounded text-sm w-48"
+              className="bg-[#a40ff3] cursor-pointer hover:bg-white hover:text-[#a40ff3] shadow hover:shadow-md text-white px-4 py-2 rounded text-sm w-48"
             >
               Sort by Projects
             </button>
             <button
               onClick={sortByDate}
-              className="bg-gray-500 text-white px-4 py-2 rounded text-sm w-48"
+              className="bg-[#a40ff3] cursor-pointer hover:bg-white hover:text-[#a40ff3] shadow hover:shadow-md text-white px-4 py-2 rounded text-sm w-48"
             >
               Sort by Date
             </button>
@@ -129,13 +129,13 @@ export default function Projects() {
             </button>
             <button
               onClick={sortByProjects}
-              className="bg-gray-500 text-white px-4 py-2 rounded w-full text-sm"
+              className="bg-[#a40ff3] text-white px-4 py-2 rounded w-full text-sm"
             >
               Sort by Projects
             </button>
             <button
               onClick={sortByDate}
-              className="bg-gray-500 text-white px-4 py-2 rounded w-full text-sm"
+              className="bg-[#a40ff3] text-white px-4 py-2 rounded w-full text-sm"
             >
               Sort by Date
             </button>
