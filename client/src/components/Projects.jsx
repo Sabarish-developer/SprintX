@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Menu } from "lucide-react";
+import { Search, Menu, SortAsc } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
@@ -68,7 +68,7 @@ export default function Projects() {
       <div className="sticky top-0 z-50 w-full bg-white border-b pb-4">
         <div className="flex items-center justify-between px-4 pt-4">
           {/* Title */}
-          <div className="text-xl font-bold text-[#a40ff3]">Project Dashboard</div>
+          {/* <div className="text-xl font-bold text-[#a40ff3]">Project Dashboard</div> */}
 
           {/* Desktop Search + Buttons */}
           <div className="hidden lg:flex items-center gap-4 w-full max-w-5xl ml-6">
@@ -84,7 +84,7 @@ export default function Projects() {
                 onBlur={() => setShowIcon(false)}
               />
             </div>
-            <button
+            {/* <button
               onClick={sortByProjects}
               className="bg-[#a40ff3] cursor-pointer hover:bg-white hover:text-[#a40ff3] shadow hover:shadow-md text-white px-4 py-2 rounded text-sm w-48"
             >
@@ -95,7 +95,8 @@ export default function Projects() {
               className="bg-[#a40ff3] cursor-pointer hover:bg-white hover:text-[#a40ff3] shadow hover:shadow-md text-white px-4 py-2 rounded text-sm w-48"
             >
               Sort by Date
-            </button>
+            </button> */}
+            <SortDropdown sortByProjects={sortByProjects} sortByDate={sortByDate} />
           </div>
 
           {/* Mobile Hamburger */}
@@ -124,7 +125,7 @@ export default function Projects() {
                 onBlur={() => setShowIcon(false)}
               />
             </div>
-            <button className="bg-[#a40ff3] text-white px-4 py-2 rounded w-full">
+            {/* <button className="bg-[#a40ff3] text-white px-4 py-2 rounded w-full">
               Search
             </button>
             <button
@@ -138,7 +139,8 @@ export default function Projects() {
               className="bg-[#a40ff3] text-white px-4 py-2 rounded w-full text-sm"
             >
               Sort by Date
-            </button>
+            </button> */}
+            <SortDropdown sortByProjects={sortByProjects} sortByDate={sortByDate} />
           </div>
         )}
       </div>
@@ -224,6 +226,49 @@ function AnimatedProgressLabel({ progress, color }) {
     </motion.div>
   );
 }
+
+
+function SortDropdown({ sortByProjects, sortByDate }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative inline-block text-left">
+      <button
+        onClick={() => setOpen(!open)}
+        className="bg-[#a40ff3] hover:bg-white hover:text-[#a40ff3] text-white px-4 py-2 rounded shadow hover:shadow-md text-sm flex items-center gap-2"
+      >
+        <SortAsc size={16} />
+        Sort
+      </button>
+
+      {open && (
+        <div className="absolute z-10 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+          <div className="py-1">
+            <button
+              onClick={() => {
+                sortByProjects();
+                setOpen(false);
+              }}
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              Projects
+            </button>
+            <button
+              onClick={() => {
+                sortByDate();
+                setOpen(false);
+              }}
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              Date
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 
 

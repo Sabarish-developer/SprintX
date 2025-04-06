@@ -41,11 +41,11 @@ const Tasks = () => {
     const getTextColor = (columnId) => {
         switch (columnId) {
             case "To Do":
-                return "text-yellow-300";
+                return "text-[#2E67F8]";
             case "In Progress":
                 return "text-orange-400";
             case "Testing":
-                return "text-[#2E67F8]";
+                return "text-[#555555]";
             case "Completed":
                 return "text-[#08FF08]";
             case "Need Review":
