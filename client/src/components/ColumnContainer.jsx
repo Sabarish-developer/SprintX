@@ -23,7 +23,7 @@ const ColumnContainer = ({ columnId, tasks }) => {
    
     <div
       ref={setNodeRef} 
-      className="p-3 border-r border-gray-300 last:border-r-0 h-screen flex flex-col"
+      className="p-3 border-r border-black last:border-r-0 h-screen flex flex-col"
       style={{ minHeight: '150px' }} 
     >
       <SortableContext items={taskIds}>

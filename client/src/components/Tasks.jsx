@@ -38,6 +38,23 @@ const Tasks = () => {
         { id: "18", title: "Hide", dueDate: "April 22", columnId: "Need Review" },
     ]);
 
+    const getTextColor = (columnId) => {
+        switch (columnId) {
+            case "To Do":
+                return "text-yellow-300";
+            case "In Progress":
+                return "text-orange-400";
+            case "Testing":
+                return "text-[#2E67F8]";
+            case "Completed":
+                return "text-[#08FF08]";
+            case "Need Review":
+                return "text-[#EB212E]";
+            default:
+                return "text-gray-500"; 
+        }
+    }
+
     const [activeTask, setActiveTask] = useState(null);
 
    
@@ -192,9 +209,9 @@ const Tasks = () => {
             <div className="overflow-x-auto w-screen lg:w-auto h-screen">
                 <div className="min-w-[900px] md:min-w-full">
                    
-                    <div className="grid grid-cols-5 border-b border-gray-300 bg-gray-300 sticky top-0 z-10">
+                    <div className="grid grid-cols-5 sticky top-0 z-10">
                         {columns.map((columnId) => ( 
-                            <div key={columnId} className="p-3 font-semibold border-r border-gray-300 last:border-r-0 flex justify-between">
+                            <div key={columnId} className={`p-3 ${getTextColor(columnId)} bg-white font-semibold ${columnId==='Need Review' ? '' : 'border-r'} border-b border-black flex justify-between`}>
                             <span>{columnId}</span>  
                             <span>({tasks.filter((task) => task.columnId === columnId).length-1})</span>
                           </div>
