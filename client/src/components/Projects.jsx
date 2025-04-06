@@ -129,11 +129,11 @@ export default function Projects() {
       </div>
 
       {/* Project Cards */}
-      <div className="mt-10 flex flex-wrap w-full justify-center gap-10 px-10 lg:px-0">
+      <div className="bg-gray-50 py-10 flex flex-wrap w-full justify-center gap-10 px-10 lg:px-0">
         {projects.map((project) => (
           <div
             key={project.id}
-            className="border rounded-lg shadow cursor-pointer hover:shadow-lg w-auto sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200"
+            className="border-0 bg-white rounded-md shadow w-auto p-5 cursor-pointer hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200"
             onClick={() => navigate(`/home/tasks`)}
           >
             <h2 className="text-xl font-bold mb-2">{project.name}</h2>
