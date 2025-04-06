@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { progress } from "framer-motion";
+import { motion } from "framer-motion";
 
 // Dummy Projects Data
 const projectsData = [
@@ -25,6 +25,7 @@ export default function Projects() {
   const [projects, setProjects] = useState(projectsData);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+
 
   const getProgressColor = (progress) => {
     if (progress === 0) return 'bg-red-500';
@@ -173,7 +174,7 @@ export default function Projects() {
                 {project.progress}%
                 <div className={`w-2 h-2 ${getProgressColor(project.progress)} rotate-45 absolute left-1/2 -bottom-1 -translate-x-1/2`}></div>
               </div>
-              <div className={`h-full ${getProgressColor(project.progress)} transition-all duration-300`} style={{width: `${project.progress}%`}} />
+              <motion.div className={`h-full ${getProgressColor(project.progress)} transition-all duration-300`} initial={{width:0}} animate={{width: `${project.progress}%`}} transition={{duration: 0.5}} />
             </div>
             </div>
           </div>
