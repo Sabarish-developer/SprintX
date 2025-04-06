@@ -17,7 +17,8 @@ export default function DashboardLayout() {
       </SideBar>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-x-auto">
+      <div className="flex-1 items-start overflow-x-auto">
+      {/* <div className="flex-1 items-start"> */}
         <Outlet />
       </div>
     </div>

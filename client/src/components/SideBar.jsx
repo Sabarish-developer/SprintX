@@ -38,9 +38,9 @@ export default function SideBar({ children }) {
     return (
         <>
             {/* Overlay for small screens */}
-            {overlay && <div onClick={closeSidebar} className="fixed inset-0 bg-black bg-opacity-30 z-10" />}
+            {overlay && <div onClick={closeSidebar} className="fixed inset-0 bg-black bg-opacity-30 z-100" />}
 
-            <aside className={`h-screen sticky top-0 z-20 ${overlay ? "fixed" : "relative"}`}>
+            <aside className={`h-screen sticky top-0 z-100 ${overlay ? "fixed" : "relative"}`}>
                 <nav
                     className={`h-full flex flex-col bg-white border-r shadow-sm transition-all ${
                         expanded ? "w-64" : "w-16"
