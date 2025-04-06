@@ -35,20 +35,20 @@ const Home = () => {
 
   return (
     <div className="flex flex-col justify-between p-6">
-        <div className="flex flex-col lg:flex-row gap-6 p-6 bg-[#4b4bc3] border-0 rounded-lg">
+        <div className="flex flex-col lg:flex-row gap-6 p-6 bg-purple-200 border-0 rounded-lg">
           {/* Welcome Card */}
-          <div className="bg-[#dbdbff] p-3 lg:p-6 rounded-xl w-auto shadow-lg">
-            <h2 className="text-2xl lg:text-3xl font-semibold text-[#4b4bc3]">Welcome</h2>
-            <h3 className="text-2xl lg:text-3xl font-bold text-[#4b4bc3]">{localStorage.getItem("username")} 👋</h3>
+          <div className="bg-purple-200 p-3 lg:p-6 rounded-xl w-auto shadow-lg">
+            <h2 className="text-2xl lg:text-3xl font-semibold text-[#a40ff3]">Welcome</h2>
+            <h3 className="text-2xl lg:text-3xl font-bold text-[#a40ff3]">{localStorage.getItem("username")} 👋</h3>
           </div>
 
           {/* Inbox Card */}
-          <div className="bg-[#dbdbff] p-6 rounded-xl w-auto shadow-lg flex items-center">
+          <div className="bg-purple-200 p-6 rounded-xl w-auto shadow-lg flex items-center">
               <div>
-                <p className="text-[#4b4bc3] p-2 lg:p-0">
+                <p className="text-[#a40ff3] p-2 lg:p-0">
                   <strong>Active Project:</strong> {activeProject.name} ({activeProject.from} - {activeProject.to})
                 </p>
-                <p className="text-[#4b4bc3] p-2 lg:p-0">
+                <p className="text-[#a40ff3] p-2 lg:p-0">
                   <strong>Active Sprint:</strong> {activeSprint.name} ({activeSprint.from} - {activeSprint.to})
                 </p>
               </div>
@@ -73,24 +73,24 @@ const Home = () => {
     </div>
 
       {/* Table Section */}
-      <div className="mt-9 p-6 bg-[#dbdbff] border-0 rounded-lg shadow-lg">
-        <h3 className="text-lg font-semibold text-[#4b4bc3]">My {userRole === "ProductOwner" ? "Epics" : userRole === "ScrumMaster" ? "User Stories" : "Tasks"}:</h3>
+      <div className="mt-9 p-6 bg-purple-200 border-0 rounded-lg shadow-lg">
+        <h3 className="text-lg font-semibold text-[#a40ff3]">My {userRole === "ProductOwner" ? "Epics" : userRole === "ScrumMaster" ? "User Stories" : "Tasks"}:</h3>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full border-separate border-spacing-0 border-0 rounded-lg">
             <thead>
-              <tr className="bg-[#4b4bc3]">
-                <th className="border-r border-b border-gray-300 text-[#dbdbff] px-4 py-2">S.No</th>
-                <th className="border-b border-r border-gray-300 text-[#dbdbff] px-4 py-2">Name</th>
-                <th className="border-b border-r border-gray-300 text-[#dbdbff] px-4 py-2">Deadline</th>
-                <th className="border-b border-r border-gray-300 text-[#dbdbff] px-4 py-2">Status</th>
+              <tr className="bg-[#a40ff3]">
+                <th className="border-r border-b border-gray-300 text-purple-200 px-4 py-2">S.No</th>
+                <th className="border-b border-r border-gray-300 text-purple-200 px-4 py-2">Name</th>
+                <th className="border-b border-r border-gray-300 text-purple-200 px-4 py-2">Deadline</th>
+                <th className="border-b border-r border-gray-300 text-purple-200 px-4 py-2">Status</th>
               </tr>
             </thead>
             <tbody>
               {listItems.map((item, idx) => (
                 <tr key={idx} className="bg-white text-center">
-                  <td className="border-b border-r border-gray-300 px-4 py-2 text-[#1e1e76]">{item.id}</td>
-                  <td className="border-b border-r border-gray-300 px-4 py-2 text-[#1e1e76]">{item.name}</td>
-                  <td className="border-b border-r border-gray-300 px-4 py-2 text-[#1e1e76]">{item.deadline}</td>
+                  <td className="border-b border-r border-gray-300 px-4 py-2 text-purple-500">{item.id}</td>
+                  <td className="border-b border-r border-gray-300 px-4 py-2 text-purple-500">{item.name}</td>
+                  <td className="border-b border-r border-gray-300 px-4 py-2 text-purple-500">{item.deadline}</td>
                   <td className={`border-b border-gray-300 px-4 py-2 font-semibold 
                     ${item.status === "In Progress" ? "text-orange-500" :
                       item.status === "Completed" ? "text-green-500" :
