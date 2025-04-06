@@ -88,7 +88,9 @@ export default function SideBar({ children }) {
                                 <span className="text-xs text-gray-600 w-15">{localStorage.getItem("email")}</span>
                             </div>
                             {/* <LogOut size={20} /> */}
-                            <div>
+                            
+                        </div>
+                        <div className="flex items-center">
                                 <button 
                                 onClick={handleLogout}
                                 className="relative group flex items-center pb-2 text-red-500 hover:cursor-pointer"
@@ -101,7 +103,6 @@ export default function SideBar({ children }) {
                                     </span>
                                 </button>
                             </div>
-                        </div>
                     </div>
                 </nav>
             </aside>
