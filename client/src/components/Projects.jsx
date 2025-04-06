@@ -144,8 +144,8 @@ export default function Projects() {
                 className="flex-1 outline-none"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                onFocus={() => setShowIcon(true)}
-                onBlur={() => setShowIcon(false)}
+                // onFocus={() => setShowIcon(true)}
+                // onBlur={() => setShowIcon(false)}
               />
             </div>
             {/* <button className="bg-[#a40ff3] text-white px-4 py-2 rounded w-full">
@@ -163,7 +163,13 @@ export default function Projects() {
             >
               Sort by Date
             </button> */}
-            <SortDropdown sortByProjects={sortByProjects} sortByDate={sortByDate} />
+            {/* <SortDropdown sortByProjects={sortByProjects} sortByDate={sortByDate} /> */}
+            <SortDropdown
+                sortByProjects={sortByProjects}
+                sortByDate={sortByDate}
+                sortType={sortType}
+                clearSort={clearSort}
+              />
           </div>
         )}
       </div>
