@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
 // Dummy Projects Data
 const projectsData = [
@@ -170,11 +170,12 @@ export default function Projects() {
             </p>
             <div className="p-2">
             <div className="relative w-full h-1 bg-gray-500 mt-5 rounded overflow-visible">
-              <div className={`absolute -top-7 left-1/2 -translate-x-1/2 text-sm ${getProgressColor(project.progress)} text-white px-2 py-0.5 rounded shadow`} style={{left: `calc(${project.progress}%)`}}>
+              {/* <div className={`absolute -top-7 left-1/2 -translate-x-1/2 text-sm ${getProgressColor(project.progress)} text-white px-2 py-0.5 rounded shadow`} style={{left: `calc(${project.progress}%)`}}>
                 {project.progress}%
                 <div className={`w-2 h-2 ${getProgressColor(project.progress)} rotate-45 absolute left-1/2 -bottom-1 -translate-x-1/2`}></div>
-              </div>
-              <motion.div className={`h-full ${getProgressColor(project.progress)} transition-all duration-300`} initial={{width:0}} animate={{width: `${project.progress}%`}} transition={{duration: 0.5}} />
+              </div> */}
+              <AnimatedProgressLabel progress={project.progress} color={getProgressColor(project.progress)} />
+              <motion.div className={`h-full ${getProgressColor(project.progress)} transition-all duration-300`} initial={{width:0}} animate={{width: `${project.progress}%`}} transition={{duration: 0.7}} />
             </div>
             </div>
           </div>
@@ -183,6 +184,47 @@ export default function Projects() {
     </div>
   );
 }
+
+function AnimatedProgressLabel({ progress, color }) {
+  const x = useMotionValue(0);
+  const percentage = useMotionValue(0);
+  const [displayPercent, setDisplayPercent] = useState(0);
+
+  useEffect(() => {
+    // Animate position
+    animate(x, progress, {
+      duration: 0.8,
+      ease: "easeOut"
+    });
+
+    // Animate percentage count
+    const controls = animate(percentage, progress, {
+      duration: 1,
+      ease: "easeOut",
+      onUpdate: latest => {
+        setDisplayPercent(Math.round(latest));
+      }
+    });
+
+    return () => controls.stop();
+  }, [progress]);
+
+  // Convert to CSS % string
+  const left = useTransform(x, value => `calc(${value}%)`);
+
+  return (
+    <motion.div
+      className={`absolute -top-7 left-1/2 -translate-x-1/2 text-sm ${color} text-white px-2 py-0.5 rounded shadow`}
+      style={{ left }}
+    >
+      {displayPercent}%
+      <div
+        className={`w-2 h-2 ${color} rotate-45 absolute left-1/2 -bottom-1 -translate-x-1/2`}
+      ></div>
+    </motion.div>
+  );
+}
+
 
 
 
