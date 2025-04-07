@@ -273,6 +273,7 @@ const signinHandler = async(req,res)=>{
 
             //Generating jsonwebtoken
             const token = jwt.sign({
+                id: user._id,
                 email: email,
                 role: user.role
             },process.env.JWT_SECRET_KEY, {expiresIn: '1h'});
