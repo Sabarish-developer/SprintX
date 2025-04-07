@@ -1,9 +1,14 @@
 import { homePageHandler, projectsPageHandler, readProjectHandler, createProjectHandler, editProjectHandler, deleteProjectHandler,
     epicsPageHandler, createEpicHandler, editEpicHandler, deleteEpicHandler, 
     sprintsPageHandler, readSprintHandler, teamMembersHandler, reportPageHandler} from "../controllers/productOwnerController";
+import {auth} from "../middleware/auth.js";
+import {roleHandler} from "../middleware/roleHandler.js";
 import { Router } from "express";
 const productOwnerRouter = Router();
 
+// Global and route level middleware for all the routes
+productOwnerRouter.use(auth);
+productOwnerRouter.use(role(['Product owner']));
 
 productOwnerRouter.get("/home", homePageHandler);
 

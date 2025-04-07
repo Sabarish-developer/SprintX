@@ -12,3 +12,5 @@ const roleHandler = (allowedRoles)=>{
         }
     }
 }
+
+export default roleHandler;
