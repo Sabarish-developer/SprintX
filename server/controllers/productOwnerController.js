@@ -147,7 +147,21 @@ const readProjectHandler = async(req,res)=>{
 }
 
 const epicsPageHandler = async(req,res)=>{
-
+    
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+        const epics = await epicModel.find({projectId});
+        if(epics.length == 0)
+            return res.status(404).json({message: "No epics found."});
+        else
+            return res.status(200).json({message: "Epics found successfully.", data: epics});
+    }catch(e){
+        console.log("Error in epic page block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const createEpicHandler = async(req,res)=>{
