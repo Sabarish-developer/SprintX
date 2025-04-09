@@ -198,6 +198,24 @@ const createEpicHandler = async(req,res)=>{
 
 const editEpicHandler = async(req,res)=>{
 
+    try{
+        const epicId = req.params.epicId;
+        const epic = await epicModel.findById(epicId);
+        if(!epic){
+            return res.status(404).json({message: "Epic not found."});
+        }
+        const { priority } = req.body;
+        if (priority != "High" && priority != "Medium" && priority != "Low"){
+            return res.status(400).json({ message: "Priority field is not valid." });
+        }   
+        epic.set(req.body);
+        await epic.save();
+        return res.status(200).json({message: "Epic updated successfully."});
+
+    }catch(e){
+        console.log("Error in edit epic block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const deleteEpicHandler = async(req,res)=>{
