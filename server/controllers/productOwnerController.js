@@ -248,7 +248,7 @@ const readSprintHandler = async(req,res)=>{
         if(!sprint){
             return res.status(404).json({message: "Sprint doesn't exist."});
         }
-        
+
         const tasks = await taskModel.find({sprintId});
         if(tasks.length == 0)
             return res.status(404).json({message: "Tasks not found."});
@@ -262,6 +262,33 @@ const readSprintHandler = async(req,res)=>{
 
 const teamMembersHandler = async(req,res)=>{
 
+    //Before hitting this endpoint, first display all projects by hitting projects page handler endpoint and in that user clicks any project
+    //send with that id
+
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+        const project = await projectModel.findById(projectId);
+        if(!project){
+            return res.status(404).json({message: "Project not found."});
+        }
+
+        const scrumMasterId = project.scrumMasterId;
+        const scrumMaster = await userModel.findById(scrumMasterId).select("username email");
+
+        const teammembersId = project.teamMembersId;
+        const teamMembers = await userModel.find({_id: {$in: teammembersId}}).select("username email subrole");
+        if(!scrumMaster || teamMembers.length==0)
+            return res.status(404).json({message: "Scrum master or Team members doesn't exist."});
+        else
+            return res.status(200).json({message: "Team members found successfully.", scrumMaster, teamMembers});
+
+    }catch(e){
+        console.log("Error in team members block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const reportPageHandler = async(req,res)=>{
