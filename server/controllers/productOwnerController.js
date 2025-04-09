@@ -89,6 +89,25 @@ const createProjectHandler = async(req,res)=>{
 
 const editProjectHandler = async(req,res)=>{
 
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+
+        let project = await projectModel.findById(projectId);
+        if(!project){
+            return res.status(404).json({message: "Project not found."});
+        }
+
+        project.set(req.body); // Here project is mongoose document, if we assign = it becomes a plain object, so no mongoose methods will be available
+        await project.save();
+        return res.status(200).json({message: "Project updated successfully."});
+
+    }catch(e){
+        console.log("Error in edit project block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const deleteProjectHandler = async(req,res)=>{
