@@ -93,6 +93,18 @@ const editProjectHandler = async(req,res)=>{
 
 const deleteProjectHandler = async(req,res)=>{
 
+    try{
+        const {projectId} = req.body;
+        const result = await projectModel.deleteOne({_id: projectId});
+        if(result.deletedCount == 1)
+            return res.status(200).json({message: "Project deleted successfully."});
+        else
+            return res.status(404).json({message: "Project not found."});
+
+    }catch(e){
+        console.log("Error in delete project block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const readProjectHandler = async(req,res)=>{

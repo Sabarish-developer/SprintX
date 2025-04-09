@@ -18,7 +18,7 @@ productOwnerRouter.get("/projects/:id", readProjectHandler);
 productOwnerRouter.get("/companymembers", companyMembersHandler);
 productOwnerRouter.post("/projects", createProjectHandler);
 productOwnerRouter.put("/projects/:id", editProjectHandler);
-productOwnerRouter.delete("/projects/:id", deleteProjectHandler);
+productOwnerRouter.delete("/projects", deleteProjectHandler);
 
 productOwnerRouter.get("/projects/:id/epics", epicsPageHandler);
 productOwnerRouter.post("/projects/:id/epics", createEpicHandler);
