@@ -7,6 +7,24 @@ import taskModel from "../models/task.js";
 
 const homePageHandler = async(req,res)=>{
 
+    try{
+        const userId = req.user.id;
+        const projects = await projectModel.find({productOwnerId: userId, status: "Active"});
+        if(projects.length == 0){
+            return res.status(404).json({message: "No projects found."});
+        }
+
+        const sortedProjects = projects.sort((a,b)=> new Date(a.deadline) - new Date(b.deadline));
+        const currentProject = sortedProjects[0];
+
+        const epics = await epicModel.find({projectId: currentProject._id});
+        
+        return res.status(200).json({message: "Welcome back!", project: currentProject, epics: epics});
+
+    }catch(e){
+        console.log("Error in home page block : ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const projectsPageHandler = async(req,res)=>{
