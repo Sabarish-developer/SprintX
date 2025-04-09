@@ -165,7 +165,35 @@ const epicsPageHandler = async(req,res)=>{
 }
 
 const createEpicHandler = async(req,res)=>{
+    
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+        const {title, description, priority, deadline} = req.body;
+        if(!title || !description || !priority || !deadline){
+            return res.status(400).json({message: "All fields are required."});
+        }
+        if(priority!="High" && priority!="Medium" && priority!="Low"){
+            return res.status(400).json({message: "Priority field is not valid."});
+        }
 
+        const productOwnerId = req.user.id;
+        await epicModel.create({
+            title,
+            description,
+            priority,
+            deadline,
+            productOwnerId,
+            projectId
+        });
+        return res.status(201).json({message: "Epic created successfully."});
+
+    }catch(e){
+        console.log("Error in create epic block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const editEpicHandler = async(req,res)=>{
