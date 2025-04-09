@@ -220,6 +220,21 @@ const editEpicHandler = async(req,res)=>{
 
 const deleteEpicHandler = async(req,res)=>{
 
+    try{
+        const {epicId} = req.body;
+        if(!epicId){
+            return res.status(400).json({message: "Epic Id is required."});
+        }
+        const result = await epicModel.deleteOne({_id: epicId});
+        if(result.deletedCount == 1)
+            return res.status(200).json({message: "Epic deleted succesfully."});
+        else
+            return res.status(404).json({message: "Epic not found."});
+
+    }catch(e){
+        console.log("Error in delete epic block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const sprintsPageHandler = async(req,res)=>{

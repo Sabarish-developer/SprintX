@@ -23,7 +23,7 @@ productOwnerRouter.delete("/projects", deleteProjectHandler);
 productOwnerRouter.get("/projects/:id/epics", epicsPageHandler);
 productOwnerRouter.post("/projects/:id/epics", createEpicHandler);
 productOwnerRouter.put("/projects/:id/epics/:epicId", editEpicHandler);
-productOwnerRouter.delete("/projects/:id/epics/:epicId", deleteEpicHandler);
+productOwnerRouter.delete("/projects/:id/epics", deleteEpicHandler);
 
 productOwnerRouter.get("/projects/:id/sprints", sprintsPageHandler);
 productOwnerRouter.get("/projects/:id/sprints/:sprintId", readSprintHandler);
