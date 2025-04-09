@@ -1,7 +1,7 @@
 import { homePageHandler, 
     companyMembersHandler, projectsPageHandler, readProjectHandler, createProjectHandler, editProjectHandler, deleteProjectHandler,
     epicsPageHandler, createEpicHandler, editEpicHandler, deleteEpicHandler, 
-    sprintsPageHandler, readSprintHandler, teamMembersHandler, reportPageHandler} from "../controllers/productOwnerController";
+    readSprintHandler, teamMembersHandler, reportPageHandler} from "../controllers/productOwnerController";
 import {auth} from "../middleware/auth.js";
 import {roleHandler} from "../middleware/roleHandler.js";
 import { Router } from "express";
@@ -25,7 +25,6 @@ productOwnerRouter.post("/projects/:id/epics", createEpicHandler);
 productOwnerRouter.put("/projects/:id/epics/:epicId", editEpicHandler);
 productOwnerRouter.delete("/projects/:id/epics", deleteEpicHandler);
 
-productOwnerRouter.get("/projects/:id/sprints", sprintsPageHandler);
 productOwnerRouter.get("/projects/:id/sprints/:sprintId", readSprintHandler);
 productOwnerRouter.get("/projects/:id/teammembers", teamMembersHandler);
 

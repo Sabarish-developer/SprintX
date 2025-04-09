@@ -237,12 +237,27 @@ const deleteEpicHandler = async(req,res)=>{
     }
 }
 
-const sprintsPageHandler = async(req,res)=>{
-
-}
-
 const readSprintHandler = async(req,res)=>{
 
+    try{
+        const sprintId = req.params.id;
+        if(!sprintId){
+            return res.status(400).json({message: "Sprint Id is required."});
+        }
+        const sprint = await sprintModel.findById(sprintId);
+        if(!sprint){
+            return res.status(404).json({message: "Sprint doesn't exist."});
+        }
+        
+        const tasks = await taskModel.find({sprintId});
+        if(tasks.length == 0)
+            return res.status(404).json({message: "Tasks not found."});
+        else    
+            return res.status(200).json({message: "Tasks found successfully.", data: tasks});
+    }catch(e){
+        console.log("Error in read sprint block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const teamMembersHandler = async(req,res)=>{
@@ -255,5 +270,5 @@ const reportPageHandler = async(req,res)=>{
 
 export {homePageHandler, companyMembersHandler, projectsPageHandler, readProjectHandler, createProjectHandler, editProjectHandler, deleteProjectHandler, 
     epicsPageHandler, createEpicHandler, editEpicHandler, deleteEpicHandler,
-    sprintsPageHandler, readSprintHandler, teamMembersHandler, reportPageHandler
+    readSprintHandler, teamMembersHandler, reportPageHandler
 }
