@@ -44,6 +44,29 @@ const companyMembersHandler = async(req,res)=>{
 
 const createProjectHandler = async(req,res)=>{
     
+    try{
+        const productOwnerId = req.user.id;
+        const {name, description, start, deadline, scrumMasterId, teamMembersId} = req.body;
+        if(!name || !description || !start || !deadline || !scrumMasterId || !teamMembersId || teamMembersId.length==0){
+            return res.status(400).json({message: "All fields are required."});
+        }
+
+        await projectModel.create({
+            name,
+            description,
+            start,
+            deadline,
+            productOwnerId,
+            scrumMasterId,
+            teamMembersId
+        });
+
+        return res.status(200).json({message: "Project created successfully."});
+
+    }catch(e){
+        console.log("Error in create project handler block : ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const editProjectHandler = async(req,res)=>{
