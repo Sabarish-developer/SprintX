@@ -2,6 +2,7 @@ import userModel from "../models/user.js";
 import projectModel from "../models/project.js";
 import sprintModel from "../models/sprint.js";
 import epicModel from "../models/epic.js";
+import taskModel from "../models/task.js";
 
 
 const homePageHandler = async(req,res)=>{
@@ -23,6 +24,22 @@ const projectsPageHandler = async(req,res)=>{
         return res.status(500).json({message: "Error in retrieving projects. Kindly try again later."});
     }
     
+}
+
+const companyMembersHandler = async(req,res)=>{
+
+    try{
+        const user = await userModel.findById(req.user.id);
+        const companyId = user.companyId;
+        const companyMembers = await userModel.find({companyId, role: "Team member"}).select("username");
+        if(companyMembers.length == 0)
+            return res.status(404).json({message: "No members found."});
+        else
+            return res.status(200).json({message: "Members found successfully.", data: companyMembers});
+    }catch(e){
+        console.log("Error in retreiving company members block : ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const createProjectHandler = async(req,res)=>{
@@ -73,7 +90,7 @@ const reportPageHandler = async(req,res)=>{
 
 }
 
-export {homePageHandler, projectsPageHandler, readProjectHandler, createProjectHandler, editProjectHandler, deleteProjectHandler, 
+export {homePageHandler, companyMembersHandler, projectsPageHandler, readProjectHandler, createProjectHandler, editProjectHandler, deleteProjectHandler, 
     epicsPageHandler, createEpicHandler, editEpicHandler, deleteEpicHandler,
     sprintsPageHandler, readSprintHandler, teamMembersHandler, reportPageHandler
 }

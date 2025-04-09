@@ -10,10 +10,7 @@ const auth = (req,res,next)=>{
 
     try{
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        req.user = { 
-            email: decoded.email, 
-            role: decoded.role 
-        };
+        req.user = decoded;
         next();
     }catch(e){
         if(e.name === "TokenExpiredError")

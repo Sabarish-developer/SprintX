@@ -1,4 +1,5 @@
-import { homePageHandler, projectsPageHandler, readProjectHandler, createProjectHandler, editProjectHandler, deleteProjectHandler,
+import { homePageHandler, 
+    companyMembersHandler, projectsPageHandler, readProjectHandler, createProjectHandler, editProjectHandler, deleteProjectHandler,
     epicsPageHandler, createEpicHandler, editEpicHandler, deleteEpicHandler, 
     sprintsPageHandler, readSprintHandler, teamMembersHandler, reportPageHandler} from "../controllers/productOwnerController";
 import {auth} from "../middleware/auth.js";
@@ -14,6 +15,7 @@ productOwnerRouter.get("/home", homePageHandler);
 
 productOwnerRouter.get("/projects", projectsPageHandler);
 productOwnerRouter.get("/projects/:id", readProjectHandler);
+productOwnerRouter.get("/companymembers", companyMembersHandler);
 productOwnerRouter.post("/projects", createProjectHandler);
 productOwnerRouter.put("/projects/:id", editProjectHandler);
 productOwnerRouter.delete("/projects/:id", deleteProjectHandler);
