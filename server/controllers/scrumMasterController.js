@@ -58,7 +58,7 @@ const deleteTaskHandler = async(req,res)=>{
 }
 
 const readSprintHandler = async(req,res)=>{
-    //kanban board
+    //kanban board of all task in sprint
 }
 
 const projectsTaskHandler = async(req,res)=>{
