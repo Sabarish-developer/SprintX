@@ -1,4 +1,9 @@
-import { projectsPageHandler, readProjectHandler, readSprintHandler, reportPageHandler, teamMembersHandler } from "../controllers/productOwnerController.js";
+import {homePageHandler, 
+    projectsPageHandler, readProjectHandler, projectEpicsHandler,
+    userStoriesPageHandler, readUserStoriesHandler, createUserStoriesHandler, deleteUserStoriesHandler, editUserStoriesHandler,
+    tasksPageHandler, projectsUserStoriesHandler, createTaskHandler, editTaskHandler, deleteTaskHandler, projectsTaskHandler,
+    readSprintHandler, createSprintHandler, editSprintHandler, deleteSprintHandler,
+    teamMembersHandler, reportPageHandler} from "../controllers/scrumMasterController.js";
 import auth from "../middleware/auth.js";
 import roleHandler from "../middleware/roleHandler.js";
 import { Router } from "express";
@@ -26,8 +31,9 @@ scrumMasterRouter.post("/projects/:id/tasks", createTaskHandler);
 scrumMasterRouter.put("/projects/:id/tasks/:taskId", editTaskHandler);
 scrumMasterRouter.delete("/projects/:id/tasks", deleteTaskHandler);
 
-scrumMasterRouter.get("/projects/:id/sprints/:sprintId", readSprintHandler); //kanban
-scrumMasterRouter.post("/projects/:id/sprints", createSprintHandler); //send all task
+scrumMasterRouter.get("/projects/:id/sprints/:sprintId", readSprintHandler); 
+scrumMasterRouter.get("/projects/:id/sprints/tasks", projectsTaskHandler);
+scrumMasterRouter.post("/projects/:id/sprints", createSprintHandler);
 scrumMasterRouter.put("/projects/:id/sprints/:sprintId", editSprintHandler);
 scrumMasterRouter.delete("/projects/:id/sprints", deleteSprintHandler);
 
