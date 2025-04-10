@@ -3,7 +3,7 @@ import projectModel from "../models/project.js";
 import sprintModel from "../models/sprint.js";
 import epicModel from "../models/epic.js";
 import taskModel from "../models/task.js";
-
+import mongoose from "mongoose";
 
 const homePageHandler = async(req,res)=>{
 
@@ -293,6 +293,46 @@ const teamMembersHandler = async(req,res)=>{
 
 const reportPageHandler = async(req,res)=>{
 
+    try{
+        const productOwnerId = req.user.id;
+        
+        const userEpics = await epicModel.find({productOwnerId});
+
+        //Fetching in hierarchy {{project,sprint,epic},....}
+        const userProjects = await projectModel.aggregate([
+            {
+                $match: {
+                    productOwnerId: new mongoose.Types.ObjectId(productOwnerId)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'sprints',
+                    localField: '_id',
+                    foreignField: 'projectId',
+                    as: 'sprints'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'epics',
+                    localField: '_id',
+                    foreignField: 'projectId',
+                    as: 'epics'
+                }
+            }
+        ]);
+
+        return res.status(200).json({
+            message: "Reports fetched successfully.", 
+            projects: userProjects, 
+            epics: userEpics
+        });
+
+    }catch(e){
+        console.log("Error in report block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 export {homePageHandler, companyMembersHandler, projectsPageHandler, readProjectHandler, createProjectHandler, editProjectHandler, deleteProjectHandler, 
