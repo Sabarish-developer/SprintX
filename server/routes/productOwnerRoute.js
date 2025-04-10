@@ -2,14 +2,15 @@ import { homePageHandler,
     companyMembersHandler, projectsPageHandler, readProjectHandler, createProjectHandler, editProjectHandler, deleteProjectHandler,
     epicsPageHandler, createEpicHandler, editEpicHandler, deleteEpicHandler, 
     readSprintHandler, teamMembersHandler, reportPageHandler} from "../controllers/productOwnerController";
-import {auth} from "../middleware/auth.js";
-import {roleHandler} from "../middleware/roleHandler.js";
+import auth from "../middleware/auth.js";
+import roleHandler from "../middleware/roleHandler.js";
 import { Router } from "express";
+
 const productOwnerRouter = Router();
 
 // Global and route level middleware for all the routes
 productOwnerRouter.use(auth);
-productOwnerRouter.use(role(['Product owner']));
+productOwnerRouter.use(roleHandler(['Product owner']));
 
 productOwnerRouter.get("/home", homePageHandler);
 
@@ -26,6 +27,8 @@ productOwnerRouter.put("/projects/:id/epics/:epicId", editEpicHandler);
 productOwnerRouter.delete("/projects/:id/epics", deleteEpicHandler);
 
 productOwnerRouter.get("/projects/:id/sprints/:sprintId", readSprintHandler);
+
+productOwnerRouter.get("/teammembers", projectsPageHandler);
 productOwnerRouter.get("/projects/:id/teammembers", teamMembersHandler);
 
 productOwnerRouter.get("/report", reportPageHandler);

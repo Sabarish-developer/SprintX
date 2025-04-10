@@ -5,6 +5,8 @@ import cors from "cors";
 import errorHandler from './middleware/errorHandler.js';
 import authRouter from './routes/authRoute.js';
 import productOwnerRouter from './routes/productOwnerRoute.js';
+import scrumMasterRouter from './routes/scrumMasterRoute.js';
+import teamMemberRouter from './routes/teamMemberRoute.js';
 
 dotenv.config();
 const app = express();
@@ -13,7 +15,8 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/productowner", productOwnerRouter);
-
+app.use("/api/scrummaster", scrumMasterRouter);
+app.use("/api/teammember", teamMemberRouter);
 
 app.use(errorHandler);
 
