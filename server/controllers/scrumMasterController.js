@@ -335,6 +335,20 @@ const deleteTaskHandler = async(req,res)=>{
 
 const readSprintHandler = async(req,res)=>{
     //kanban board of all task in sprint
+    try{
+        const sprintId = req.params.id;
+        if(!sprintId){
+            return res.status(400).json({message: "Sprint Id is required."});
+        }
+        const tasks = await taskModel.find({sprintId});
+        if(tasks.length == 0)
+            return res.status(404).json({message: "No tasks found."});
+        else
+            return res.status(200).json({message: "Tasks retrieved successfully.", tasks});
+    }catch(e){
+        console.log("Error in read sprint block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const projectsTaskHandler = async(req,res)=>{
