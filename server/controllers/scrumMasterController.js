@@ -32,6 +32,17 @@ const homePageHandler = async(req,res)=>{
 
 const projectsPageHandler = async(req,res)=>{
 
+    try{
+        const userId = req.user.id;
+        const projects = await projectModel.find({scrumMasterId: userId}).select("name description start deadline status");
+        if(projects.length == 0)
+            return res.status(404).json({message: "No projects found."});
+        else
+            return res.status(200).json({message: "Projects retreived successfully.",projects});
+    }catch(e){
+        console.log("Error in projects block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const readProjectHandler = async(req,res)=>{
