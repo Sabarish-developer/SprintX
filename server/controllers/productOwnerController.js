@@ -36,7 +36,19 @@ const projectsPageHandler = async(req,res)=>{
 
     try{
         const userId = req.user.id;
-        const projects = await projectModel.find({productOwnerId: userId});
+        const projects = await projectModel.aggregate([
+            {
+                $match: { productOwnerId: userId }
+            },
+            {
+                $lookup: {
+                    from: "epics", // Assuming the Epic collection is called "epics"
+                    localField: "_id", // Join on project _id
+                    foreignField: "projectId", // Epic's projectId
+                    as: "epics"
+                }
+            }
+        ]);
 
         if(projects.length == 0)
             return res.status(200).json({message: "No projects found. Start by creating a project.", projects: []});
@@ -45,8 +57,7 @@ const projectsPageHandler = async(req,res)=>{
     }catch(e){
         console.log("Error in projects page Handler block : ",e);
         return res.status(500).json({message: "Error in retrieving projects. Kindly try again later."});
-    }
-    
+    }  
 }
 
 const companyMembersHandler = async(req,res)=>{
