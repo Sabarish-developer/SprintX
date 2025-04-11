@@ -507,6 +507,46 @@ const teamMembersHandler = async(req,res)=>{
 
 const reportPageHandler = async(req,res)=>{
     
+    try{
+        const scrumMasterId = req.user.id;
+            
+        const userStories = await userStoryModel.find({scrumMasterId});
+    
+        //Fetching in hierarchy {{project,sprint,epic},....}
+        const userProjects = await projectModel.aggregate([
+            {
+                $match: {
+                    scrumMasterId: new mongoose.Types.ObjectId(scrumMasterId)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'sprints',
+                    localField: '_id',
+                    foreignField: 'projectId',
+                    as: 'sprints'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userStories',
+                    localField: '_id',
+                    foreignField: 'projectId',
+                    as: 'userStories'
+                }
+            }
+        ]);
+    
+        return res.status(200).json({
+            message: "Reports fetched successfully.", 
+            projects: userProjects, 
+            userStories
+        });
+    
+    }catch(e){
+        console.log("Error in report block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 export {homePageHandler, projectsPageHandler, readProjectHandler,
