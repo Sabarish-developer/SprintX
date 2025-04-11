@@ -11,7 +11,7 @@ const homePageHandler = async(req,res)=>{
         const userId = req.user.id;
         const projects = await projectModel.find({productOwnerId: userId, status: "Active"});
         if(projects.length == 0){
-            return res.status(200).json({message: "No projects found"});
+            return res.status(404).json({message: "No projects found"});
         }
 
         const sortedProjects = projects.sort((a,b)=> new Date(a.deadline) - new Date(b.deadline));
@@ -39,7 +39,7 @@ const projectsPageHandler = async(req,res)=>{
         const projects = await projectModel.find({productOwnerId: userId}).select("name description start deadline status");
 
         if(projects.length == 0)
-            return res.status(200).json({message: "No projects found. Start by creating a project."});
+            return res.status(404).json({message: "No projects found. Start by creating a project."});
         else
             return res.status(200).json({data: projects, message: "Projects retrieved successfully."});
     }catch(e){

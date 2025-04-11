@@ -292,6 +292,27 @@ const createTaskHandler = async(req,res)=>{
 
 const editTaskHandler = async(req,res)=>{
     
+    try{
+        const taskId = req.params.id;
+        if(!taskId){
+            return res.status(400).json({message: "Task Id is required."});
+        }
+        const task = await taskModel.findById(taskId);
+        if(!task){
+            return res.status(404).json({message: "Task not found."});
+        }
+        const {priority} = req.body;
+        const allowedPriority = ["High", "Medium", "Low"];
+        if(!allowedPriority.includes(priority)){
+            return res.status(400).json({message: "Priority is not valid."});
+        }
+        task.set(req.body);
+        await task.save();
+        return res.status(200).json({message: "Task updated successfully."});
+    }catch(e){
+        console.log("Error is edit task block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const deleteTaskHandler = async(req,res)=>{
