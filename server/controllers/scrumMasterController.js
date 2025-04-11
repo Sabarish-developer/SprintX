@@ -3,6 +3,7 @@ import userStoryModel from "../models/userStory.js";
 import taskModel from "../models/task.js";
 import sprintModel from "../models/sprint.js";
 import companyModel from "../models/company.js";
+import epicModel from "../models/epic.js";
 
 const homePageHandler = async(req,res)=>{
 
@@ -104,6 +105,21 @@ const readUserStoriesHandler = async(req,res)=>{
 
 const projectEpicsHandler = async(req,res)=>{
     
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+
+        const epics = await epicModel.find({projectId});
+        if(epics.length == 0)
+            return res.status(404).json({message: "No epics found."});
+        else
+            return res.status(200).json({message: "Epics retreived successfully.", epics})
+    }catch(e){
+        console.log("Error in project epics block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const createUserStoriesHandler = async(req,res)=>{
