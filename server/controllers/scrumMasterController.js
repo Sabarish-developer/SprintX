@@ -2,7 +2,6 @@ import projectModel from "../models/project.js";
 import userStoryModel from "../models/userStory.js";
 import taskModel from "../models/task.js";
 import sprintModel from "../models/sprint.js";
-import companyModel from "../models/company.js";
 import epicModel from "../models/epic.js";
 import userModel from "../models/user.js";
 
@@ -353,6 +352,21 @@ const readSprintHandler = async(req,res)=>{
 
 const projectsTaskHandler = async(req,res)=>{
     
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+        
+        const tasks = await taskModel.find({projectId});
+        if(tasks.length == 0)
+            return res.status(404).json({message: "No tasks found."});
+        else
+            return res.status(200).json({message: "Tasks retrieved successfully.", tasks});
+    }catch(e){
+        console.log("Error in project task block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const createSprintHandler = async(req,res)=>{
