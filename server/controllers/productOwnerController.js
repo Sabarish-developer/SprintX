@@ -32,10 +32,11 @@ const homePageHandler = async(req,res)=>{
     }
 }
 
-const projectsPageHandler = async(req,res)=>{
-
-    try{
+const projectsPageHandler = async (req, res) => {
+    try {
         const userId = req.user.id;
+
+        // Fetch the projects with all their Epics
         const projects = await projectModel.aggregate([
             {
                 $match: { productOwnerId: userId }
@@ -50,15 +51,44 @@ const projectsPageHandler = async(req,res)=>{
             }
         ]);
 
-        if(projects.length == 0)
-            return res.status(200).json({message: "No projects found. Start by creating a project.", projects: []});
-        else
-            return res.status(200).json({message: "Projects retrieved successfully.", projects});
-    }catch(e){
-        console.log("Error in projects page Handler block : ",e);
-        return res.status(500).json({message: "Error in retrieving projects. Kindly try again later."});
-    }  
-}
+        // Check if projects are found
+        if (projects.length === 0) {
+            return res.status(200).json({
+                message: "No projects found. Start by creating a project.",
+                projects: []
+            });
+        }
+
+        // Calculate completion percentage for each project
+        const projectsWithCompletion = projects.map(project => {
+            const totalEpics = project.epics.length; // Total number of Epics for this project
+            const completedEpics = project.epics.filter(epic => epic.status === "Completed").length; // Completed Epics
+
+            // Calculate completion percentage
+            const completionPercentage = totalEpics === 0
+                ? 0
+                : Math.round((completedEpics / totalEpics) * 100);
+
+            // Return project data with completion percentage
+            return {
+                ...project,
+                completionPercentage
+            };
+        });
+
+        return res.status(200).json({
+            message: "Projects retrieved successfully.",
+            projects: projectsWithCompletion
+        });
+
+    } catch (e) {
+        console.log("Error in projects page Handler block : ", e);
+        return res.status(500).json({
+            message: "Error in retrieving projects. Kindly try again later."
+        });
+    }
+};
+
 
 const companyMembersHandler = async(req,res)=>{
 
