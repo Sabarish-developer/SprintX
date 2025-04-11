@@ -2,7 +2,7 @@ import {homePageHandler,
     projectsPageHandler, readProjectHandler, projectEpicsHandler,
     userStoriesPageHandler, readUserStoriesHandler, createUserStoriesHandler, deleteUserStoriesHandler, editUserStoriesHandler,
     tasksPageHandler, projectsUserStoriesHandler, createTaskHandler, editTaskHandler, deleteTaskHandler, projectsTaskHandler,
-    readSprintHandler, createSprintHandler, editSprintHandler, deleteSprintHandler,
+    readSprintHandler, createSprintHandler, editSprintHandler, deleteSprintHandler, companyMembersHandler,
     teamMembersHandler, reportPageHandler} from "../controllers/scrumMasterController.js";
 import auth from "../middleware/auth.js";
 import roleHandler from "../middleware/roleHandler.js";
@@ -27,6 +27,7 @@ scrumMasterRouter.put("/projects/:id/userstories/:id", editUserStoriesHandler);
 
 scrumMasterRouter.get("/projects/:id/tasks", tasksPageHandler);
 scrumMasterRouter.get("/projects/:id/tasks/userstories", projectsUserStoriesHandler);
+scrumMasterRouter.get("/projects/:id/tasks/companymembers", companyMembersHandler);
 scrumMasterRouter.post("/projects/:id/tasks", createTaskHandler);
 scrumMasterRouter.put("/projects/:id/tasks/:taskId", editTaskHandler);
 scrumMasterRouter.delete("/projects/:id/tasks", deleteTaskHandler);

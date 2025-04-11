@@ -4,6 +4,7 @@ import taskModel from "../models/task.js";
 import sprintModel from "../models/sprint.js";
 import companyModel from "../models/company.js";
 import epicModel from "../models/epic.js";
+import userModel from "../models/user.js";
 
 const homePageHandler = async(req,res)=>{
 
@@ -39,7 +40,7 @@ const projectsPageHandler = async(req,res)=>{
         if(projects.length == 0)
             return res.status(404).json({message: "No projects found."});
         else
-            return res.status(200).json({message: "Projects retreived successfully.",projects});
+            return res.status(200).json({message: "Projects retrieved successfully.",projects});
     }catch(e){
         console.log("Error in projects block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -58,7 +59,7 @@ const readProjectHandler = async(req,res)=>{
         if(sprints.length == 0)
             return res.status(404).json({message: "No sprints found."});
         else
-            return res.status(200).json({message: "Sprints retreived successfully.", sprints});
+            return res.status(200).json({message: "Sprints retrieved successfully.", sprints});
     }catch(e){
         console.log("Error in read project block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -77,7 +78,7 @@ const userStoriesPageHandler = async(req,res)=>{
         if(userStories.length == 0)
             return res.status(404).json({message: "No user stories found."});
         else
-            return res.status(200).json({message: "User stories retreived successfully.", userStories});
+            return res.status(200).json({message: "User stories retrieved successfully.", userStories});
     }catch(e){
         console.log("Error in user stories block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -96,7 +97,7 @@ const readUserStoriesHandler = async(req,res)=>{
         if(tasks.length == 0)
             return res.status(404).json({message: "No tasks found."});
         else
-            return res.status(200).json({message: "Tasks retreived successfully.", tasks});
+            return res.status(200).json({message: "Tasks retrieved successfully.", tasks});
     }catch(e){
         console.log("Error in read user story block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later"});
@@ -115,7 +116,7 @@ const projectEpicsHandler = async(req,res)=>{
         if(epics.length == 0)
             return res.status(404).json({message: "No epics found."});
         else
-            return res.status(200).json({message: "Epics retreived successfully.", epics})
+            return res.status(200).json({message: "Epics retrieved successfully.", epics})
     }catch(e){
         console.log("Error in project epics block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -210,7 +211,7 @@ const tasksPageHandler = async(req,res)=>{
         if(tasks.length == 0)
             return res.status(404).json({message: "Tasks not found."});
         else
-            return res.status(200).json({message: "Tasks retreived successfully.", tasks});
+            return res.status(200).json({message: "Tasks retrieved successfully.", tasks});
     }catch(e){
         console.log("Error in tasks page block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -228,9 +229,30 @@ const projectsUserStoriesHandler = async(req,res)=>{
         if(userStories.length == 0)
             return res.status(404).json({message: "User stories not found."});
         else
-            return res.status(200).json({message: "User stories retreived successfully.", userStories});
+            return res.status(200).json({message: "User stories retrieved successfully.", userStories});
     }catch(e){
         console.log("Error in project user story block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
+}
+
+const companyMembersHandler = async(req,res)=>{
+
+    try{
+        const userId = req.user.id;
+        const user = await userModel.findById(userId);
+        if(!user){
+            return res.status(404).json({message: "User not found."});
+        }
+
+        const companyId = user.companyId;
+        const companymembers = await userModel.find({companyId, role: "Team member"}).select("username");
+        if(companymembers.length == 0)
+            return res.status(404).json({message: "No team members found."});
+        else
+            return res.status(200).json({message: "Team members retrieved successfully.", companymembers});
+    }catch(e){
+        console.log("Error in company members block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
     }
 }
@@ -310,5 +332,6 @@ export {homePageHandler, projectsPageHandler, readProjectHandler,
     tasksPageHandler, projectsUserStoriesHandler, createTaskHandler,
     editTaskHandler, deleteTaskHandler, projectsTaskHandler,
     readSprintHandler,createSprintHandler, editSprintHandler, 
-    deleteSprintHandler, teamMembersHandler, reportPageHandler
+    deleteSprintHandler, teamMembersHandler, reportPageHandler,
+    companyMembersHandler
 }
