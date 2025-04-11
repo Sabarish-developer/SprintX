@@ -54,11 +54,14 @@ const companyMembersHandler = async(req,res)=>{
     try{
         const user = await userModel.findById(req.user.id);
         const companyId = user.companyId;
-        const companyMembers = await userModel.find({companyId, role: "Team member"}).select("username");
-        if(companyMembers.length == 0)
-            return res.status(404).json({message: "No members found."});
+        const teamMembers = await userModel.find({companyId, role: "Team member"}).select("username");
+        const scrumMasters = await userModel.find({companyId, role: "Scrum master"}).select("username");
+        if(teamMembersMembers.length == 0)
+            return res.status(404).json({message: "No team members found."});
+        else if(scrumMasters.length == 0)
+                return res.status(404).json({message: "No scrum masters found."});
         else
-            return res.status(200).json({message: "Members found successfully.", data: companyMembers});
+            return res.status(200).json({message: "Members found successfully.", scrumMasters, teamMembers});
     }catch(e){
         console.log("Error in retreiving company members block : ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -69,14 +72,14 @@ const createProjectHandler = async(req,res)=>{
     
     try{
         const productOwnerId = req.user.id;
-        const {name, description, start, deadline, scrumMasterId, teamMembersId} = req.body;
-        if(!name.trim() || !description.trim() || !start || !deadline || !scrumMasterId || !teamMembersId || teamMembersId.length==0){
+        const {title, description, start, deadline, scrumMasterId, teamMembersId} = req.body;
+        if(!title.trim() || !description.trim() || !start || !deadline || !scrumMasterId || !teamMembersId || teamMembersId.length==0){
             return res.status(400).json({message: "All fields are required."});
         }
 
         await projectModel.create({
-            name,
-            description,
+            title: title.trim(),
+            description: description.trim(),
             start,
             deadline,
             productOwnerId,
@@ -186,8 +189,8 @@ const createEpicHandler = async(req,res)=>{
 
         const productOwnerId = req.user.id;
         await epicModel.create({
-            title,
-            description,
+            title: title.trim(),
+            description: description.trim(),
             priority,
             deadline,
             productOwnerId,

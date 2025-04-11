@@ -11,7 +11,7 @@ const userStorySchema = new Schema({
     end: {type:Date},
     scrumMasterId: {type:ObjectId, ref:"users", required:true},
     projectId: {type:ObjectId, ref:"projects", required:true},
-    sprintId: {type:ObjectId, ref:"sprints", required:true},
+    sprintId: {type:ObjectId, ref:"sprints"},
     epicId: {type:ObjectId, ref:"epics", required:true}
 })
 

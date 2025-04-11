@@ -11,8 +11,8 @@ const taskSchema = new Schema({
     end: {type:Date},
     teamMemberId: {type:ObjectId, ref:"users", required:true},
     projectId: {type:ObjectId, ref:"projects", required:true},
-    sprintId: {type:ObjectId, ref:"sprints", required:true},
-    epicId: {type:ObjectId, ref:"epics", required:true},
+    sprintId: {type:ObjectId, ref:"sprints"},
+    epicId: {type:ObjectId, ref:"epics"},
     userStoryId: {type:ObjectId, ref:"userStories", required:true}
 })
 

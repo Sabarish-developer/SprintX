@@ -11,7 +11,7 @@ const epicSchema = new Schema({
     end: {type:Date},
     productOwnerId: {type:ObjectId, ref:"users", required:true},
     projectId: {type:ObjectId, ref:"projects", required:true},
-    sprintId: {type:ObjectId, ref:"sprints", required:true}
+    sprintId: {type:ObjectId, ref:"sprints"}
 })
 
 epicSchema.index({title:1, projectId: 1}, {unique: true});

@@ -140,8 +140,8 @@ const createUserStoriesHandler = async(req,res)=>{
         }
 
         await userStoryModel.create({
-            title,
-            description,
+            title: title.trim(),
+            description: description.trim(),
             priority,
             deadline,
             scrumMasterId,
@@ -237,6 +237,35 @@ const projectsUserStoriesHandler = async(req,res)=>{
 
 const createTaskHandler = async(req,res)=>{
     
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+
+        const {title, description, priority, deadline, userStoryId, teamMemberId} = req.body;
+        if(!title.trim() || !description.trim() || !priority || !deadline || !userStoryId || !teamMemberId){
+            return res.status(400).json({message: "All fields are required."});
+        }
+        const allowedPriority = ["High", "Medium", "Low"];
+        if(!allowedPriority.includes(priority)){
+            return res.status(400).json({message: "Priority is not valid."});
+        }
+
+        await taskModel.create({
+            title,
+            description,
+            priority,
+            deadline,
+            projectId,
+            userStoryId,
+            teamMemberId
+        });
+        return res.status(201).json({message: "Task created successfully."});
+    }catch(e){
+        console.log("Error in task create block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const editTaskHandler = async(req,res)=>{
