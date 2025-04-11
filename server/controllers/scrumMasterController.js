@@ -176,6 +176,27 @@ const deleteUserStoriesHandler = async(req,res)=>{
 
 const editUserStoriesHandler = async(req,res)=>{
     
+    try{
+        const userStoryId = req.params.userStoryId;
+        if(!userStoryId){
+            return res.status(400).json({message: "User story Id is required."});
+        }
+        const userStory = await userStoryModel.findOne({_id: userStoryId});
+        if(!userStory){
+            return res.status(404).json({message: "User story not found."});
+        }
+        const {priority} = req.body;
+        const allowedPriority = ["High", "Medium", "Low"];
+        if(!allowedPriority.includes(priority)){
+            return res.status(400).json({message: "Priority is not valid."});
+        }
+        userStory.set(req.body);
+        await userStory.save();
+        return res.status(200).json({message: "User story updated successfully."});
+    }catch(e){
+        console.log("Error in edit user story block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const tasksPageHandler = async(req,res)=>{

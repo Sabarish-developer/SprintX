@@ -205,6 +205,9 @@ const editEpicHandler = async(req,res)=>{
 
     try{
         const epicId = req.params.epicId;
+        if(!epicId){
+            return res.status(400).json({message: "Epic Id is required."});
+        }
         const epic = await epicModel.findById(epicId);
         if(!epic){
             return res.status(404).json({message: "Epic not found."});
