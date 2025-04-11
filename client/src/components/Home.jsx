@@ -28,10 +28,11 @@ const Home = () => {
     const fetchHomeData = async () => {
       //console.log("hello bro");
       try {
-        console.log(localStorage.getItem("token"));
+        const token = localStorage.getItem("token");
+        console.log(token);
         const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/home`, {
           headers: {
-            Authorization: `${localStorage.getItem("token")}`,
+            Authorization: token,
           }
         });
         console.log("after fetch");
