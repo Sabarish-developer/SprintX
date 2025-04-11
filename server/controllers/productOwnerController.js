@@ -11,7 +11,7 @@ const homePageHandler = async(req,res)=>{
         const userId = req.user.id;
         const projects = await projectModel.find({productOwnerId: userId, status: "Active"});
         if(projects.length == 0){
-            return res.status(404).json({message: "No projects found"});
+            return res.status(200).json({message: "No projects found", project: null, epics: []});
         }
 
         const sortedProjects = projects.sort((a,b)=> new Date(a.deadline) - new Date(b.deadline));
@@ -39,9 +39,9 @@ const projectsPageHandler = async(req,res)=>{
         const projects = await projectModel.find({productOwnerId: userId}).select("name description start deadline status");
 
         if(projects.length == 0)
-            return res.status(404).json({message: "No projects found. Start by creating a project."});
+            return res.status(200).json({message: "No projects found. Start by creating a project.", projects: []});
         else
-            return res.status(200).json({data: projects, message: "Projects retrieved successfully."});
+            return res.status(200).json({message: "Projects retrieved successfully.", projects});
     }catch(e){
         console.log("Error in projects page Handler block : ",e);
         return res.status(500).json({message: "Error in retrieving projects. Kindly try again later."});
@@ -57,9 +57,9 @@ const companyMembersHandler = async(req,res)=>{
         const teamMembers = await userModel.find({companyId, role: "Team member"}).select("username");
         const scrumMasters = await userModel.find({companyId, role: "Scrum master"}).select("username");
         if(teamMembersMembers.length == 0)
-            return res.status(404).json({message: "No team members found."});
+            return res.status(200).json({message: "No team members found.", teamMembers: []});
         else if(scrumMasters.length == 0)
-                return res.status(404).json({message: "No scrum masters found."});
+                return res.status(200).json({message: "No scrum masters found.", scrumMasters: []});
         else
             return res.status(200).json({message: "Members found successfully.", scrumMasters, teamMembers});
     }catch(e){
@@ -105,7 +105,7 @@ const editProjectHandler = async(req,res)=>{
 
         let project = await projectModel.findById(projectId);
         if(!project){
-            return res.status(404).json({message: "Project not found."});
+            return res.status(200).json({message: "Project doesn't exist."});
         }
 
         project.set(req.body); // Here project is mongoose document, if we assign = it becomes a plain object, so no mongoose methods will be available
@@ -126,7 +126,7 @@ const deleteProjectHandler = async(req,res)=>{
         if(result.deletedCount == 1)
             return res.status(200).json({message: "Project deleted successfully."});
         else
-            return res.status(404).json({message: "Project not found."});
+            return res.status(200).json({message: "Project doesn't exist."});
 
     }catch(e){
         console.log("Error in delete project block: ",e);
@@ -144,9 +144,9 @@ const readProjectHandler = async(req,res)=>{
 
         const sprints = await sprintModel.find({projectId});
         if(sprints.length == 0)
-            return res.status(404).json({message: "No sprints found."});
+            return res.status(200).json({message: "No sprints found.", sprints: []});
         else
-            return res.status(200).json({message: "Sprints found successfully.", data: sprints});
+            return res.status(200).json({message: "Sprints found successfully.", sprints});
 
     }catch(e){
         console.log("Error in read project block: ",e);
@@ -163,9 +163,9 @@ const epicsPageHandler = async(req,res)=>{
         }
         const epics = await epicModel.find({projectId});
         if(epics.length == 0)
-            return res.status(404).json({message: "No epics found."});
+            return res.status(200).json({message: "No epics found.", epics: []});
         else
-            return res.status(200).json({message: "Epics found successfully.", data: epics});
+            return res.status(200).json({message: "Epics found successfully.", epics});
     }catch(e){
         console.log("Error in epic page block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -213,7 +213,7 @@ const editEpicHandler = async(req,res)=>{
         }
         const epic = await epicModel.findById(epicId);
         if(!epic){
-            return res.status(404).json({message: "Epic not found."});
+            return res.status(200).json({message: "Epic doesn't exist."});
         }
         const { priority } = req.body;
         if (priority != "High" && priority != "Medium" && priority != "Low"){
@@ -240,7 +240,7 @@ const deleteEpicHandler = async(req,res)=>{
         if(result.deletedCount == 1)
             return res.status(200).json({message: "Epic deleted succesfully."});
         else
-            return res.status(404).json({message: "Epic not found."});
+            return res.status(200).json({message: "Epic doesn't exist."});
 
     }catch(e){
         console.log("Error in delete epic block: ",e);
@@ -257,14 +257,14 @@ const readSprintHandler = async(req,res)=>{
         }
         const sprint = await sprintModel.findById(sprintId);
         if(!sprint){
-            return res.status(404).json({message: "Sprint doesn't exist."});
+            return res.status(200).json({message: "Sprint doesn't exist."});
         }
 
         const tasks = await taskModel.find({sprintId});
         if(tasks.length == 0)
-            return res.status(404).json({message: "Tasks not found."});
+            return res.status(200).json({message: "Tasks not found.", tasks: []});
         else    
-            return res.status(200).json({message: "Tasks found successfully.", data: tasks});
+            return res.status(200).json({message: "Tasks found successfully.", tasks});
     }catch(e){
         console.log("Error in read sprint block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -283,7 +283,7 @@ const teamMembersHandler = async(req,res)=>{
         }
         const project = await projectModel.findById(projectId);
         if(!project){
-            return res.status(404).json({message: "Project not found."});
+            return res.status(200).json({message: "Project doesn't exist."});
         }
 
         const scrumMasterId = project.scrumMasterId;
@@ -292,7 +292,7 @@ const teamMembersHandler = async(req,res)=>{
         const teammembersId = project.teamMembersId;
         const teamMembers = await userModel.find({_id: {$in: teammembersId}}).select("username email subrole");
         if(!scrumMaster || teamMembers.length==0)
-            return res.status(404).json({message: "Scrum master or Team members doesn't exist."});
+            return res.status(200).json({message: "Scrum master or Team members doesn't exist.", scrumMaster, teamMembers});
         else
             return res.status(200).json({message: "Team members found successfully.", scrumMaster, teamMembers});
 
