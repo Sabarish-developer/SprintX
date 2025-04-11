@@ -489,15 +489,15 @@ const teamMembersHandler = async(req,res)=>{
             return res.status(404).json({message: "Project not found."});
         }
 
-        const scrumMasterId = project.scrumMasterId;
-        const scrumMaster = await userModel.findById(scrumMasterId).select("username email");
+        const productOwnerId = project.productOwnerId;
+        const productOwner = await userModel.findById(productOwnerId).select("username email");
 
         const teammembersId = project.teamMembersId;
         const teamMembers = await userModel.find({_id: {$in: teammembersId}}).select("username email subrole");
-        if(!scrumMaster || teamMembers.length==0)
-            return res.status(404).json({message: "Scrum master or Team members doesn't exist."});
+        if(!productOwner || teamMembers.length==0)
+            return res.status(404).json({message: "Product owner or Team members doesn't exist."});
         else
-            return res.status(200).json({message: "Team members found successfully.", scrumMaster, teamMembers});
+            return res.status(200).json({message: "Team members found successfully.", productOwner, teamMembers});
 
     }catch(e){
         console.log("Error in team members block: ",e);
