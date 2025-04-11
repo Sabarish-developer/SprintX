@@ -14,9 +14,9 @@ import { toast } from 'react-toastify';
 
 
 const roleOptions = [
-  { value: 'Team member', label: 'Team Member' },
-  { value: 'Scrum master', label: 'Scrum Master' },
-  { value: 'Product owner', label: 'Product Owner' }
+  { value: 'Team Member', label: 'Team Member' },
+  { value: 'Scrum Master', label: 'Scrum Master' },
+  { value: 'Product Owner', label: 'Product Owner' }
 ];
 
 const customSelectStyles = {
