@@ -317,6 +317,20 @@ const editTaskHandler = async(req,res)=>{
 
 const deleteTaskHandler = async(req,res)=>{
     
+    try{
+        const {taskId} = req.body;
+        if(!taskId){
+            return res.status(400).json({message: "Task Id is required."});
+        }
+        const result = await taskModel.deleteOne({_id: taskId});
+        if(result.deletedCount == 1)
+            return res.status(200).json({message: "Task deleted successfully."});
+        else
+            return res.status(404).json({message: "Task doesn't exist."});
+    }catch(e){
+        console.log("Error in delete task block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const readSprintHandler = async(req,res)=>{
