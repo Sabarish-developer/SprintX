@@ -219,6 +219,20 @@ const tasksPageHandler = async(req,res)=>{
 
 const projectsUserStoriesHandler = async(req,res)=>{
     
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+        const userStories = await userStoryModel.find({projectId});
+        if(userStories.length == 0)
+            return res.status(404).json({message: "User stories not found."});
+        else
+            return res.status(200).json({message: "User stories retreived successfully.", userStories});
+    }catch(e){
+        console.log("Error in project user story block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const createTaskHandler = async(req,res)=>{
