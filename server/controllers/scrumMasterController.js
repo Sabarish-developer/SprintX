@@ -11,7 +11,7 @@ const homePageHandler = async(req,res)=>{
         const userId = req.user.id;
         const projects = await projectModel.find({scrumMasterId: userId, status: "Active"});
         if(projects.length == 0){
-            return res.status(404).json({message: "No projects found."});
+            return res.status(200).json({message: "No projects found.", project:null, userStories: []});
         }
 
         const sortedProjects = projects.sort((a,b)=> new Date(a.deadline) - new Date(b.deadline));
@@ -37,7 +37,7 @@ const projectsPageHandler = async(req,res)=>{
         const userId = req.user.id;
         const projects = await projectModel.find({scrumMasterId: userId}).select("name description start deadline status");
         if(projects.length == 0)
-            return res.status(404).json({message: "No projects found."});
+            return res.status(200).json({message: "No projects found.", projects: []});
         else
             return res.status(200).json({message: "Projects retrieved successfully.",projects});
     }catch(e){
@@ -56,7 +56,7 @@ const readProjectHandler = async(req,res)=>{
 
         const sprints = await sprintModel.find({projectId});
         if(sprints.length == 0)
-            return res.status(404).json({message: "No sprints found."});
+            return res.status(200).json({message: "No sprints found.", sprints:[]});
         else
             return res.status(200).json({message: "Sprints retrieved successfully.", sprints});
     }catch(e){
@@ -75,7 +75,7 @@ const userStoriesPageHandler = async(req,res)=>{
 
         const userStories = await userStoryModel.find({projectId});
         if(userStories.length == 0)
-            return res.status(404).json({message: "No user stories found."});
+            return res.status(200).json({message: "No user stories found.", userStories: []});
         else
             return res.status(200).json({message: "User stories retrieved successfully.", userStories});
     }catch(e){
@@ -94,7 +94,7 @@ const readUserStoriesHandler = async(req,res)=>{
 
         const tasks = await taskModel.find({userStoryId});
         if(tasks.length == 0)
-            return res.status(404).json({message: "No tasks found."});
+            return res.status(200).json({message: "No tasks found.", tasks:[]});
         else
             return res.status(200).json({message: "Tasks retrieved successfully.", tasks});
     }catch(e){
@@ -113,7 +113,7 @@ const projectEpicsHandler = async(req,res)=>{
 
         const epics = await epicModel.find({projectId});
         if(epics.length == 0)
-            return res.status(404).json({message: "No epics found."});
+            return res.status(200).json({message: "No epics found.", epics:[]});
         else
             return res.status(200).json({message: "Epics retrieved successfully.", epics})
     }catch(e){
@@ -167,7 +167,7 @@ const deleteUserStoriesHandler = async(req,res)=>{
         if(result.deletedCount == 1)
             return res.status(200).json({message: "User story deleted successfully."});
         else
-            return res.status(404).json({message: "User story doesn't exist"});
+            return res.status(200).json({message: "User story doesn't exist"});
     }catch(e){
         console.log("Error in delete user story block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -183,7 +183,7 @@ const editUserStoriesHandler = async(req,res)=>{
         }
         const userStory = await userStoryModel.findOne({_id: userStoryId});
         if(!userStory){
-            return res.status(404).json({message: "User story not found."});
+            return res.status(200).json({message: "User story doesn't exist."});
         }
         const {priority} = req.body;
         const allowedPriority = ["High", "Medium", "Low"];
@@ -208,7 +208,7 @@ const tasksPageHandler = async(req,res)=>{
         }
         const tasks = await taskModel.find({projectId});
         if(tasks.length == 0)
-            return res.status(404).json({message: "Tasks not found."});
+            return res.status(200).json({message: "Tasks not found.", tasks:[]});
         else
             return res.status(200).json({message: "Tasks retrieved successfully.", tasks});
     }catch(e){
@@ -226,7 +226,7 @@ const projectsUserStoriesHandler = async(req,res)=>{
         }
         const userStories = await userStoryModel.find({projectId});
         if(userStories.length == 0)
-            return res.status(404).json({message: "User stories not found."});
+            return res.status(200).json({message: "User stories not found.", userStories:[]});
         else
             return res.status(200).json({message: "User stories retrieved successfully.", userStories});
     }catch(e){
@@ -241,13 +241,13 @@ const companyMembersHandler = async(req,res)=>{
         const userId = req.user.id;
         const user = await userModel.findById(userId);
         if(!user){
-            return res.status(404).json({message: "User not found."});
+            return res.status(200).json({message: "User doesn't exist."});
         }
 
         const companyId = user.companyId;
         const companymembers = await userModel.find({companyId, role: "Team member"}).select("username");
         if(companymembers.length == 0)
-            return res.status(404).json({message: "No team members found."});
+            return res.status(200).json({message: "No team members found.", companymembers:[]});
         else
             return res.status(200).json({message: "Team members retrieved successfully.", companymembers});
     }catch(e){
@@ -298,7 +298,7 @@ const editTaskHandler = async(req,res)=>{
         }
         const task = await taskModel.findById(taskId);
         if(!task){
-            return res.status(404).json({message: "Task not found."});
+            return res.status(200).json({message: "Task doesn't exist."});
         }
         const {priority} = req.body;
         const allowedPriority = ["High", "Medium", "Low"];
@@ -325,7 +325,7 @@ const deleteTaskHandler = async(req,res)=>{
         if(result.deletedCount == 1)
             return res.status(200).json({message: "Task deleted successfully."});
         else
-            return res.status(404).json({message: "Task doesn't exist."});
+            return res.status(200).json({message: "Task doesn't exist."});
     }catch(e){
         console.log("Error in delete task block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -341,7 +341,7 @@ const readSprintHandler = async(req,res)=>{
         }
         const tasks = await taskModel.find({sprintId});
         if(tasks.length == 0)
-            return res.status(404).json({message: "No tasks found."});
+            return res.status(200).json({message: "No tasks found.", tasks:[]});
         else
             return res.status(200).json({message: "Tasks retrieved successfully.", tasks});
     }catch(e){
@@ -360,7 +360,7 @@ const projectsTaskHandler = async(req,res)=>{
         
         const tasks = await taskModel.find({projectId});
         if(tasks.length == 0)
-            return res.status(404).json({message: "No tasks found."});
+            return res.status(200).json({message: "No tasks found.", tasks:[]});
         else
             return res.status(200).json({message: "Tasks retrieved successfully.", tasks});
     }catch(e){
@@ -415,7 +415,7 @@ const editSprintHandler = async(req,res)=>{
 
         const sprint = await sprintModel.findById(sprintId);
         if (!sprint) {
-            return res.status(404).json({ message: "Sprint not found." });
+            return res.status(200).json({ message: "Sprint doesn't exist." });
         }
         const oldTasks = sprint.tasks.map(id => id.toString());
         const newTaskIds = newTasks.map(id => id.toString());
@@ -470,7 +470,7 @@ const deleteSprintHandler = async(req,res)=>{
         if(result.deletedCount == 1)
             return res.status(200).json({message: "Sprint deleted successfully."});
         else
-            return res.status(404).json({message: "Sprint doesn't exist."});
+            return res.status(200).json({message: "Sprint doesn't exist."});
     }catch(e){
         console.log("Error in delete sprint block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
@@ -486,7 +486,7 @@ const teamMembersHandler = async(req,res)=>{
         }
         const project = await projectModel.findById(projectId);
         if(!project){
-            return res.status(404).json({message: "Project not found."});
+            return res.status(200).json({message: "Project doesn't exist."});
         }
 
         const productOwnerId = project.productOwnerId;
@@ -495,7 +495,7 @@ const teamMembersHandler = async(req,res)=>{
         const teammembersId = project.teamMembersId;
         const teamMembers = await userModel.find({_id: {$in: teammembersId}}).select("username email subrole");
         if(!productOwner || teamMembers.length==0)
-            return res.status(404).json({message: "Product owner or Team members doesn't exist."});
+            return res.status(200).json({message: "Product owner or Team members doesn't exist.", productOwner, teamMembers});
         else
             return res.status(200).json({message: "Team members found successfully.", productOwner, teamMembers});
 
