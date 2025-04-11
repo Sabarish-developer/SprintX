@@ -371,6 +371,34 @@ const projectsTaskHandler = async(req,res)=>{
 
 const createSprintHandler = async(req,res)=>{
     
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Product Id is required."});
+        }
+        const {title, start, deadline, tasks} = req.body;
+        if(!title.trim() || !start || !deadline || !tasks){
+            return res.status(400).json({message: "All fields are required."});
+        }
+        const scrumMasterId = req.user.id;
+        const sprint = await sprintModel.create({
+            title: title.trim(),
+            start,
+            deadline,
+            projectId,
+            scrumMasterId,
+            tasks
+        });
+
+        await taskModel.updateMany(
+            { _id: {$in: tasks}},
+            {$set: {sprintId: sprint._id}}
+        );
+        return res.status(200).json({message: "Sprint created successfully."});
+    }catch(e){
+        console.log("Error in create sprint block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const editSprintHandler = async(req,res)=>{

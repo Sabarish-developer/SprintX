@@ -9,7 +9,8 @@ const sprintSchema = new Schema({
     end: {type:Date},
     status: {type:String, enum:["Active", "Completed"], default:"Active"},
     projectId: {type:ObjectId, ref:"projects", required:true},
-    scrumMasterId: {type:ObjectId, ref:"users", required:true}
+    scrumMasterId: {type:ObjectId, ref:"users", required:true},
+    tasks: [{type:ObjectId, ref:"tasks"}]
 })
 
 sprintSchema.index({title:1, projectId:1}, {unique:true});
