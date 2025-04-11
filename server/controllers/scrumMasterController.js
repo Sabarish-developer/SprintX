@@ -157,6 +157,21 @@ const createUserStoriesHandler = async(req,res)=>{
 
 const deleteUserStoriesHandler = async(req,res)=>{
     
+    try{
+        const {userStoryId} = req.body;
+        if(!userStoryId){
+            return res.status(400).json({message: "User story Id is required."});
+        }
+
+        const result = await userStoryModel.deleteOne({_id: userStoryId});
+        if(result.deletedCount == 1)
+            return res.status(200).json({message: "User story deleted successfully."});
+        else
+            return res.status(404).json({message: "User story doesn't exist"});
+    }catch(e){
+        console.log("Error in delete user story block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const editUserStoriesHandler = async(req,res)=>{
