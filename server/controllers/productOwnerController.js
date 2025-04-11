@@ -19,7 +19,12 @@ const homePageHandler = async(req,res)=>{
 
         const epics = await epicModel.find({projectId: currentProject._id});
         
-        return res.status(200).json({message: "Welcome back!", project: currentProject, epics: epics});
+        return res.status(200).json({
+            message: "Welcome back!", 
+            username: req.user.username,
+            project: currentProject, 
+            epics: epics
+        });
 
     }catch(e){
         console.log("Error in home page block : ",e);
