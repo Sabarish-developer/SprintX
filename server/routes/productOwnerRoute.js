@@ -1,7 +1,7 @@
 import { homePageHandler, 
     companyMembersHandler, projectsPageHandler, readProjectHandler, createProjectHandler, editProjectHandler, deleteProjectHandler,
     epicsPageHandler, createEpicHandler, editEpicHandler, deleteEpicHandler, 
-    readSprintHandler, teamMembersHandler, reportPageHandler} from "../controllers/productOwnerController";
+    readSprintHandler, teamMembersHandler, reportPageHandler} from "../controllers/productOwnerController.js";
 import auth from "../middleware/auth.js";
 import roleHandler from "../middleware/roleHandler.js";
 import { Router } from "express";
