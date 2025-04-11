@@ -47,6 +47,21 @@ const projectsPageHandler = async(req,res)=>{
 
 const readProjectHandler = async(req,res)=>{
 
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+
+        const sprints = await sprintModel.find({projectId});
+        if(sprints.length == 0)
+            return res.status(404).json({message: "No sprints found."});
+        else
+            return res.status(200).json({message: "Sprints retreived successfully.", sprints});
+    }catch(e){
+        console.log("Error in read project block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const userStoriesPageHandler = async(req,res)=>{
