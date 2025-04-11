@@ -455,6 +455,26 @@ const editSprintHandler = async(req,res)=>{
 
 const deleteSprintHandler = async(req,res)=>{
     
+    try{
+        const sprintId = req.params.id;
+        if(!sprintId){
+            return res.status(400).json({message: "Sprint Id is required."});
+        }
+
+        await taskModel.updateMany(
+            { sprintId: sprintId },
+            { $unset: { sprintId: "" } }
+        );
+        
+        const result = await sprintModel.deleteOne({_id: sprintId});
+        if(result.deletedCount == 1)
+            return res.status(200).json({message: "Sprint deleted successfully."});
+        else
+            return res.status(404).json({message: "Sprint doesn't exist."});
+    }catch(e){
+        console.log("Error in delete sprint block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const teamMembersHandler = async(req,res)=>{
