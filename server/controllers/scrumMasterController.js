@@ -403,6 +403,54 @@ const createSprintHandler = async(req,res)=>{
 
 const editSprintHandler = async(req,res)=>{
     
+    try{
+        const sprintId = req.params.sprintId;
+        if(!sprintId){
+            return res.status(400).json({message: "Sprint Id is required."});
+        }
+        const {title, start, deadline, tasks} = req.body;
+        if(!title.trim() || !start || !deadline || !tasks){
+            return res.status(400).json({message: "All fields are required."});
+        }
+
+        const sprint = await sprintModel.findById(sprintId);
+        if (!sprint) {
+            return res.status(404).json({ message: "Sprint not found." });
+        }
+        const oldTasks = sprint.tasks.map(id => id.toString());
+        const newTaskIds = newTasks.map(id => id.toString());
+
+        const removedTasks = oldTasks.filter(id => !newTaskIds.includes(id));
+        const addedTasks = newTaskIds.filter(id => !oldTasks.includes(id));
+
+        // Remove sprintId from removed tasks
+        if (removedTasks.length > 0) {
+            await taskModel.updateMany(
+                { _id: { $in: removedTasks } },
+                { $unset: { sprintId: "" } }
+            );
+        }
+
+        // Add sprintId to newly added tasks
+        if (addedTasks.length > 0) {
+            await taskModel.updateMany(
+                { _id: { $in: addedTasks } },
+                { $set: { sprintId: sprint._id } }
+            );
+        }
+
+        // Update the sprint itself
+        sprint.title = title.trim();
+        sprint.start = start;
+        sprint.deadline = deadline;
+        sprint.tasks = newTasks;
+        await sprint.save();
+
+        return res.status(200).json({ message: "Sprint updated successfully." });
+    } catch (e) {
+        console.error("Error in edit sprint handler:", e);
+        return res.status(500).json({ message: "Internal server error." });
+    }
 }
 
 const deleteSprintHandler = async(req,res)=>{
