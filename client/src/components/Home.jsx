@@ -22,6 +22,7 @@ const Home = () => {
   const [userStories, setUserStories] = useState([]);
   const [tasks, setTasks] = useState([]);
 
+  const [mes, setMes] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -35,9 +36,18 @@ const Home = () => {
             Authorization: token,
           }
         });
-        console.log("after fetch");
+        if(res.status == 200){
+          const { message, project, epics } = res.data;
+          console.log("after fetch");
 
-        const {project, epics} = res.data;
+          if (!project) {
+            console.log("No projects yet.");
+            setMes(message); // "No projects found."
+            setError(message); // Optional: use this to conditionally render error state
+            return;
+          }
+
+        //const {project, epics} = res.data;
         setActiveProject({
           name: project.name,
           from: new Date(project.createdAt).toLocaleDateString("en-US", {
@@ -61,6 +71,7 @@ const Home = () => {
         }));
 
         setEpics(formattedEpics);
+        }
       } catch (error) {
         console.error("Error fetching home data:", error);
         setError("Failed to fetch data. Please try again later.");
