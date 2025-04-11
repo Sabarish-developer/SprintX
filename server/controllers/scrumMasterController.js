@@ -124,6 +124,35 @@ const projectEpicsHandler = async(req,res)=>{
 
 const createUserStoriesHandler = async(req,res)=>{
     
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+
+        const scrumMasterId = req.user.id;
+        const {title, description, priority, deadline, epicId} = req.body;
+        if(!title.trim() || !description.trim() || !priority || !deadline || !epicId){
+            return res.status(400).json({message: "All fields are required."});
+        }
+        if(priority!="High" && priority!="Medium" && priority!="Low"){
+            return res.status(400).json({message: "Priority is not valid."});
+        }
+
+        await userStoryModel.create({
+            title,
+            description,
+            priority,
+            deadline,
+            scrumMasterId,
+            projectId,
+            epicId
+        });
+        return res.status(201).json({message: "User story created successfully."});
+    }catch(e){
+        console.log("Error in create user story block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const deleteUserStoriesHandler = async(req,res)=>{

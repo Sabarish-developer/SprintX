@@ -70,7 +70,7 @@ const createProjectHandler = async(req,res)=>{
     try{
         const productOwnerId = req.user.id;
         const {name, description, start, deadline, scrumMasterId, teamMembersId} = req.body;
-        if(!name || !description || !start || !deadline || !scrumMasterId || !teamMembersId || teamMembersId.length==0){
+        if(!name.trim() || !description.trim() || !start || !deadline || !scrumMasterId || !teamMembersId || teamMembersId.length==0){
             return res.status(400).json({message: "All fields are required."});
         }
 
@@ -177,7 +177,7 @@ const createEpicHandler = async(req,res)=>{
             return res.status(400).json({message: "Project Id is required."});
         }
         const {title, description, priority, deadline} = req.body;
-        if(!title || !description || !priority || !deadline){
+        if(!title.trim() || !description.trim() || !priority || !deadline){
             return res.status(400).json({message: "All fields are required."});
         }
         if(priority!="High" && priority!="Medium" && priority!="Low"){
