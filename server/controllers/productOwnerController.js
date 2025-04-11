@@ -36,7 +36,7 @@ const projectsPageHandler = async(req,res)=>{
 
     try{
         const userId = req.user.id;
-        const projects = await projectModel.find({productOwnerId: userId}).select("name description start deadline status");
+        const projects = await projectModel.find({productOwnerId: userId});
 
         if(projects.length == 0)
             return res.status(200).json({message: "No projects found. Start by creating a project.", projects: []});
