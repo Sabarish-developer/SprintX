@@ -92,6 +92,24 @@ const readSprintHandler = async(req,res)=>{
 
 const tasksPageHandler = async(req,res)=>{
     
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+        const userId = req.user.id;
+        if(!userId){
+            return res.status(400).json({message: "User Id is required."});
+        }
+        const tasks = await taskModel.find({projectId, teamMemberId: userId});
+        if(tasks.length == 0)
+            return res.status(200).json({message: "No tasks found.", tasks: []});
+        else
+            return res.status(200).json({message: "Tasks retrieved successfully.", tasks});
+    }catch(e){
+        console.log("Error in task page block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const taskUpdateHandler = async(req,res)=>{
