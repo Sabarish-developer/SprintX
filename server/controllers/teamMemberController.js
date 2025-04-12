@@ -33,6 +33,20 @@ const homePageHandler = async(req,res)=>{
 
 const projectsPageHandler = async(req,res)=>{
     
+    try{
+        const userId = req.user.id;
+        if(!userId){
+            return res.status(400).json({message: "User Id is required."});
+        }
+        const projects = await projectModel.find({teamMembersId: userId});
+        if(projects.length == 0)
+            return res.status(200).json({message: "No projects found.", projects: []});
+        else
+            return res.status(200).json({message: "Projects retrieved successfully.", projects});
+    }catch(e){
+        console.log("Error in projects block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const readProjectHandler = async(req,res)=>{
