@@ -2,7 +2,7 @@ import userModel from "../models/user";
 import projectModel from "../models/project";
 import sprintModel from "../models/sprint";
 import taskModel from "../models/task";
-import { projectsTaskHandler } from "./scrumMasterController";
+import mongoose from "mongoose";
 
 
 const homePageHandler = async(req,res)=>{
@@ -151,6 +151,35 @@ const teamMembersHandler = async(req,res)=>{
 
 const reportPageHandler = async(req,res)=>{
     
+    try{
+        const userId = req.user.id;
+        
+        const tasks = await taskModel.find({teamMemberId: userId});
+
+        const userProjects = await project.aggregate([
+            {
+                $match: {
+                    teamMembersId: new mongoose.Types.ObjectId(userId)
+                }
+            },
+            {
+                $lookup: {
+                    from: "tasks",
+                    localField: "_id",
+                    foreignField: "projectId",
+                    as: "tasks"
+                }
+            }
+        ]);
+        return res.status(200).json({
+            message: "Report retrieved successfully.",
+            projects: userProjects,
+            tasks
+         });
+    }catch(e){
+        console.log("Error in report block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 export {homePageHandler, projectsPageHandler, readProjectHandler,
