@@ -5,6 +5,7 @@ import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
 import { toast } from "react-toastify";
+import ConfirmToast from "./ConfirmToast";
 
 //Dummy Projects Data
 const projectsData = [
@@ -159,9 +160,48 @@ export default function Projects() {
     setIsEditOpen(false);
   };  //on integrate the backend soon, just replace the setProjects(updatedProjects) logic with PUT API call.
 
-  const handleDelete = () => {
-    alert("delete clicked");
-  }
+  const handleDelete = async (projectId) => {
+    // const confirmDelete = window.confirm("Are you sure you want to delete this project?");
+    // if (!confirmDelete) return;
+  
+    // try {
+    //   const response = await axios.delete(`/api/projects/${projectId}`);
+    //   if (response.status === 200) {
+    //     // Remove the deleted project from local state
+    //     setProjects((prev) => prev.filter((proj) => proj._id !== projectId));
+    //   }
+    // } catch (error) {
+    //   console.error("Failed to delete project:", error);
+    //   toast.error("Failed to delete project");
+    // }
+
+    toast(
+      <ConfirmToast
+        message="Are you sure you want to delete this project?"
+        onConfirm={() => {
+          // ✅ back end here below
+          // try {
+          //   const response = await axios.delete(`/api/projects/${projectId}`);
+          //   if (response.status === 200) {
+          //     // Remove the deleted project from local state
+          //     setProjects((prev) => prev.filter((proj) => proj._id !== projectId));
+          //   }
+          // } catch (error) {
+          //   console.error("Failed to delete project:", error);
+          //   toast.error("Failed to delete project");
+          // }
+          setProjects(prev => prev.filter(p => p.id !== projectId));
+          toast.success("Project deleted successfully!✅");
+        }}
+      />,
+      { autoClose: false }
+    );
+    //setProjects((prev) => prev.filter((proj) => proj.id !== projectId)); //since we not integreated backend now i just used this 
+  };
+  
+  // const handleDelete = () => {
+  //   alert("delete clicked");
+  // }
 
   const handleCreateProject = () => {
     alert("project created")
@@ -500,7 +540,7 @@ export default function Projects() {
                   <div className="border-2 p-1 flex items-center gap-1 rounded-md border-gray-400">
                     <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); setProjectToEdit(project); setIsEditOpen(true)}}><FolderCog size={20} color="#a40ff3" /></span>
                     <div className="w-px h-4 bg-gray-400"/>
-                    <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); handleDelete()}}><Trash2 size={20} color="red" /></span>
+                    <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); handleDelete(project.id)}}><Trash2 size={20} color="red" /></span>
                   </div>
                   }
                 </div>
