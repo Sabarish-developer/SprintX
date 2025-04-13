@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Menu, SortAsc, FolderCog, Trash2} from "lucide-react";
+import { X, Menu, SortAsc, FolderCog, Trash2, FolderPlus} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import axios from "axios";
@@ -192,6 +192,14 @@ export default function Projects() {
                 clearSort={clearSort}
               />
           </div>
+          <button
+          onClick={() => setOpen(!open)}
+          className="bg-[#a40ff3] hover:bg-white cursor-pointer hover:text-[#a40ff3] text-white px-4 py-2 rounded shadow hover:shadow-md text-sm flex items-center gap-2 w-40"
+        >
+          <FolderPlus size={18} />
+          Create project
+        </button>
+          {/* <button>Create Project</button> */}
 
           {/* Mobile Hamburger */}
           <div className="lg:hidden">
