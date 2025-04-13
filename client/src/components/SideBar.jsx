@@ -1,6 +1,6 @@
 import { MoreVertical, ChevronLast, ChevronFirst, User, LogOut } from "lucide-react";
 import { useContext, createContext, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 import logo from "../assets/logo.svg";
 // import {jwtDecode} from "jwt-decode";
 import useAuth from "../hooks/useAuth";
@@ -118,47 +118,91 @@ export default function SideBar({ children }) {
 
 export function SidebarItem({ icon, text, path, active, alert }) {
     const { expanded, closeSidebar } = useContext(SideBarContext);
+    const linkClasses = ({ isActive }) =>
+        `relative flex items-center p-2 my-1 
+         font-medium rounded-md cursor-pointer 
+         transition-colors group
+         ${
+           isActive
+             ? "bg-gradient-to-r from-purple-400 via-purple-300 to-purple-400 text-purple-800"
+             : "hover:bg-gradient-to-r from-purple-300 via-purple-200 to-purple-300 text-gray-600"
+         }`;
+      
     return (
-        <li
-            onClick={closeSidebar} // Close sidebar on click
-            className={`relative flex items-center p-2 my-1 
-                font-medium rounded-md cursor-pointer 
-                transition-colors group
-                ${
-                    active
-                        ? "bg-gradient-to-r from-purplae-400 via-purple-300 to-purple-400 text-purple-800"
-                        : "hover:bg-gradient-to-r from-purple-300 via-purple-200 to-purple-300 text-gray-600"
-                }
-            `}
-        >
-            <Link to={path} className="flex items-center w-full">
-                {icon}
-                <span
-                    className={`overflow-hidden transition-all ${
-                        expanded ? "w-32 ml-3" : "w-0"
-                    }`}
-                >
-                    {text}
-                </span>
-            </Link>
-            {alert && (
-                <div
-                    className={`absolute right-2 w-2 h-2 rounded bg-purple-400 ${
-                        expanded ? "" : "top-2"
-                    }`}
-                />
-            )}
 
-            {/* Tooltip for collapsed mode */}
-            {!expanded && (
-                <div
-                    className={`absolute left-full rounded-md px-2 py-1 ml-6
+        <NavLink to={path} end className={linkClasses} onClick={closeSidebar}>
+        <div className="flex items-center w-full">
+            {icon}
+            <span
+            className={`overflow-hidden transition-all ${
+                expanded ? "w-32 ml-3" : "w-0"
+            }`}
+            >
+            {text}
+            </span>
+        </div>
+
+        {alert && (
+            <div
+            className={`absolute right-2 w-2 h-2 rounded bg-purple-400 ${
+                expanded ? "" : "top-2"
+            }`}
+            />
+        )}
+
+        {/* Tooltip for collapsed mode */}
+        {!expanded && (
+            <div
+            className={`absolute left-full rounded-md px-2 py-1 ml-6
                 bg-purple-100 text-purple-800 text-sm invisible opacity-20 -translate-x-3
                 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
-                >
-                    {text}
-                </div>
-            )}
-        </li>
+            >
+            {text}
+            </div>
+        )}
+        </NavLink>
+
+
+        // <li
+        //     onClick={closeSidebar} // Close sidebar on click
+        //     className={`relative flex items-center p-2 my-1 
+        //         font-medium rounded-md cursor-pointer 
+        //         transition-colors group
+        //         ${
+        //             active
+        //                 ? "bg-gradient-to-r from-purplae-400 via-purple-300 to-purple-400 text-purple-800"
+        //                 : "hover:bg-gradient-to-r from-purple-300 via-purple-200 to-purple-300 text-gray-600"
+        //         }
+        //     `}
+        // >
+        //     <Link to={path} className="flex items-center w-full">
+        //         {icon}
+        //         <span
+        //             className={`overflow-hidden transition-all ${
+        //                 expanded ? "w-32 ml-3" : "w-0"
+        //             }`}
+        //         >
+        //             {text}
+        //         </span>
+        //     </Link>
+        //     {alert && (
+        //         <div
+        //             className={`absolute right-2 w-2 h-2 rounded bg-purple-400 ${
+        //                 expanded ? "" : "top-2"
+        //             }`}
+        //         />
+        //     )}
+
+        //     {/* Tooltip for collapsed mode */}
+        //     {!expanded && (
+        //         <div
+        //             className={`absolute left-full rounded-md px-2 py-1 ml-6
+        //         bg-purple-100 text-purple-800 text-sm invisible opacity-20 -translate-x-3
+        //         transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
+        //         >
+        //             {text}
+        //         </div>
+        //     )}
+        // </li>
     );
 }
