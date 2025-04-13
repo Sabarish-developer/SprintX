@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const ConfirmToast = ({ message, onConfirm, onCancel }) => {
   return (
     <div className="flex flex-col items-start gap-2 bg-purple-100 p-4 rounded-lg shadow-md">
-      <h3 className="text-lg font-semibold text-[#a40ff3]">Confirmation</h3>
+      <h3 className="text-lg font-semibold text-[#a40ff3]">Alert❗</h3>
       <p className="text-sm">{message}</p>
       <div className="flex gap-2 self-end">
         <button

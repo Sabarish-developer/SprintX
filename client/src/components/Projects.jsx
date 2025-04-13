@@ -177,7 +177,7 @@ export default function Projects() {
 
     toast(
       <ConfirmToast
-        message="Are you sure you want to delete this project?"
+        message="Are you sure you want to delete this project? This action cannot be undone."
         onConfirm={() => {
           // ✅ back end here below
           // try {
