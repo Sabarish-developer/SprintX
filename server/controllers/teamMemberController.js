@@ -115,7 +115,20 @@ const tasksPageHandler = async(req,res)=>{
 
 const taskUpdateHandler = async(req,res)=>{
     //when one task is completed -> check userstory completed -> check epic completed -> check project completed.
-    
+    try{
+        const taskId = req.params.id;
+        const {status} = req.body;
+
+        const task = await taskModel.findByIdAndUpdate(taskId, {status});
+        if(status === "Completed"){
+            await progressUpdater(taskId);
+        }
+
+        return res.status(200).json({message: "Task updated successfully."});
+    }catch(e){
+        console.log("Error in task update block: ",e);
+        return res.status(500).json({message: "Internal server error. Please try again later."});
+    }
 }
 
 const teamMembersHandler = async(req,res)=>{
