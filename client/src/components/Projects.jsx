@@ -1,88 +1,95 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Menu, SortAsc} from "lucide-react";
+import { X, Menu, SortAsc, FolderCog, Trash2} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import axios from "axios";
+import useAuth from "../hooks/useAuth";
 
-// Dummy Projects Data
-// const projectsData = [
-//     { id: 1, name: "Seenu", owner: "Aliceee", scrumMaster: "Bob", from: "2025-03-01", to: "2025-06-30", status: "In Progress", progress: 50 },
-//     { id: 2, name: "Apple", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Completed", progress: 100 },
-//     { id: 3, name: "Windows", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "In Progress", progress: 50},
-//     { id: 4, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
-//     { id: 5, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
-//     { id: 6, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
-//     { id: 7, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
-//     { id: 8, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
-//     { id: 9, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
-//     { id: 10, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
-//     { id: 11, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
-//     { id: 12, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
-//   ];
+//Dummy Projects Data
+const projectsData = [
+    { id: 1, name: "Seenu nnnnnn nnnn n", owner: "Aliceee", scrumMaster: "Bob", from: "2025-03-01", to: "2025-06-30", status: "In Progress", progress: 50 },
+    { id: 2, name: "Apple", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Completed", progress: 100 },
+    { id: 3, name: "Windows", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "In Progress", progress: 50},
+    { id: 4, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+    { id: 5, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+    { id: 6, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+    { id: 7, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+    { id: 8, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+    { id: 9, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+    { id: 10, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+    { id: 11, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+    { id: 12, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+  ];
 
 export default function Projects() {
   const [search, setSearch] = useState("");
   const [showIcon, setShowIcon] = useState(false);
-  const [projects, setProjects] = useState([]);
+  //const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState(projectsData);
   const [pro, setPro] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const [sortType, setSortType] = useState("");
   const [error, setError] = useState("");
 
+  const user = useAuth();
+  const isProductOwner = user?.role === "Product owner";
+  console.log(isProductOwner);
+  console.log("hello");
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        console.log("iam inside fetchProjects func");
 
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
-          headers: {
-            Authorization: token
-          }
-        });
-        console.log(res.data.message);
+  // useEffect(() => {
+  //   const fetchProjects = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       console.log("iam inside fetchProjects func");
 
-        if(res.status===200){
+  //       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
+  //         headers: {
+  //           Authorization: token
+  //         }
+  //       });
+  //       console.log(res.data.message);
 
-          if(res.data.projects.length === 0){
-            setError(res.data.message);
-            return;
-          }
+  //       if(res.status===200){
 
-          const fetchedProjects = res.data.projects.map((p, index) => ({
-            id: index + 1,
-            name: p.name,
-            owner: p.owner,
-            scrumMaster: p.scrumMaster,
-            // from: new Date(p.from).toISOString().slice(0, 10),
-            // to: new Date(p.to).toISOString().slice(0, 10),
-            from: new Date(p.from).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            }),
-            to: new Date(p.to).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            }),
-            status: p.status,
-            progress: p.progress
-          }));
+  //         if(res.data.projects.length === 0){
+  //           setError(res.data.message);
+  //           return;
+  //         }
+
+  //         const fetchedProjects = res.data.projects.map((p, index) => ({
+  //           id: index + 1,
+  //           name: p.name,
+  //           owner: p.owner,
+  //           scrumMaster: p.scrumMaster,
+  //           // from: new Date(p.from).toISOString().slice(0, 10),
+  //           // to: new Date(p.to).toISOString().slice(0, 10),
+  //           from: new Date(p.from).toLocaleDateString("en-US", {
+  //             month: "short",
+  //             day: "numeric",
+  //             year: "numeric",
+  //           }),
+  //           to: new Date(p.to).toLocaleDateString("en-US", {
+  //             month: "short",
+  //             day: "numeric",
+  //             year: "numeric",
+  //           }),
+  //           status: p.status,
+  //           progress: p.progress
+  //         }));
   
-          setProjects(fetchedProjects);
-          setPro(fetchedProjects);
-        }
-      } catch (err) {
-        console.error("Error fetching project data:", err);
-        setError("Error fetching project data");
-      }
-    };
+  //         setProjects(fetchedProjects);
+  //         setPro(fetchedProjects);
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching project data:", err);
+  //       setError("Error fetching project data");
+  //     }
+  //   };
 
-    fetchProjects();
-  }, []);
+  //   fetchProjects();
+  // }, []);
 
 
   const getProgressColor = (progress) => {
@@ -92,9 +99,9 @@ export default function Projects() {
   };
 
   const getCardBg = (progress) => {
-    if (progress === 0) return 'bg-red-100';
-    if (progress > 0 && progress < 100) return 'bg-orange-100';
-    return 'bg-green-100'; // progress === 100
+    if (progress === 0) return 'bg-red-5';
+    if (progress > 0 && progress < 100) return 'bg-orange-5';
+    return 'bg-green-5'; // progress === 100
   };
   
 
@@ -133,6 +140,14 @@ export default function Projects() {
   //   const fresh = await res.json();
   //   setProjects(fresh);
   // };
+
+  const handleEdit = () => {
+    alert("edit clicked");
+  }
+
+  const handleDelete = () => {
+    alert("delete clicked");
+  }
   
 
   return (
@@ -145,7 +160,7 @@ export default function Projects() {
 
           {/* Desktop Search + Buttons */}
           <div className="hidden lg:flex lg:items-center gap-4 w-full max-w-5xl">
-           <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2 ">  {/*flex-1 */}
+           <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2">  {/*flex-1 */}
               {/* {showIcon && <Search className="text-gray-500 mr-2" size={20} />} */}
               <input
                 type="text"
@@ -231,34 +246,46 @@ export default function Projects() {
       </div>
 
       {/* Project Cards */}
-      <div className="bg-gray-50 py-10 flex flex-wrap w-full h-auto justify-center gap-10 px-10 lg:px-0">
+      <div className="bg-purple-50 py-10 flex flex-wrap w-auto h-auto justify-center gap-10 px-10 lg:px-0" onClick={() => navigate(`/home/tasks`)}>
       {error ? (
           <div className="text-red-500 text-center">{error}</div>
         ) : projects.length > 0 ? (
-          <div>
+          <>
             {/* Render your list of projects here */}
             {projects.map((project) => (
               <div
                 key={project.id}
-                className={`border-0 rounded-md shadow w-auto h-full p-5 cursor-pointer hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200 ${getCardBg(project.progress)}`}
-                onClick={() => navigate(`/home/tasks`)}
+                className={`border-0 rounded-md shadow w-60 p-5 cursor-pointer hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200 bg-white ${getCardBg(project.progress)}`}
               >
-                <h2 className="text-xl font-bold mb-2">{project.name}</h2>
+                <div className="flex items-center justify-between gap-2 mb-2 w-full">
+                  <div className="w-4/4 min-w-0 cursor-pointer">
+                    <h2 className="text-xl font-bold mb-2 overflow-hidden whitespace-nowrap text-ellipsis">
+                      {project.name}
+                    </h2>
+                  </div>
+                  {isProductOwner && 
+                  <div className="border-2 p-1 flex items-center gap-1 rounded-md border-gray-400">
+                    <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); handleEdit()}}><FolderCog size={20} color="#a40ff3" /></span>
+                    <div className="w-px h-4 bg-gray-400"/>
+                    <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); handleDelete()}}><Trash2 size={20} color="red" /></span>
+                  </div>
+                  }
+                </div>
                 <hr />
-                <p className="p-1">
-                  <strong>Product Owner:</strong> {project.owner}
+                <p className="p-1 text-gray-500">
+                  <strong className="text-gray-600">Product Owner:</strong> {project.owner}
                 </p>
-                <p className="p-1">
-                  <strong>Scrum Master:</strong> {project.scrumMaster}
+                <p className="p-1 text-gray-500">
+                  <strong className="text-gray-600">Scrum Master:</strong> {project.scrumMaster}
                 </p>
-                <p className="p-1">
-                  <strong>From:</strong> {project.from}
+                <p className="p-1 text-gray-500">
+                  <strong className="text-gray-600">From:</strong> {project.from}
                 </p>
-                <p className="p-1">
-                  <strong>To:</strong> {project.to}
+                <p className="p-1 text-gray-500">
+                  <strong className="text-gray-600">To:</strong> {project.to}
                 </p>
-                <p className="p-1">
-                  <strong>Status:</strong> {project.status}
+                <p className="p-1 text-gray-500">
+                  <strong className="text-gray-600">Status:</strong> {project.status}
                 </p>
                 <div className="p-2">
                   <div className="relative w-full h-1 bg-gray-500 mt-5 rounded overflow-visible">
@@ -272,7 +299,7 @@ export default function Projects() {
                 </div>
               </div>
             ))}
-          </div>
+          </>
         ) : (
           <div>Loading...</div> // Optional loading state
         )}
