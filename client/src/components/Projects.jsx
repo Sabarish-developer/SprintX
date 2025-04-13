@@ -173,7 +173,7 @@ export default function Projects() {
 
   // Filter projects by search text
   useEffect(() => {
-    const filtered = projects.filter((p) =>   // i changed here projectsData
+    const filtered = projectsData.filter((p) =>   // i changed here projectsData
       p.name.toLowerCase().includes(search.toLowerCase())
     );
     setProjects(filtered);
@@ -197,7 +197,7 @@ export default function Projects() {
 
   //clear sort see below clear sort
   const clearSort = () => {
-    setProjects(pro); // this is temp only use below in integeration
+    setProjects(projectsData); // this is temp only use below in integeration
   };
 
   // use this on integrating with backend not above
@@ -625,7 +625,7 @@ export default function Projects() {
             {projects.map((project) => (
               <div
                 key={project.id}
-                className={`border-0 rounded-md shadow w-60 p-5 cursor-pointer hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200 bg-white ${getCardBg(project.progress)}`}
+                className={`border-0 rounded-md shadow w-60 md:w-80 lg:w-80 p-5 cursor-pointer hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200 bg-white ${getCardBg(project.progress)}`}
               >
                 <div className="flex items-center justify-between gap-2 mb-2 w-full">
                   <div className="w-4/4 min-w-0 cursor-pointer">
