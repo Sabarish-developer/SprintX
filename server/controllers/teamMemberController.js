@@ -118,6 +118,35 @@ const taskUpdateHandler = async(req,res)=>{
 
 const teamMembersHandler = async(req,res)=>{
     
+    try{
+        const projectId = req.params.id;
+        if(!projectId){
+            return res.status(400).json({message: "Project Id is required."});
+        }
+        const project = await projectModel.findById(projectId);
+        if(!project){
+            return res.status(200).json({message: "Project doesn't exist."});
+        }
+
+        const productOwnerId = project.productOwnerId;
+        const productOwner = await userModel.findById(productOwnerId).select("username email");
+
+        const scrumMasterId = project.scrumMasterId;
+        const scrumMaster = await userModel.findById(scrumMasterId).select("username email");
+
+        let teamMembersId = project.teamMembersId;
+        const userId = req.user.id;
+        const newTeamMembersId = teamMembersId.filter((id)=> id.toString() !== userId.toString());
+        const newTeamMembers = await userModel.find({_id: {$in: newTeamMembersId}}).select("username email subrole");
+
+        if(productOwner && scrumMaster && newTeamMembers)
+            return res.status(200).json({message: "All roles are present", productOwner, scrumMaster, teamMembers: newTeamMembers});
+        else
+            return res.status(200).json({message: "All roles are not present.", productOwner, scrumMaster, teamMembers: newTeamMembers});
+    }catch(e){
+        console.log("Error in team member block: ",e);
+        return res.status(500).json("Internal server error. Please try again later.");
+    }
 }
 
 const reportPageHandler = async(req,res)=>{
