@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
+import { toast } from "react-toastify";
 
 //Dummy Projects Data
 const projectsData = [
@@ -26,6 +27,9 @@ export default function Projects() {
   const [showIcon, setShowIcon] = useState(false);
   //const [projects, setProjects] = useState([]);
   const [projects, setProjects] = useState(projectsData);
+  const [showModal, setShowModal] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState(null);
   const [pro, setPro] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -93,7 +97,7 @@ export default function Projects() {
 
 
   const getProgressColor = (progress) => {
-    if (progress === 0) return 'bg-red-500';
+    if (progress == 0) return 'bg-red-500';
     if (progress > 0 && progress < 100) return 'bg-orange-500';
     return 'bg-green-500'; // progress === 100
   };
@@ -141,9 +145,19 @@ export default function Projects() {
   //   setProjects(fresh);
   // };
 
-  const handleEdit = () => {
-    alert("edit clicked");
-  }
+  // const handleEdit = () => {
+  //   alert("edit clicked");
+  // }
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+  
+    const updatedProjects = projects.map((proj) =>
+      proj.id === projectToEdit.id ? projectToEdit : proj
+    );
+    setProjects(updatedProjects);
+    setIsEditOpen(false);
+  };  //on integrate the backend soon, just replace the setProjects(updatedProjects) logic with PUT API call.
 
   const handleDelete = () => {
     alert("delete clicked");
@@ -198,13 +212,219 @@ export default function Projects() {
           </div>
           {isProductOwner &&
           <button
-          onClick={() => handleCreateProject()}
+          onClick={() => setShowModal(true)}
           className="bg-[#a40ff3] hover:bg-white cursor-pointer hover:text-[#a40ff3] text-white px-4 py-2 rounded shadow hover:shadow-md text-sm flex items-center gap-2 w-40"
-        >
-          <FolderPlus size={18} />
-          Create project
-        </button> 
+          >
+            <FolderPlus size={18} />
+            Create project
+          </button>
           }
+          {showModal && (
+              <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 ml-16 lg:ml-0 p-2 lg:p-0">
+                <div className="bg-white p-6 rounded-md w-96 shadow-md">
+                  <h2 className="text-xl font-semibold mb-4">Create Project</h2>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+
+                      const formData = new FormData(e.target);
+                      const newProject = {
+                        id: Date.now(), // or generate unique ID logic
+                        name: formData.get("name"),
+                        owner: formData.get("owner"),
+                        scrumMaster: formData.get("scrumMaster"),
+                        from: formData.get("from"),
+                        to: formData.get("to"),
+                        status: "Not Started", // default
+                        progress: 0, // default
+                      };
+
+                      setProjects((prev) => [...prev, newProject]);
+                      setShowModal(false);
+                      toast.success("Project is created successfully!");
+                    }}
+                  >
+                    <div className="mb-3">
+                      <label className="block mb-1 font-medium">Project Name</label>
+                      <input
+                        name="name"
+                        required
+                        className="w-full border px-3 py-1 rounded"
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="block mb-1 font-medium">Owner</label>
+                      <input
+                        name="owner"
+                        required
+                        className="w-full border px-3 py-1 rounded"
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="block mb-1 font-medium">Scrum Master</label>
+                      <input
+                        name="scrumMaster"
+                        required
+                        className="w-full border px-3 py-1 rounded"
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="block mb-1 font-medium">From Date</label>
+                      <input
+                        type="date"
+                        name="from"
+                        required
+                        className="w-full border px-3 py-1 rounded"
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="block mb-1 font-medium">To Date</label>
+                      <input
+                        type="date"
+                        name="to"
+                        required
+                        className="w-full border px-3 py-1 rounded"
+                      />
+                    </div>
+
+                    <div className="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowModal(false)}
+                        className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-4 py-1 bg-purple-500 text-white rounded hover:bg-purple-600"
+                      >
+                        Create
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* Edit Project */}
+            {isEditOpen && (
+              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50 ml-16 lg:ml-0 p-2 lg:p-0">
+                <div className="bg-white p-6 rounded-md w-96 shadow-lg">
+                  <h2 className="text-xl font-bold mb-4">Edit Project</h2>
+                  <form onSubmit={handleEditSubmit} className="space-y-3">
+                    {/* Name */}
+                    <input
+                      type="text"
+                      value={projectToEdit.name}
+                      onChange={(e) =>
+                        setProjectToEdit({ ...projectToEdit, name: e.target.value })
+                      }
+                      placeholder="Project Name"
+                      className="border border-gray-300 rounded w-full px-3 py-2"
+                      required
+                    />
+
+                    {/* Owner */}
+                    <input
+                      type="text"
+                      value={projectToEdit.owner}
+                      onChange={(e) =>
+                        setProjectToEdit({ ...projectToEdit, owner: e.target.value })
+                      }
+                      placeholder="Owner"
+                      className="border border-gray-300 rounded w-full px-3 py-2"
+                      required
+                    />
+
+                    {/* Scrum Master */}
+                    <input
+                      type="text"
+                      value={projectToEdit.scrumMaster}
+                      onChange={(e) =>
+                        setProjectToEdit({ ...projectToEdit, scrumMaster: e.target.value })
+                      }
+                      placeholder="Scrum Master"
+                      className="border border-gray-300 rounded w-full px-3 py-2"
+                      required
+                    />
+
+                    {/* From Date */}
+                    <input
+                      type="date"
+                      value={projectToEdit.from}
+                      onChange={(e) =>
+                        setProjectToEdit({ ...projectToEdit, from: e.target.value })
+                      }
+                      className="border border-gray-300 rounded w-full px-3 py-2"
+                      required
+                    />
+
+                    {/* To Date */}
+                    <input
+                      type="date"
+                      value={projectToEdit.to}
+                      onChange={(e) =>
+                        setProjectToEdit({ ...projectToEdit, to: e.target.value })
+                      }
+                      className="border border-gray-300 rounded w-full px-3 py-2"
+                      required
+                    />
+
+                    {/* Status Dropdown */}
+                    <select
+                      value={projectToEdit.status}
+                      onChange={(e) =>
+                        setProjectToEdit({ ...projectToEdit, status: e.target.value })
+                      }
+                      className="border border-purple-300 rounded w-full px-3 py-2 bg-purple-100 font-medium"
+                      required
+                    >
+                      <option value="Not Started">Not Started</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Completed">Completed</option>
+                    </select>
+
+                    {/* Progress */}
+                    <input
+                      type="number"
+                      value={projectToEdit.progress}
+                      onChange={(e) =>
+                        setProjectToEdit({ ...projectToEdit, progress: e.target.value })
+                      }
+                      placeholder="Progress %"
+                      className="border border-gray-300 rounded w-full px-3 py-2"
+                      required
+                      min="0"
+                      max="100"
+                    />
+
+                    {/* Buttons */}
+                    <div className="flex justify-end gap-2 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsEditOpen(false)}
+                        className="bg-gray-300 text-gray-800 px-4 py-1 rounded-md"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="bg-purple-600 text-white px-4 py-1 rounded-md"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+
 
           {/* Mobile Hamburger */}
           <div className="lg:hidden">
@@ -278,7 +498,7 @@ export default function Projects() {
                   </div>
                   {isProductOwner && 
                   <div className="border-2 p-1 flex items-center gap-1 rounded-md border-gray-400">
-                    <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); handleEdit()}}><FolderCog size={20} color="#a40ff3" /></span>
+                    <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); setProjectToEdit(project); setIsEditOpen(true)}}><FolderCog size={20} color="#a40ff3" /></span>
                     <div className="w-px h-4 bg-gray-400"/>
                     <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); handleDelete()}}><Trash2 size={20} color="red" /></span>
                   </div>
