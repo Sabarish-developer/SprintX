@@ -38,8 +38,8 @@ const Login = () => {
                 toast.success(response.data.message);
                 localStorage.setItem("token",response.data.token);
                 localStorage.setItem("email",response.data.data.email);
-                localStorage.setItem("username",response.data.data.username);
-                console.log(localStorage.getItem("username"));
+                // localStorage.setItem("username",response.data.data.username);
+                // console.log(localStorage.getItem("username"));
                 console.log(localStorage.getItem("email"));
                 console.log(localStorage.getItem("token"));
             }

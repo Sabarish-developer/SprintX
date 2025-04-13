@@ -2,6 +2,8 @@ import { MoreVertical, ChevronLast, ChevronFirst, User, LogOut } from "lucide-re
 import { useContext, createContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
+// import {jwtDecode} from "jwt-decode";
+import useAuth from "../hooks/useAuth";
 
 const SideBarContext = createContext();
 
@@ -9,6 +11,11 @@ export default function SideBar({ children }) {
     const navigate = useNavigate();
     const [expanded, setExpanded] = useState(window.innerWidth >= 1024); // Expand by default for lg screens
     const [overlay, setOverlay] = useState(false);
+
+    const user = useAuth(); // Get user data from the custom hook
+
+    const username = user?.username;
+    //const isAdmin = user?.role === "admin";
 
     const toggleSidebar = () => {
         if (window.innerWidth < 1024) {
@@ -30,8 +37,8 @@ export default function SideBar({ children }) {
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("username");
-        localStorage.removeItem("email"); // Remove token from local storage
+        // localStorage.removeItem("username");
+        localStorage.removeItem("email");
         navigate("/"); // Navigate to home page
       };
 
@@ -84,7 +91,7 @@ export default function SideBar({ children }) {
                             }`}
                         >
                             <div className="leading-4 w-10">
-                                <h4 className="font-semibold w-15">{localStorage.getItem("username")}</h4>
+                                <h4 className="font-semibold w-15">{username}</h4>
                                 <span className="text-xs text-gray-600 w-15">{localStorage.getItem("email")}</span>
                             </div>
                         </div>
