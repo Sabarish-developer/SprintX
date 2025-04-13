@@ -6,6 +6,7 @@ import axios from "axios";
 import useAuth from "../hooks/useAuth";
 import { toast } from "react-toastify";
 import ConfirmToast from "./ConfirmToast";
+import Select from "react-select";
 
 //Dummy Projects Data
 const projectsData = [
@@ -24,6 +25,7 @@ const projectsData = [
   ];
 
 export default function Projects() {
+  const token = localStorage.getItem("token");
   const [search, setSearch] = useState("");
   const [showIcon, setShowIcon] = useState(false);
   //const [projects, setProjects] = useState([]);
@@ -42,11 +44,71 @@ export default function Projects() {
   console.log(isProductOwner);
   console.log("hello");
 
+  const [scrumMasters, setScrumMasters] = useState([]);
+  const [teamMembers, setTeamMembers] = useState([]);
+  // const [selectedScrumMaster, setSelectedScrumMaster] = useState({
+  //   value: projectToEdit.scrumMasterId,
+  //   label: projectToEdit.scrumMasterName,
+  // });
+  // const [selectedTeamMembers, setSelectedTeamMembers] = useState(
+  //   projectToEdit.teamMembers.map(member => ({
+  //     value: member.id,
+  //     label: member.username,
+  //   }))
+  // );
+  const [selectedScrumMaster, setSelectedScrumMaster] = useState(
+    projectToEdit?.scrumMasterId
+      ? {
+          value: projectToEdit.scrumMasterId,
+          label: projectToEdit.scrumMasterName,
+        }
+      : null
+  );
+  
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState(
+    Array.isArray(projectToEdit?.teamMembers)
+      ? projectToEdit.teamMembers.map(member => ({
+          value: member.id,
+          label: member.username,
+        }))
+      : []
+  );
+  
+
+  const scrumMasterOptions = scrumMasters.map(member => ({
+    value: member.id,
+    label: member.username
+  }));
+
+  const teamMemberOptions = teamMembers.map(member => ({
+    value: member.id,
+    label: member.username
+  }));
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/companymembers`, {
+                   headers: {
+                     Authorization: token
+                   }
+                 }); // adjust endpoint if needed
+        setScrumMasters(res.data.scrumMasters);
+        setTeamMembers(res.data.teamMembers);
+        toast.info(res.data.message);
+      } catch (err) {
+        toast.error("Failed to load members");
+      }
+    };
+  
+    fetchMembers();
+  }, []);
+  
+
 
   // useEffect(() => {
   //   const fetchProjects = async () => {
   //     try {
-  //       const token = localStorage.getItem("token");
   //       console.log("iam inside fetchProjects func");
 
   //       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
@@ -95,7 +157,6 @@ export default function Projects() {
 
   //   fetchProjects();
   // }, []);
-
 
   const getProgressColor = (progress) => {
     if (progress == 0) return 'bg-red-500';
@@ -203,9 +264,9 @@ export default function Projects() {
   //   alert("delete clicked");
   // }
 
-  const handleCreateProject = () => {
-    alert("project created")
-  }
+  // const handleCreateProject = () => {
+  //   alert("project created")
+  // }
   
 
   return (
@@ -331,7 +392,24 @@ export default function Projects() {
                       />
                     </div>
 
-                    <div className="flex justify-end gap-2">
+                    <label className="block mb-2 text-sm font-bold">Scrum Master</label>
+                      <Select
+                        options={scrumMasterOptions}
+                        onChange={setSelectedScrumMaster}
+                        placeholder="Select Scrum Master"
+                        isSearchable
+                      />
+
+                      <label className="block mt-4 mb-2 text-sm font-bold">Team Members</label>
+                      <Select
+                        isMulti
+                        options={teamMemberOptions}
+                        onChange={setSelectedTeamMembers}
+                        placeholder="Select Team Members"
+                        isSearchable
+                      />
+
+                    <div className="flex justify-end gap-2 mt-4">
                       <button
                         type="button"
                         onClick={() => setShowModal(false)}
@@ -442,9 +520,28 @@ export default function Projects() {
                       min="0"
                       max="100"
                     />
+                    {/* Scrum Master Select */}
+                      <label className="font-semibold">Scrum Master</label>
+                      <Select
+                        value={selectedScrumMaster}
+                        onChange={setSelectedScrumMaster}
+                        options={scrumMasterOptions}
+                        placeholder="Select Scrum Master"
+                      />
+
+                      {/* Team Members Select (Multi-select) */}
+                      <label className="font-semibold mt-2">Team Members</label>
+                      <Select
+                        isMulti
+                        value={selectedTeamMembers}
+                        onChange={setSelectedTeamMembers}
+                        options={teamMemberOptions}
+                        placeholder="Select Team Members"
+                      />
+
 
                     {/* Buttons */}
-                    <div className="flex justify-end gap-2 pt-2">
+                    <div className="flex justify-end gap-2 pt-2 mt-4">
                       <button
                         type="button"
                         onClick={() => setIsEditOpen(false)}
