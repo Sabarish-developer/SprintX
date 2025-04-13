@@ -1,8 +1,9 @@
-import userModel from "../models/user";
-import projectModel from "../models/project";
-import sprintModel from "../models/sprint";
-import taskModel from "../models/task";
+import userModel from "../models/user.js";
+import projectModel from "../models/project.js";
+import sprintModel from "../models/sprint.js";
+import taskModel from "../models/task.js";
 import mongoose from "mongoose";
+import progressUpdater from "../utils/progressUpdater.js";
 
 
 const homePageHandler = async(req,res)=>{
@@ -114,6 +115,7 @@ const tasksPageHandler = async(req,res)=>{
 
 const taskUpdateHandler = async(req,res)=>{
     //when one task is completed -> check userstory completed -> check epic completed -> check project completed.
+    
 }
 
 const teamMembersHandler = async(req,res)=>{
