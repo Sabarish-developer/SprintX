@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css'
@@ -35,7 +36,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/home',
-    element: <SideBarLayout/>,
+    element: (
+      <ProtectedRoute>
+        <SideBarLayout/>
+      </ProtectedRoute>
+    ),
     children:[
       {
         path:'/home',
