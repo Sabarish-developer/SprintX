@@ -148,6 +148,10 @@ export default function Projects() {
   const handleDelete = () => {
     alert("delete clicked");
   }
+
+  const handleCreateProject = () => {
+    alert("project created")
+  }
   
 
   return (
@@ -192,14 +196,15 @@ export default function Projects() {
                 clearSort={clearSort}
               />
           </div>
+          {isProductOwner &&
           <button
-          onClick={() => setOpen(!open)}
+          onClick={() => handleCreateProject()}
           className="bg-[#a40ff3] hover:bg-white cursor-pointer hover:text-[#a40ff3] text-white px-4 py-2 rounded shadow hover:shadow-md text-sm flex items-center gap-2 w-40"
         >
           <FolderPlus size={18} />
           Create project
-        </button>
-          {/* <button>Create Project</button> */}
+        </button> 
+          }
 
           {/* Mobile Hamburger */}
           <div className="lg:hidden">
