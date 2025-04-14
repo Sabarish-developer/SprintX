@@ -29,11 +29,10 @@ export default function Projects() {
   const [search, setSearch] = useState("");
   const [showIcon, setShowIcon] = useState(false);
   const [projects, setProjects] = useState([]);
-  //const [projects, setProjects] = useState(projectsData);
+  const [projectsData, setProjectsData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [projectToEdit, setProjectToEdit] = useState(null);
-  const [pro, setPro] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const [sortType, setSortType] = useState("");
@@ -157,7 +156,7 @@ export default function Projects() {
         });
   
         setProjects(fetchedProjects);
-        setPro(fetchedProjects);
+        setProjectsData(fetchedProjects);
       }
     } catch (err) {
       console.error("Error fetching project data:", err);
@@ -184,7 +183,7 @@ export default function Projects() {
 
   // Filter projects by search text
   useEffect(() => {
-    const filtered = projects.filter((p) =>   // i changed here projectsData
+    const filtered = projectsData.filter((p) =>   // i changed here projectsData
       p.name.toLowerCase().includes(search.toLowerCase())
     );
     setProjects(filtered);
@@ -259,15 +258,7 @@ export default function Projects() {
 
   // use this on integrating with backend not above
   const clearSort = async () => {
-    //const res = await fetch("/api/projects"); // or use Axios
-    const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
-      headers: {
-        Authorization: token
-      }
-    });
-    //const fresh = await res.json();
-    const fresh = await res.data.projects;
-    setProjects(fresh);
+    fetchProjects(); // Fetch the original unsorted projects from the backend
   };
 
   const handleEditSubmit = async (e) => {
