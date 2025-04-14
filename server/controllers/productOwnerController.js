@@ -97,10 +97,10 @@ const companyMembersHandler = async(req,res)=>{
         const companyId = user.companyId;
         const teamMembers = await userModel.find({companyId, role: "Team member"}).select("username");
         const scrumMasters = await userModel.find({companyId, role: "Scrum master"}).select("username");
-        if(teamMembersMembers.length == 0)
-            return res.status(200).json({message: "No team members found.", teamMembers: []});
+        if(teamMembers.length == 0)
+            return res.status(200).json({message: "Add a team member to create a project."});
         else if(scrumMasters.length == 0)
-                return res.status(200).json({message: "No scrum masters found.", scrumMasters: []});
+                return res.status(200).json({message: "Add a scrum master to create a project."});
         else
             return res.status(200).json({message: "Members found successfully.", scrumMasters, teamMembers});
     }catch(e){
