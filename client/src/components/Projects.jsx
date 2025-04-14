@@ -336,7 +336,7 @@ export default function Projects() {
                       const formData = new FormData(e.target);
                       const newProject = {
                         title: formData.get("name"),
-                        description: formData.get("owner"),
+                        description: formData.get("desc"),
                         start: formData.get("from"),
                         deadline: formData.get("to"),
                         scrumMasterId: selectedScrumMaster?.value, // 🟢 ID of selected Scrum Master
@@ -373,9 +373,9 @@ export default function Projects() {
                     </div>
 
                     <div className="mb-3">
-                      <label className="block mb-1 font-medium">Owner</label>
+                      <label className="block mb-1 font-medium">Description</label>
                       <input
-                        name="owner"
+                        name="desc"
                         required
                         className="w-full border px-3 py-1 rounded"
                       />
