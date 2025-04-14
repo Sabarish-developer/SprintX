@@ -412,6 +412,16 @@ export default function Projects() {
                         options={teamMemberOptions}
                         onChange={setSelectedTeamMembers}
                         value={selectedTeamMembers}
+                        menuPosition="fixed"
+                        styles={{
+                          menu: (base) => ({
+                            ...base,
+                            maxHeight: 200,
+                            overflowY: 'auto'
+                          }),
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        }}
+                        //menuPortalTarget={document.body}                        
                         placeholder="Select Team Members"
                       />
 
@@ -542,6 +552,15 @@ export default function Projects() {
                         value={selectedTeamMembers}
                         onChange={setSelectedTeamMembers}
                         options={teamMemberOptions}
+                        menuPosition="fixed"
+                        styles={{
+                          menu: (base) => ({
+                            ...base,
+                            maxHeight: 200,
+                            overflowY: 'auto'
+                          }),
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        }}
                         placeholder="Select Team Members"
                       />
 
