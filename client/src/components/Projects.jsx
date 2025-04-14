@@ -334,23 +334,30 @@ export default function Projects() {
                       e.preventDefault();
 
                       const formData = new FormData(e.target);
-                      const newProject = {
-                        title: formData.get("name"),
-                        description: formData.get("desc"),
-                        start: formData.get("from"),
-                        deadline: formData.get("to"),
-                        scrumMasterId: selectedScrumMaster?.value, // 🟢 ID of selected Scrum Master
-                        teamMembersId: selectedTeamMembers.map(member => member.value), // 🟢 Array of IDs
-                      };
-                      console.log(newProject.teamMembersId);
+                      // const newProject = {
+                      //   title: formData.get("name"),
+                      //   description: formData.get("desc"),
+                      //   start: formData.get("from"),
+                      //   deadline: formData.get("to"),
+                      //   scrumMasterId: selectedScrumMaster?.value, // 🟢 ID of selected Scrum Master
+                      //   teamMembersId: selectedTeamMembers.map(member => member.value), // 🟢 Array of IDs
+                      // };
+                      // console.log(newProject);
                       try {
-                        const res1 = axios.post(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, newProject, 
-                          {
-                            headers: {
-                              Authorization: token
-                            }
-                          }
-                        )
+                        // const res1 = axios.post(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, newProject, 
+                        //   {
+                        //     headers: {
+                        //       Authorization: token
+                        //     }
+                        //   }
+                        const res1 = axios.post(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
+                          title: formData.get("name"),
+                          description: formData.get("desc"),
+                          start: formData.get("from"),
+                          deadline: formData.get("to"),
+                          scrumMasterId: selectedScrumMaster?.value, // 🟢 ID of selected Scrum Master
+                          teamMembersId: selectedTeamMembers.map(member => member.value), // 🟢 Array of IDs
+                        });
                         if(res1.staus===200){
                           toast.success(res1.data.message);
                         }
