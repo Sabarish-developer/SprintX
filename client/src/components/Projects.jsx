@@ -357,6 +357,10 @@ export default function Projects() {
                           deadline: formData.get("to"),
                           scrumMasterId: selectedScrumMaster?.value, // 🟢 ID of selected Scrum Master
                           teamMembersId: selectedTeamMembers.map(member => member.value), // 🟢 Array of IDs
+                        }, {
+                          headers: {
+                            Authorization: token
+                          }
                         });
                         if(res1.staus===200){
                           toast.success(res1.data.message);
