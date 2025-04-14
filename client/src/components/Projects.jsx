@@ -9,27 +9,27 @@ import ConfirmToast from "./ConfirmToast";
 import Select from "react-select";
 
 //Dummy Projects Data
-const projectsData = [
-    { id: 1, name: "Seenu nnnnnn nnnn n", owner: "Aliceee", scrumMaster: "Bob", from: "2025-03-01", to: "2025-06-30", status: "In Progress", progress: 50 },
-    { id: 2, name: "Apple", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Completed", progress: 100 },
-    { id: 3, name: "Windows", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "In Progress", progress: 50},
-    { id: 4, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
-    { id: 5, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
-    { id: 6, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
-    { id: 7, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
-    { id: 8, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
-    { id: 9, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
-    { id: 10, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
-    { id: 11, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
-    { id: 12, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
-  ];
+// const projectsData = [
+//     { id: 1, name: "Seenu nnnnnn nnnn n", owner: "Aliceee", scrumMaster: "Bob", from: "2025-03-01", to: "2025-06-30", status: "In Progress", progress: 50 },
+//     { id: 2, name: "Apple", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Completed", progress: 100 },
+//     { id: 3, name: "Windows", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "In Progress", progress: 50},
+//     { id: 4, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+//     { id: 5, name: "Linux", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+//     { id: 6, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+//     { id: 7, name: "Projectl 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0},
+//     { id: 8, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+//     { id: 9, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+//     { id: 10, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+//     { id: 11, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+//     { id: 12, name: "Project 2", owner: "Charlie", scrumMaster: "Dave", from: "2025-04-01", to: "2025-07-30", status: "Not Started", progress: 0 },
+//   ];
 
 export default function Projects() {
   const token = localStorage.getItem("token");
   const [search, setSearch] = useState("");
   const [showIcon, setShowIcon] = useState(false);
-  //const [projects, setProjects] = useState([]);
-  const [projects, setProjects] = useState(projectsData);
+  const [projects, setProjects] = useState([]);
+  //const [projects, setProjects] = useState(projectsData);
   const [showModal, setShowModal] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [projectToEdit, setProjectToEdit] = useState(null);
@@ -110,58 +110,56 @@ export default function Projects() {
     label: member.username
   }));
 
-
-  // useEffect(() => {
-  //   const fetchProjects = async () => {
-  //     try {
-  //       console.log("iam inside fetchProjects func");
-
-  //       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
-  //         headers: {
-  //           Authorization: token
-  //         }
-  //       });
-  //       console.log(res.data.message);
-
-  //       if(res.status===200){
-
-  //         if(res.data.projects.length === 0){
-  //           setError(res.data.message);
-  //           return;
-  //         }
-
-  //         const fetchedProjects = res.data.projects.map((p, index) => ({
-  //           id: index + 1,
-  //           name: p.name,
-  //           owner: p.owner,
-  //           scrumMaster: p.scrumMaster,
-  //           // from: new Date(p.from).toISOString().slice(0, 10),
-  //           // to: new Date(p.to).toISOString().slice(0, 10),
-  //           from: new Date(p.from).toLocaleDateString("en-US", {
-  //             month: "short",
-  //             day: "numeric",
-  //             year: "numeric",
-  //           }),
-  //           to: new Date(p.to).toLocaleDateString("en-US", {
-  //             month: "short",
-  //             day: "numeric",
-  //             year: "numeric",
-  //           }),
-  //           status: p.status,
-  //           progress: p.progress
-  //         }));
+  const fetchProjects = async () => {
+    try {
+      console.log("Fetching projects...");
   
-  //         setProjects(fetchedProjects);
-  //         setPro(fetchedProjects);
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching project data:", err);
-  //       setError("Error fetching project data");
-  //     }
-  //   };
-
-  //   fetchProjects();
-  // }, []);
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
+        headers: {
+          Authorization: token
+        }
+      });
+  
+      if (res.status === 200) {
+        if (res.data.projects.length === 0) {
+          setError(res.data.message);
+          return;
+        }
+        
+        const fetchedProjects = res.data.projects.map((p) => {
+          console.log(p);
+          return {
+            id: p._id,
+            name: p.title,
+            owner: p.description,
+            scrumMaster: p.scrumMaster,
+            from: new Date(p.from).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+            to: new Date(p.to).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+            status: p.status,
+            progress: p.progress
+          };
+        });
+  
+        setProjects(fetchedProjects);
+        setPro(fetchedProjects);
+      }
+    } catch (err) {
+      console.error("Error fetching project data:", err);
+      setError("Error fetching project data");
+    }
+  };
+  
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
   const getProgressColor = (progress) => {
     if (progress == 0) return 'bg-red-500';
@@ -178,7 +176,7 @@ export default function Projects() {
 
   // Filter projects by search text
   useEffect(() => {
-    const filtered = projectsData.filter((p) =>   // i changed here projectsData
+    const filtered = projects.filter((p) =>   // i changed here projectsData
       p.name.toLowerCase().includes(search.toLowerCase())
     );
     setProjects(filtered);
@@ -201,16 +199,22 @@ export default function Projects() {
   };
 
   //clear sort see below clear sort
-  const clearSort = () => {
-    setProjects(projectsData); // this is temp only use below in integeration
-  };
+  // const clearSort = () => {
+  //   setProjects(projectsData); // this is temp only use below in integeration
+  // };
 
   // use this on integrating with backend not above
-  // const clearSort = async () => {
-  //   const res = await fetch("/api/projects"); // or use Axios
-  //   const fresh = await res.json();
-  //   setProjects(fresh);
-  // };
+  const clearSort = async () => {
+    //const res = await fetch("/api/projects"); // or use Axios
+    const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
+      headers: {
+        Authorization: token
+      }
+    });
+    //const fresh = await res.json();
+    const fresh = await res.data.projects;
+    setProjects(fresh);
+  };
 
   // const handleEdit = () => {
   //   alert("edit clicked");
@@ -334,15 +338,15 @@ export default function Projects() {
                       e.preventDefault();
 
                       const formData = new FormData(e.target);
-                      // const newProject = {
-                      //   title: formData.get("name"),
-                      //   description: formData.get("desc"),
-                      //   start: formData.get("from"),
-                      //   deadline: formData.get("to"),
-                      //   scrumMasterId: selectedScrumMaster?.value, // 🟢 ID of selected Scrum Master
-                      //   teamMembersId: selectedTeamMembers.map(member => member.value), // 🟢 Array of IDs
-                      // };
-                      // console.log(newProject);
+                      const newProject = {
+                        title: formData.get("name"),
+                        description: formData.get("desc"),
+                        start: formData.get("from"),
+                        deadline: formData.get("to"),
+                        scrumMasterId: selectedScrumMaster?.value, // 🟢 ID of selected Scrum Master
+                        teamMembersId: selectedTeamMembers.map(member => member.value), // 🟢 Array of IDs
+                      };
+                      console.log(newProject);
                       try {
                         // const res1 = axios.post(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, newProject, 
                         //   {
@@ -350,7 +354,9 @@ export default function Projects() {
                         //       Authorization: token
                         //     }
                         //   }
-                        const res1 = axios.post(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
+                        console.log(formData.get("from"));
+                        console.log(formData.get("to"));
+                        const res1 = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
                           title: formData.get("name"),
                           description: formData.get("desc"),
                           start: formData.get("from"),
@@ -362,9 +368,8 @@ export default function Projects() {
                             Authorization: token
                           }
                         });
-                        if(res1.staus===200){
-                          toast.success(res1.data.message);
-                        }
+                        toast.success(res1.data.message);
+                        await fetchProjects(); // refresh UI after DB update
                       } catch (error) {
                         toast.error("Failed to create project");
                         //console.log(res1.data.message?res1.data.message:error);
