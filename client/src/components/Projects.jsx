@@ -315,15 +315,15 @@ export default function Projects() {
   
   
 
-  const handleDelete = async(projectIdd) => {
+  const handleDelete = async(projectId) => {
 
     toast(
       <ConfirmToast
         message="Are you sure you want to delete this project? This action cannot be undone."
-        onConfirm={async () => {
+        onConfirm={ async() => {
           try {
             const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`,{
-              projectId:projectIdd,
+              projectId,
             },
             {
               headers: {
