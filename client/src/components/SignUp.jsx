@@ -184,7 +184,7 @@ const Signup = () => {
                 {errors.role && <span className="text-red-500 text-sm">{errors.role.message}</span>}
 
                 <input {...register("Sub role")} placeholder="Sub role" className="input-field" />
-                <input {...register("companyName", { required: true })} placeholder="Company Name" className="input-field" />
+                <input {...register("companyName", { required: true })} defaultValue="Sprintx" placeholder="Company Name" className="input-field" />
                 {errors.companyName && <span className="text-red-500 text-sm">Company name is required</span>}
 
                 <div className="flex gap-4 justify-center">
