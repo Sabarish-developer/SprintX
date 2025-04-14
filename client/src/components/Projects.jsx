@@ -330,24 +330,37 @@ export default function Projects() {
                 <div className="bg-white p-6 rounded-md w-96 shadow-md">
                   <h2 className="text-xl font-semibold mb-4">Create Project</h2>
                   <form
-                    onSubmit={(e) => {
+                    onSubmit={async(e) => {
                       e.preventDefault();
 
                       const formData = new FormData(e.target);
                       const newProject = {
-                        id: Date.now(), // or generate unique ID logic
-                        name: formData.get("name"),
-                        owner: formData.get("owner"),
-                        scrumMaster: formData.get("scrumMaster"),
-                        from: formData.get("from"),
-                        to: formData.get("to"),
-                        status: "Not Started", // default
-                        progress: 0, // default
+                        title: formData.get("name"),
+                        description: formData.get("owner"),
+                        start: formData.get("from"),
+                        deadline: formData.get("to"),
+                        scrumMasterId: selectedScrumMaster?.value, // 🟢 ID of selected Scrum Master
+                        teamMembersId: selectedTeamMembers.map(member => member.value), // 🟢 Array of IDs
                       };
+                      console.log(newProject.teamMembersId);
+                      try {
+                        const res1 = axios.post(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, newProject, 
+                          {
+                            headers: {
+                              Authorization: token
+                            }
+                          }
+                        )
+                        if(res1.staus===200){
+                          toast.success(res1.data.message);
+                        }
+                      } catch (error) {
+                        toast.error("Failed to create project");
+                        //console.log(res1.data.message?res1.data.message:error);
+                      }
 
-                      setProjects((prev) => [...prev, newProject]);
+                      //setProjects((prev) => [...prev, newProject]);
                       setShowModal(false);
-                      toast.success("Project is created successfully!");
                     }}
                   >
                     <div className="mb-3">
@@ -368,14 +381,14 @@ export default function Projects() {
                       />
                     </div>
 
-                    <div className="mb-3">
+                    {/* <div className="mb-3">
                       <label className="block mb-1 font-medium">Scrum Master</label>
                       <input
                         name="scrumMaster"
                         required
                         className="w-full border px-3 py-1 rounded"
                       />
-                    </div>
+                    </div> */}
 
                     <div className="mb-3">
                       <label className="block mb-1 font-medium">From Date</label>
@@ -401,6 +414,15 @@ export default function Projects() {
                       <Select
                         options={scrumMasterOptions}
                         onChange={setSelectedScrumMaster}
+                        menuPosition="fixed"
+                        styles={{
+                          menu: (base) => ({
+                            ...base,
+                            maxHeight: 200,
+                            overflowY: 'auto'
+                          }),
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        }}
                         placeholder="Select Scrum Master"
                         isSearchable
                       />
@@ -476,7 +498,7 @@ export default function Projects() {
                     />
 
                     {/* Scrum Master */}
-                    <input
+                    {/* <input
                       type="text"
                       value={projectToEdit.scrumMaster}
                       onChange={(e) =>
@@ -485,7 +507,7 @@ export default function Projects() {
                       placeholder="Scrum Master"
                       className="border border-gray-300 rounded w-full px-3 py-2"
                       required
-                    />
+                    /> */}
 
                     {/* From Date */}
                     <input
