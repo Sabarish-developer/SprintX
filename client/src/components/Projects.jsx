@@ -133,18 +133,18 @@ export default function Projects() {
             name: p.title,
             owner: p.description,
             scrumMaster: p.scrumMaster,
-            from: new Date(p.from).toLocaleDateString("en-US", {
+            from: new Date(p.start).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
               year: "numeric",
             }),
-            to: new Date(p.to).toLocaleDateString("en-US", {
+            to: new Date(p.deadline).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
               year: "numeric",
             }),
             status: p.status,
-            progress: p.progress
+            progress: p.completionPercentage
           };
         });
   
