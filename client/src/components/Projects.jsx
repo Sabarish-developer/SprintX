@@ -65,6 +65,7 @@ export default function Projects() {
       : null
   );
   
+  //const [selectedTeamMembers, setSelectedTeamMembers] = useState([]);
   const [selectedTeamMembers, setSelectedTeamMembers] = useState(
     Array.isArray(projectToEdit?.teamMembers)
       ? projectToEdit.teamMembers.map(member => ({
@@ -73,17 +74,6 @@ export default function Projects() {
         }))
       : []
   );
-  
-
-  const scrumMasterOptions = scrumMasters.map(member => ({
-    value: member.id,
-    label: member.username
-  }));
-
-  const teamMemberOptions = teamMembers.map(member => ({
-    value: member.id,
-    label: member.username
-  }));
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -95,6 +85,12 @@ export default function Projects() {
                  }); // adjust endpoint if needed
         setScrumMasters(res.data.scrumMasters);
         setTeamMembers(res.data.teamMembers);
+        // const formattedOptions = res.data.teamMembers.map(member => ({
+        //   value: member._id,
+        //   label: member.username,
+        // }));
+        // setTeamMembers(formattedOptions);
+        
         toast.info(res.data.message);
       } catch (err) {
         toast.error("Failed to load members");
@@ -104,6 +100,15 @@ export default function Projects() {
     fetchMembers();
   }, []);
   
+  console.log("1",teamMembers);
+  const scrumMasterOptions = scrumMasters.map(member => ({
+    value: member._id,
+    label: member.username
+  }));
+  const teamMemberOptions = teamMembers.map(member => ({
+    value: member._id,
+    label: member.username
+  }));
 
 
   // useEffect(() => {
@@ -403,10 +408,11 @@ export default function Projects() {
                       <label className="block mt-4 mb-2 text-sm font-bold">Team Members</label>
                       <Select
                         isMulti
+                        isSearchable
                         options={teamMemberOptions}
                         onChange={setSelectedTeamMembers}
+                        value={selectedTeamMembers}
                         placeholder="Select Team Members"
-                        isSearchable
                       />
 
                     <div className="flex justify-end gap-2 mt-4">
