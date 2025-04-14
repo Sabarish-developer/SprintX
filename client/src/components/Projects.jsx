@@ -74,6 +74,8 @@ export default function Projects() {
         }))
       : []
   );
+  // const editProjectScrumMaster = null;
+  // const editProjectTeamMembers = [];
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -132,7 +134,9 @@ export default function Projects() {
             id: p._id,
             name: p.title,
             owner: p.description,
-            scrumMaster: p.scrumMaster,
+            scrumMaster: "SEENU",
+            start: new Date(p.start).toISOString().slice(0, 10), // ✅ good for <input type="date" />
+            deadline: new Date(p.deadline).toISOString().slice(0, 10), // ✅ good for <input type="date" />
             from: new Date(p.start).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -144,7 +148,11 @@ export default function Projects() {
               year: "numeric",
             }),
             status: p.status,
-            progress: p.completionPercentage
+            progress: p.completionPercentage,
+            scrumMasterId: p.scrumMasterId,
+            productOwnerId:p.productOwnerId,
+            teamMembersId: p.teamMembersId,
+            description:p.description
           };
         });
   
@@ -184,6 +192,52 @@ export default function Projects() {
 
   //const unsorted = [...Projects];
 
+  useEffect(() => {
+    console.log("iam proj to edit",projectToEdit);
+    console.log("SM",selectedScrumMaster);
+    console.log("TM",selectedTeamMembers);
+  }, [projectToEdit]);
+  useEffect(() => {
+    if (projectToEdit) {
+      // Set Scrum Master (you already do this part, just showing for clarity)
+      if (projectToEdit.scrumMasterId && projectToEdit.scrumMaster) {
+        setSelectedScrumMaster({
+          value: projectToEdit.scrumMasterId,
+          label: projectToEdit.scrumMaster
+        });
+      }
+  
+      // Set Team Members from teamMemberOptions using IDs
+      if (Array.isArray(projectToEdit.teamMembersId)) {
+        const matchedMembers = teamMemberOptions.filter(option =>
+          projectToEdit.teamMembersId.includes(option.value)
+        );
+        setSelectedTeamMembers(matchedMembers);
+      }
+    }
+  }, [projectToEdit]);
+
+  // const setOptions = (projectToEdit) => {
+  //   if (projectToEdit) {
+  //     // Set Scrum Master (you already do this part, just showing for clarity)
+  //     if (projectToEdit.scrumMasterId && projectToEdit.scrumMaster) {
+  //       setSelectedScrumMaster({
+  //         value: projectToEdit.scrumMasterId,
+  //         label: projectToEdit.scrumMaster
+  //       });
+  //     }
+  
+  //     // Set Team Members from teamMemberOptions using IDs
+  //     if (Array.isArray(projectToEdit.teamMembersId)) {
+  //       const matchedMembers = teamMemberOptions.filter(option =>
+  //         projectToEdit.teamMembersId.includes(option.value)
+  //       );
+  //       setSelectedTeamMembers(matchedMembers);
+  //     }
+  //   }
+  // }
+  
+  
   // Sort by project name
   const sortByProjects = () => {
     const sorted = [...projects].sort((a, b) => a.name.localeCompare(b.name));
@@ -216,52 +270,77 @@ export default function Projects() {
     setProjects(fresh);
   };
 
-  // const handleEdit = () => {
-  //   alert("edit clicked");
-  // }
-
-  const handleEditSubmit = (e) => {
-    e.preventDefault();
+  const handleEditSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
   
-    const updatedProjects = projects.map((proj) =>
-      proj.id === projectToEdit.id ? projectToEdit : proj
-    );
-    setProjects(updatedProjects);
-    setIsEditOpen(false);
-  };  //on integrate the backend soon, just replace the setProjects(updatedProjects) logic with PUT API call.
-
-  const handleDelete = async (projectId) => {
-    // const confirmDelete = window.confirm("Are you sure you want to delete this project?");
-    // if (!confirmDelete) return;
+    const formData = new FormData(e.target); // Get data from form fields
   
-    // try {
-    //   const response = await axios.delete(`/api/projects/${projectId}`);
-    //   if (response.status === 200) {
-    //     // Remove the deleted project from local state
-    //     setProjects((prev) => prev.filter((proj) => proj._id !== projectId));
-    //   }
-    // } catch (error) {
-    //   console.error("Failed to delete project:", error);
-    //   toast.error("Failed to delete project");
-    // }
+    try {
+      const updatedProject = {
+        title: formData.get("name"), // Assuming name input field has 'name' attribute
+        description: formData.get("desc"), // Assuming description field has 'desc'
+        start: formData.get("from"), // Assuming start date field has 'from'
+        deadline: formData.get("to"), // Assuming deadline field has 'to'
+        scrumMasterId: selectedScrumMaster?.value,
+        teamMembersId: selectedTeamMembers.map(member => member.value),
+      };
+      console.log("iam updated project bro",updatedProject);
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectToEdit.id}`,
+        {
+          title: formData.get("name"), // Assuming name input field has 'name' attribute
+          description: formData.get("desc"), // Assuming description field has 'desc'
+          start: formData.get("from"), // Assuming start date field has 'from'
+          deadline: formData.get("to"), // Assuming deadline field has 'to'
+          scrumMasterId: selectedScrumMaster?.value,
+          teamMembersId: selectedTeamMembers.map(member => member.value),
+        },
+        {
+          headers: {
+            Authorization: token
+          }
+        }
+      );
+  
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        setIsEditOpen(false); // Close modal
+        fetchProjects(); // Refresh if needed
+      }
+    } catch (error) {
+      console.error("Failed to update:", error);
+      toast.error("Failed to update project");
+    }
+  };
+  
+  
+
+  const handleDelete = async(projectIdd) => {
 
     toast(
       <ConfirmToast
         message="Are you sure you want to delete this project? This action cannot be undone."
-        onConfirm={() => {
-          // ✅ back end here below
-          // try {
-          //   const response = await axios.delete(`/api/projects/${projectId}`);
-          //   if (response.status === 200) {
-          //     // Remove the deleted project from local state
-          //     setProjects((prev) => prev.filter((proj) => proj._id !== projectId));
-          //   }
-          // } catch (error) {
-          //   console.error("Failed to delete project:", error);
-          //   toast.error("Failed to delete project");
-          // }
-          setProjects(prev => prev.filter(p => p.id !== projectId));
-          toast.success("Project deleted successfully!✅");
+        onConfirm={async () => {
+          try {
+            const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`,{
+              projectId:projectIdd,
+            },
+            {
+              headers: {
+                Authorization: token
+              }
+            });
+            if (response.status === 200) {
+              // Remove the deleted project from local state
+              toast.success(response.data.message);
+              fetchProjects(); // Refresh the project list
+            }
+          } catch (error) {
+            console.error("Failed to delete project:", error);
+            toast.error("Failed to delete project");
+          }
+          //setProjects(prev => prev.filter(p => p.id !== projectId));
+          //toast.success("Project deleted successfully!✅");
         }}
       />,
       { autoClose: false }
@@ -492,6 +571,7 @@ export default function Projects() {
                     {/* Name */}
                     <input
                       type="text"
+                      name="name"
                       value={projectToEdit.name}
                       onChange={(e) =>
                         setProjectToEdit({ ...projectToEdit, name: e.target.value })
@@ -501,12 +581,13 @@ export default function Projects() {
                       required
                     />
 
-                    {/* Owner */}
+                    {/* Description */}
                     <input
                       type="text"
+                      name="desc"
                       value={projectToEdit.owner}
                       onChange={(e) =>
-                        setProjectToEdit({ ...projectToEdit, owner: e.target.value })
+                        setProjectToEdit({ ...projectToEdit, description: e.target.value })
                       }
                       placeholder="Owner"
                       className="border border-gray-300 rounded w-full px-3 py-2"
@@ -528,9 +609,10 @@ export default function Projects() {
                     {/* From Date */}
                     <input
                       type="date"
-                      value={projectToEdit.from}
+                      name="from"
+                      value={projectToEdit.start}
                       onChange={(e) =>
-                        setProjectToEdit({ ...projectToEdit, from: e.target.value })
+                        setProjectToEdit({ ...projectToEdit, start: e.target.value })
                       }
                       className="border border-gray-300 rounded w-full px-3 py-2"
                       required
@@ -539,16 +621,17 @@ export default function Projects() {
                     {/* To Date */}
                     <input
                       type="date"
-                      value={projectToEdit.to}
+                      name="to"
+                      value={projectToEdit.deadline}
                       onChange={(e) =>
-                        setProjectToEdit({ ...projectToEdit, to: e.target.value })
+                        setProjectToEdit({ ...projectToEdit, deadline: e.target.value })
                       }
                       className="border border-gray-300 rounded w-full px-3 py-2"
                       required
                     />
 
                     {/* Status Dropdown */}
-                    <select
+                    {/* <select
                       value={projectToEdit.status}
                       onChange={(e) =>
                         setProjectToEdit({ ...projectToEdit, status: e.target.value })
@@ -559,10 +642,10 @@ export default function Projects() {
                       <option value="Not Started">Not Started</option>
                       <option value="In Progress">In Progress</option>
                       <option value="Completed">Completed</option>
-                    </select>
+                    </select> */}
 
                     {/* Progress */}
-                    <input
+                    {/* <input
                       type="number"
                       value={projectToEdit.progress}
                       onChange={(e) =>
@@ -573,7 +656,7 @@ export default function Projects() {
                       required
                       min="0"
                       max="100"
-                    />
+                    /> */}
                     {/* Scrum Master Select */}
                       <label className="font-semibold">Scrum Master</label>
                       <Select
@@ -588,6 +671,7 @@ export default function Projects() {
                       <Select
                         isMulti
                         value={selectedTeamMembers}
+                        //value={teamMemberOptions.filter(option => selectedTeamMembers.includes(option.value))}
                         onChange={setSelectedTeamMembers}
                         options={teamMemberOptions}
                         menuPosition="fixed"
@@ -698,7 +782,7 @@ export default function Projects() {
                   </div>
                   {isProductOwner && 
                   <div className="border-2 p-1 flex items-center gap-1 rounded-md border-gray-400">
-                    <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); setProjectToEdit(project); setIsEditOpen(true)}}><FolderCog size={20} color="#a40ff3" /></span>
+                    <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); setProjectToEdit(project); setIsEditOpen(true);}}><FolderCog size={20} color="#a40ff3" /></span>
                     <div className="w-px h-4 bg-gray-400"/>
                     <span className="cursor-pointer" onClick={(e) => {e.stopPropagation(); handleDelete(project.id)}}><Trash2 size={20} color="red" /></span>
                   </div>
@@ -710,6 +794,9 @@ export default function Projects() {
                 </p>
                 <p className="p-1 text-gray-500">
                   <strong className="text-gray-600">Scrum Master:</strong> {project.scrumMaster}
+                </p>
+                <p className="p-1 text-gray-500">
+                  <strong className="text-gray-600">Description:</strong> {project.description}
                 </p>
                 <p className="p-1 text-gray-500">
                   <strong className="text-gray-600">From:</strong> {project.from}
