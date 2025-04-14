@@ -37,9 +37,10 @@ const projectsPageHandler = async (req, res) => {
         const userId = req.user.id;
 
         // Fetch the projects with all their Epics
+        const userObjectId = new mongoose.Types.ObjectId(userId);
         const projects = await projectModel.aggregate([
             {
-                $match: { productOwnerId: userId }
+                $match: { productOwnerId: userObjectId }
             },
             {
                 $lookup: {
@@ -50,7 +51,6 @@ const projectsPageHandler = async (req, res) => {
                 }
             }
         ]);
-
         // Check if projects are found
         if (projects.length === 0) {
             return res.status(200).json({
