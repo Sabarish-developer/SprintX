@@ -307,20 +307,20 @@ export default function Projects() {
   
 
   const handleDelete = async(projectId) => {
+    console.log(projectId);
 
     toast(
       <ConfirmToast
         message="Are you sure you want to delete this project? This action cannot be undone."
         onConfirm={ async() => {
           try {
-            const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`,{
-              projectId,
-            },
-            {
-              headers: {
-                Authorization: token
-              }
-            });
+           const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
+  data: { projectId },
+  headers: {
+    Authorization: token
+  }
+});
+
             if (response.status === 200) {
               // Remove the deleted project from local state
               toast.success(response.data.message);
