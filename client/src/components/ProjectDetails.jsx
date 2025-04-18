@@ -122,7 +122,8 @@ const ProjectDetails = () => {
     setEpicToEdit(epic);
     setEditModalOpen(true);
   };
-  
+
+  const [isLoading, setIsLoading] = useState(false);
   const handleEditSave = async() => {
     if (isCreating) {
       console.log("new epic:", epicToEdit);
@@ -132,7 +133,9 @@ const ProjectDetails = () => {
         priority: epicToEdit.priority,
         deadline: epicToEdit.deadline,
       };
+      setIsLoading(true);
       await createEpic(projectId, formData);
+      setIsLoading(false);
     } else {
       const updatedData = {
         title: epicToEdit.title,
@@ -141,7 +144,9 @@ const ProjectDetails = () => {
         deadline: epicToEdit.deadline,
       };
       console.log("Updating epic:", updatedData);
+      setIsLoading(true);
       await editEpic(epicToEdit.id, updatedData);
+      setIsLoading(false);
 
       // setEpics(prev =>
       //   prev.map(epic =>
@@ -447,8 +452,32 @@ const ProjectDetails = () => {
             <button
               className="px-4 py-2 bg-[#a40ff3] text-white rounded hover:bg-purple-500"
               onClick={handleEditSave}
+              disabled={isLoading}
             >
-              Save
+            {isLoading ? (
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5h-3z"
+                  ></path>
+                </svg>
+              ) : (
+                "Save"
+              )}
             </button>
             </div>
           </div>
