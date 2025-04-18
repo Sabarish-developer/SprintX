@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Menu, SortAsc, X, Plus, Pencil, Trash2 } from 'lucide-react';
 import '../SignUp.css';
 import useAuth from "../hooks/useAuth";
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const sprintData = [
   { id: 1, title: 'seenu', start: '2024-04-01', deadline: '2024-05-15', priority: 'Active' },
@@ -10,19 +13,25 @@ const sprintData = [
 ];
 
 const epicData = [
-  { id: 1, title: 'Epic A', deadline: '2024-05-01', priority: 'Ongoing', description: 'This is a detailed description for Epic A that is long enough to show scrolling behavior inside the popup.' },
-  { id: 2, title: 'Epic B', deadline: '2024-06-01', priority: 'Pending', description: 'Epic B involves creating UI for reports and analytics.' },
+  { id: 1, title: 'Epic A', deadline: '2024-05-01', priority: 'High', description: 'This is a detailed description for Epic A that is long enough to show scrolling behavior inside the popup.' },
+  { id: 2, title: 'Epic B', deadline: '2024-06-01', priority: 'Medium', description: 'Epic B involves creating UI for reports and analytics.' },
 ];
 
 const ProjectDetails = () => {
 
   const user = useAuth();
   const isProductOwner = user?.role === "Product owner";
+  const { projectId } = useParams();
+  const navigate = useNavigate();
+  console.log("Project ID:", projectId);
+  console.log("User Role:", user?.role);
+  const token = localStorage.getItem("token");
 
   const [Sprints, setSprints] = useState(sprintData);
-  const [Epics, setEpics] = useState(epicData);
+  const [Epics, setEpics] = useState([]);
+  const [EpicsData, setEpicsData] = useState([]); 
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [epicToEdit, setEpicToEdit] = useState(null);
+  const [epicToEdit, setEpicToEdit] = useState();
   const [isCreating, setIsCreating] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,6 +40,67 @@ const ProjectDetails = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [epicAction, setEpicAction] = useState('');
+  const [error, setError] = useState(null);
+
+  const fetchEpics = async () => {
+    try {
+      console.log("Fetching Epics...");
+  
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`, {
+        headers: {
+          Authorization: token
+        }
+      });
+  
+      if (res.status === 200) {
+        if (res.data.epics.length == 0) {
+          setError(res.data.message);
+          return;
+        }
+        
+        const fetchedEpics = res.data.epics.map((p) => {
+          console.log(p);
+          return {
+            id: p._id,
+            title: p.title,
+            deadline: new Date(p.deadline).toISOString().slice(0, 10), // ✅ good for <input type="date" />
+            priority: p.priority,
+            description: p.description,
+            // owner: p.description,
+            // scrumMaster: "SEENU",
+            // start: new Date(p.start).toISOString().slice(0, 10), // ✅ good for <input type="date" />
+            // from: new Date(p.start).toLocaleDateString("en-US", {
+            //   month: "short",
+            //   day: "numeric",
+            //   year: "numeric",
+            // }),
+            // to: new Date(p.deadline).toLocaleDateString("en-US", {
+            //   month: "short",
+            //   day: "numeric",
+            //   year: "numeric",
+            // }),
+            // status: p.status,
+            // progress: p.completionPercentage,
+            // scrumMasterId: p.scrumMasterId,
+            // productOwnerId:p.productOwnerId,
+            // teamMembersId: p.teamMembersId,
+            // description:p.description
+          };
+        });
+  
+        setEpics(fetchedEpics);
+        setEpicsData(fetchedEpics);
+      }
+    } catch (err) {
+      console.error("Error fetching Epics data:", err);
+      setError("Error fetching Epics data");
+      toast.error("Error fetching Epics data");
+    }
+  };
+  
+  useEffect(() => {
+    fetchEpics();
+  }, []);
 
   const filteredSprints = [...Sprints]
     .filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -54,7 +124,14 @@ const ProjectDetails = () => {
   
   const handleEditSave = () => {
     if (isCreating) {
-      setEpics(prev => [...prev, epicToEdit]);
+      console.log("new epic:", epicToEdit);
+      const formData = {
+        title: epicToEdit.title,
+        description: epicToEdit.description,
+        priority: epicToEdit.priority,
+        deadline: epicToEdit.deadline,
+      };
+      createEpic(projectId, formData);
     } else {
       setEpics(prev =>
         prev.map(epic =>
@@ -64,6 +141,26 @@ const ProjectDetails = () => {
     }
     setEditModalOpen(false);
     setIsCreating(false);
+  };
+
+  const createEpic = async (projectId, formData) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`,
+        formData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log(response.data.message);
+      toast.success(response.data.message);
+      fetchEpics(); // Refresh the epics list after creation
+      // setEpics(prev => [...prev, epicToEdit]);
+    } catch (error) {
+      console.error("Epic creation failed:", error.response?.data?.message || error.message);
+    }
   };
   
 
@@ -144,7 +241,7 @@ const ProjectDetails = () => {
       {isProductOwner && (
         <button
         onClick={() => {
-          setEpicToEdit({ title: "", description: "", deadline: "", priority: "Planned", id: Date.now() });
+          setEpicToEdit({ title: "", description: "", deadline: "", priority: "High", id: Date.now() });
           setEditModalOpen(true);
           setIsCreating(true);
           setEpicAction('Create Epics');
@@ -239,23 +336,24 @@ const ProjectDetails = () => {
                 // onChange={(e) => setEpicToEdit({ ...epicToEdit, description: e.target.value })}
                 onChange={(e) => {
                   const words = e.target.value.trim().split(/\s+/);
-                  if (words.length <= 100) {
+                  if (words.length <= 15) {
                     setEpicToEdit({ ...epicToEdit, description: e.target.value });
                   }
                 }}                
               />
               <p className="text-xs text-gray-500 text-right">
-                {epicToEdit.description.trim().split(/\s+/).filter(Boolean).length}/100 words
+                {epicToEdit.description.trim().split(/\s+/).filter(Boolean).length}/15 words
               </p>
 
               <label className="text-md font-medium mb-1">Priority</label>
               <select
                 className="w-full border rounded px-3 py-2"
-                value={epicToEdit.priority}
                 onChange={(e) => setEpicToEdit({ ...epicToEdit, priority: e.target.value })}
+                value={epicToEdit.priority}
               >
-                <option value="Ongoing">Ongoing</option>
-                <option value="Pending">Pending</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
               </select>
 
               <label className="text-md font-medium mb-1">Deadline</label>

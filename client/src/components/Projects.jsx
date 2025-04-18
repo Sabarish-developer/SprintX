@@ -770,7 +770,7 @@ export default function Projects() {
                 className={`border-0 rounded-md shadow w-60 md:w-80 lg:w-80 p-5 hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200 bg-white ${getCardBg(project.progress)}`}
               >
                 <div className="flex items-center justify-between gap-2 mb-2 w-full">
-                  <div className="w-4/4 min-w-0 cursor-pointer" onClick={() => navigate(`/home/projects/details`)}>
+                  <div className="w-4/4 min-w-0 cursor-pointer" onClick={() => navigate(`/home/projects/${project.id}`)}>
                     <h2 className="text-xl font-bold mb-2 overflow-hidden whitespace-nowrap text-ellipsis">
                       {project.name}
                     </h2>
