@@ -266,32 +266,46 @@ const ProjectDetails = () => {
             </tr>
           </thead>
           <tbody>
-            {Epics.map((epic, idx) => (
-              <tr key={epic.id} className="border-t">
-                <td className="p-3 text-sm">{idx + 1}</td>
-                <td
-                  className="p-3 text-sm text-blue-600 cursor-pointer hover:underline"
-                  onClick={() => setSelectedEpic(epic)}
-                >
-                  {epic.title}
-                </td>
-                <td className="p-3 text-sm">{epic.priority}</td>
-                <td className="p-3 text-sm">{epic.deadline}</td>
-                {isProductOwner && (
-                  <td className="p-3 text-sm">
-                    <div className="flex items-center gap-3 text-gray-600">
-                      <button onClick={() => {handleEditClick(epic); setEpicAction('Edit Epic')}} className="cursor-pointer text-gray-800 hover:text-gray-600">
-                        <Pencil size={18} />
-                      </button>
-                      <div className="h-5 w-px bg-gray-300" />
-                      <button onClick={() => handleDelete(epic.id)} className="text-red-500 cursor-pointer hover:text-red-600">
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
+            {Epics.length > 0 ? (
+              Epics.map((epic, idx) => (
+                  <tr key={epic.id} className="border-t">
+                    <td className="p-3 text-sm">{idx + 1}</td>
+                    <td
+                      className="p-3 text-sm text-blue-600 cursor-pointer hover:underline"
+                      onClick={() => setSelectedEpic(epic)}
+                    >
+                      {epic.title}
+                    </td>
+                    <td className="p-3 text-sm">{epic.priority}</td>
+                    <td className="p-3 text-sm">{epic.deadline}</td>
+                    {isProductOwner && (
+                      <td className="p-3 text-sm">
+                        <div className="flex items-center gap-3 text-gray-600">
+                          <button onClick={() => {handleEditClick(epic); setEpicAction('Edit Epic')}} className="cursor-pointer text-gray-800 hover:text-gray-600">
+                            <Pencil size={18} />
+                          </button>
+                          <div className="h-5 w-px bg-gray-300" />
+                          <button onClick={() => handleDelete(epic.id)} className="text-red-500 cursor-pointer hover:text-red-600">
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+              ))
+            ): error ? (
+              <tr>
+                  <td colSpan={4} className="text-center py-4 text-purple-400">
+                    {error}
                   </td>
-                )}
-              </tr>
-            ))}
+                </tr>
+            ) : (
+              <tr>
+                  <td colSpan={4} className="text-center py-4 text-purple-400">
+                    {"Loading..."}
+                  </td>
+                </tr>
+            )}
           </tbody>
         </table>
       </div>
