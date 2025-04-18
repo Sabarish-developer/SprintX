@@ -15,6 +15,7 @@ import  Settings  from './components/Settings.jsx'
 import ErrorPage from './components/ErrorPage.jsx'
 import Projects from './components/Projects.jsx';
 import Tasks from './components/Tasks.jsx';
+import ProjectDetails from './components/ProjectDetails.jsx';
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: '/home/projects',
         element: <Projects/>
+      },
+      {
+        path: '/home/projects/details',
+        element: <ProjectDetails/>
       },
       {
         path: '/home/tasks',

@@ -7,6 +7,7 @@ import useAuth from "../hooks/useAuth";
 import { toast } from "react-toastify";
 import ConfirmToast from "./ConfirmToast";
 import Select from "react-select";
+import '../SignUp.css';
 
 //Dummy Projects Data
 // const projectsData = [
@@ -358,12 +359,12 @@ export default function Projects() {
 
           {/* Desktop Search + Buttons */}
           <div className="hidden lg:flex lg:items-center gap-4 w-full max-w-5xl">
-           <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2">  {/*flex-1 */}
+           <div className="flex items-center border-0 rounded-lg px-3 py-2">  {/*flex-1 */}
               {/* {showIcon && <Search className="text-gray-500 mr-2" size={20} />} */}
               <input
                 type="text"
                 placeholder="Search projects"
-                className="flex-1 outline-none"
+                className="flex-1 outline-none input-field"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onFocus={() => setShowIcon(true)}
@@ -454,7 +455,7 @@ export default function Projects() {
                       <input
                         name="name"
                         required
-                        className="w-full border px-3 py-1 rounded"
+                        className="w-full border px-3 py-1 rounded input-field"
                       />
                     </div>
 
@@ -463,7 +464,7 @@ export default function Projects() {
                       <input
                         name="desc"
                         required
-                        className="w-full border px-3 py-1 rounded"
+                        className="w-full border px-3 py-1 rounded input-field"
                       />
                     </div>
 
@@ -482,7 +483,7 @@ export default function Projects() {
                         type="date"
                         name="from"
                         required
-                        className="w-full border px-3 py-1 rounded"
+                        className="w-full border px-3 py-1 rounded input-field"
                       />
                     </div>
 
@@ -492,7 +493,7 @@ export default function Projects() {
                         type="date"
                         name="to"
                         required
-                        className="w-full border px-3 py-1 rounded"
+                        className="w-full border px-3 py-1 rounded input-field"
                       />
                     </div>
 
@@ -537,13 +538,13 @@ export default function Projects() {
                       <button
                         type="button"
                         onClick={() => setShowModal(false)}
-                        className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                        className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="px-4 py-1 bg-purple-500 text-white rounded hover:bg-purple-600"
+                        className="px-4 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 cursor-pointer"
                       >
                         Create
                       </button>
@@ -568,7 +569,7 @@ export default function Projects() {
                         setProjectToEdit({ ...projectToEdit, name: e.target.value })
                       }
                       placeholder="Project Name"
-                      className="border border-gray-300 rounded w-full px-3 py-2"
+                      className="border border-gray-300 rounded w-full px-3 py-2 input-field"
                       required
                     />
 
@@ -581,7 +582,7 @@ export default function Projects() {
                         setProjectToEdit({ ...projectToEdit, description: e.target.value })
                       }
                       placeholder="Owner"
-                      className="border border-gray-300 rounded w-full px-3 py-2"
+                      className="border border-gray-300 rounded w-full px-3 py-2 input-field"
                       required
                     />
 
@@ -605,7 +606,8 @@ export default function Projects() {
                       onChange={(e) =>
                         setProjectToEdit({ ...projectToEdit, start: e.target.value })
                       }
-                      className="border border-gray-300 rounded w-full px-3 py-2"
+                      // className="border border-gray-300 rounded w-full px-3 py-2"
+                      className="input-field"
                       required
                     />
 
@@ -617,7 +619,7 @@ export default function Projects() {
                       onChange={(e) =>
                         setProjectToEdit({ ...projectToEdit, deadline: e.target.value })
                       }
-                      className="border border-gray-300 rounded w-full px-3 py-2"
+                      className="border border-gray-300 rounded w-full px-3 py-2 input-field"
                       required
                     />
 
@@ -655,6 +657,7 @@ export default function Projects() {
                         onChange={setSelectedScrumMaster}
                         options={scrumMasterOptions}
                         placeholder="Select Scrum Master"
+                        classNamePrefix="input-field"
                       />
 
                       {/* Team Members Select (Multi-select) */}
@@ -666,6 +669,7 @@ export default function Projects() {
                         onChange={setSelectedTeamMembers}
                         options={teamMemberOptions}
                         menuPosition="fixed"
+                        classNamePrefix="input-field"
                         styles={{
                           menu: (base) => ({
                             ...base,
@@ -683,13 +687,13 @@ export default function Projects() {
                       <button
                         type="button"
                         onClick={() => setIsEditOpen(false)}
-                        className="bg-gray-300 text-gray-800 px-4 py-1 rounded-md"
+                        className="bg-gray-300 text-gray-800 px-4 py-1 rounded-md cursor-pointer"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="bg-purple-600 text-white px-4 py-1 rounded-md"
+                        className="bg-purple-600 text-white px-4 py-1 rounded-md cursor-pointer"
                       >
                         Save
                       </button>
@@ -766,7 +770,7 @@ export default function Projects() {
                 className={`border-0 rounded-md shadow w-60 md:w-80 lg:w-80 p-5 hover:shadow-lg sm:w-1/2 md:w-1/3 lg:w-1/5 transition duration-200 bg-white ${getCardBg(project.progress)}`}
               >
                 <div className="flex items-center justify-between gap-2 mb-2 w-full">
-                  <div className="w-4/4 min-w-0 cursor-pointer" onClick={() => navigate(`/home/tasks`)}>
+                  <div className="w-4/4 min-w-0 cursor-pointer" onClick={() => navigate(`/home/projects/details`)}>
                     <h2 className="text-xl font-bold mb-2 overflow-hidden whitespace-nowrap text-ellipsis">
                       {project.name}
                     </h2>

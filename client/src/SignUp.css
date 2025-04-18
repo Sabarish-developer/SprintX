@@ -6,6 +6,23 @@
       transform: translateY(-10px);
     }
   }
+
+
+  .bottom-shadow-nav {
+    box-shadow: 0px 4px 6px -5px #a40ff3; /* Adjusted spread value */
+  }
+  
+  .bottom-shadow {
+    box-shadow: 0px 4px 6px -5px #a40ff3; /* Adjusted spread value */
+  }
+
+  .bottom-shadow:hover {
+    box-shadow: 0px 4px 6px -5px #a40ff3, 0px 0px 15px 4px rgba(124, 58, 237, 0.5); /* Adjusted spread value */
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  
+  
   
   .float-slow {
     animation: float 3s ease-in-out infinite;
