@@ -5,6 +5,7 @@ import useAuth from "../hooks/useAuth";
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import ConfirmToast from './ConfirmToast';
 
 const sprintData = [
   { id: 1, title: 'seenu', start: '2024-04-01', deadline: '2024-05-15', priority: 'Active' },
@@ -122,7 +123,7 @@ const ProjectDetails = () => {
     setEditModalOpen(true);
   };
   
-  const handleEditSave = () => {
+  const handleEditSave = async() => {
     if (isCreating) {
       console.log("new epic:", epicToEdit);
       const formData = {
@@ -131,16 +132,45 @@ const ProjectDetails = () => {
         priority: epicToEdit.priority,
         deadline: epicToEdit.deadline,
       };
-      createEpic(projectId, formData);
+      await createEpic(projectId, formData);
     } else {
-      setEpics(prev =>
-        prev.map(epic =>
-          epic.id === epicToEdit.id ? epicToEdit : epic
-        )
-      );
+      const updatedData = {
+        title: epicToEdit.title,
+        description: epicToEdit.description,
+        priority: epicToEdit.priority,
+        deadline: epicToEdit.deadline,
+      };
+      console.log("Updating epic:", updatedData);
+      await editEpic(epicToEdit.id, updatedData);
+
+      // setEpics(prev =>
+      //   prev.map(epic =>
+      //     epic.id === epicToEdit.id ? epicToEdit : epic
+      //   )
+      // );
     }
     setEditModalOpen(false);
     setIsCreating(false);
+  };
+
+  const editEpic = async (epicId, updatedData) => {
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics/${epicId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log(response.data.message);
+      toast.success(response.data.message);
+      fetchEpics(); // Refresh the epics list after editing
+    } catch (error) {
+      console.error("Failed to update epic:", error.response?.data?.message || error.message);
+      toast.error("Failed to update epic");
+    }
   };
 
   const createEpic = async (projectId, formData) => {
@@ -164,8 +194,34 @@ const ProjectDetails = () => {
   };
   
 
-  const handleDelete = (id) => {
-    setEpics(prev => prev.filter(epic => epic.id !== id));
+  const handleDelete = async(id) => {
+    console.log("Deleting epic with ID:", id);
+    toast(
+      <ConfirmToast
+        message="Are you sure you want to delete this Epic? This action cannot be undone."
+        onConfirm={ async() => {
+          try {
+           const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`, {
+              data: { epicId: id },
+              headers: {
+                Authorization: token
+              }
+            });
+
+            if (response.status === 200) {
+              toast.success(response.data.message);
+              fetchEpics();
+            }
+          } catch (error) {
+            console.error("Failed to delete Epic:", error);
+            toast.error("Failed to delete Epic");
+          }
+          //setProjects(prev => prev.filter(p => p.id !== projectId));
+          //toast.success("Project deleted successfully!✅");
+        }}
+      />,
+      { autoClose: false }
+    );
   };
   
 
@@ -313,7 +369,7 @@ const ProjectDetails = () => {
 
       {/* Modal Popup */}
           {selectedEpic && (
-            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-100">
               <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-xl relative">
                 <h2 className="text-lg font-bold mb-2">{selectedEpic.title} - Description</h2>
                 <div className="h-[200px] overflow-y-auto text-sm text-gray-700 border p-3 rounded">
@@ -330,7 +386,7 @@ const ProjectDetails = () => {
           )}
 
       {editModalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-100 p-4">
           <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-lg">
             <h2 className="text-lg font-semibold mb-4">{epicAction}</h2>
             <div className="space-y-3">
