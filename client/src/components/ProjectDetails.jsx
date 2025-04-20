@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import ConfirmToast from './ConfirmToast';
+import Select from 'react-select';
 
 const sprintData = [
   { id: 1, title: 'seenu', start: '2024-04-01', deadline: '2024-05-15', status: 'Active' },
@@ -53,12 +54,17 @@ const ProjectDetails = () => {
   const token = localStorage.getItem("token");
 
   //userstory part
-  const[userStory, setUserStory] = useState(userStoriesData);
+  const[userStory, setUserStory] = useState([]);
   const[userStoryAction, setUserStoryAction] = useState('');
   const[userStoryToEdit, setUserStoryToEdit] = useState();
   const[isUserStoryCreating, setIsUserStoryCreating] = useState(false);
   const[showUserStoryModal, setShowUserStoryModal] = useState(false);
   const[selectedUserStory, setSelectedUserStory] = useState(null);
+  const [epicOptions, setEpicOptions] = useState([]);
+  const [selecteddEpic, setSelecteddEpic] = useState(null);
+  const selectedEpicId = selecteddEpic?.value;
+  const [userStoryError, setUserStoryError] = useState(null);
+
 
   //task part
   const[task, setTask] = useState(tasksData);
@@ -67,6 +73,9 @@ const ProjectDetails = () => {
   const[isTaskCreating, setIsTaskCreating] = useState(false);
   const[showTaskModal, setShowTaskModal] = useState(false);
   const[selectedTask, setSelectedTask] = useState(null);
+  const [USOptions, setUSOptions] = useState([]);
+  const [selectedUS, setSelectedUS] = useState(null);
+  const selectedUSId = selectedUS?.value;
 
   //sprint part
   const [Sprints, setSprints] = useState([]);
@@ -96,7 +105,7 @@ const ProjectDetails = () => {
     try {
       console.log("Fetching Epics...");
   
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`, {
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${projectId}/epics`, {
         headers: {
           Authorization: token
         }
@@ -116,30 +125,19 @@ const ProjectDetails = () => {
             deadline: new Date(p.deadline).toISOString().slice(0, 10), // ✅ good for <input type="date" />
             priority: p.priority,
             description: p.description,
-            // owner: p.description,
-            // scrumMaster: "SEENU",
-            // start: new Date(p.start).toISOString().slice(0, 10), // ✅ good for <input type="date" />
-            // from: new Date(p.start).toLocaleDateString("en-US", {
-            //   month: "short",
-            //   day: "numeric",
-            //   year: "numeric",
-            // }),
-            // to: new Date(p.deadline).toLocaleDateString("en-US", {
-            //   month: "short",
-            //   day: "numeric",
-            //   year: "numeric",
-            // }),
-            // status: p.status,
-            // progress: p.completionPercentage,
-            // scrumMasterId: p.scrumMasterId,
-            // productOwnerId:p.productOwnerId,
-            // teamMembersId: p.teamMembersId,
-            // description:p.description
           };
         });
   
         setEpics(fetchedEpics);
         setEpicsData(fetchedEpics);
+
+        //this will Create epicOptions for <Select />
+        const options = res.data.epics.map((p) => ({
+          value: p._id,
+          label: p.title,
+        }));
+
+        setEpicOptions(options);
       }
     } catch (err) {
       console.error("Error fetching Epics data:", err);
@@ -149,8 +147,7 @@ const ProjectDetails = () => {
   };
   
   useEffect(() => {
-    if(isProductOwner){
-    fetchEpics();}
+    fetchEpics();
   }, []);
 
   const fetchSprints = async () => {
@@ -211,6 +208,56 @@ const ProjectDetails = () => {
   
   useEffect(() => {
     fetchSprints();
+  }, []);
+
+  const fetchUserstories = async () => {
+    try {
+      console.log("Fetching Userstories...");
+  
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${projectId}/userstories`, {
+        headers: {
+          Authorization: token
+        }
+      });
+  
+      if (res.status === 200) {
+        if (res.data.userStories.length == 0) {
+          setUserStoryError(res.data.message);
+          return;
+        }
+        
+        const fetchedUserStories = res.data.userStories.map((p) => {
+          console.log(p);
+          return {
+            id: p._id,
+            title: p.title,
+            description: p.description,
+            priority: p.priority,
+            deadline: new Date(p.deadline).toISOString().slice(0, 10), // ✅ good for <input type="date" />
+            epicId: p.epicId,
+          };
+        });
+  
+        setUserStory(fetchedUserStories);
+        //setUserStoryData(fetchedUserStories);
+
+        //this will Create epicOptions for <Select />
+        const optionsUS = res.data.userStories.map((p) => ({
+          value: p._id,
+          label: p.title,
+        }));
+
+        setUSOptions(optionsUS);
+      }
+    } catch (err) {
+      console.error("Error fetching userStory data:", err);
+      setUserStoryError("Error fetching userStory data");
+      toast.error("Error fetching userStory data");
+    }
+  };
+  
+  useEffect(() => {
+    fetchUserstories();
   }, []);
 
   // const filteredSprints = [...Sprints]
@@ -476,17 +523,19 @@ const ProjectDetails = () => {
   
   const handleEditSaveUserstory = async() => {
     if (isUserStoryCreating) {
-      console.log("new Usrstory:", userStoryToEdit);
+      console.log("new Usrstory:", userStoryToEdit, selectedEpicId);
       const formData = {
-        id: Date.now(),
+        //id: Date.now(),
         title: userStoryToEdit.title,
         description: userStoryToEdit.description,
         priority: userStoryToEdit.priority,
         deadline: userStoryToEdit.deadline,
+        epicId: selectedEpicId,
       };
       setIsLoading(true);
-      //await createUserstory(projectId, formData);
-      setUserStory(prev => [...prev, formData]); //temporary only
+      await createUserstory(projectId, formData);
+      fetchUserstories(); // Refresh the user stories list after creation   
+      //setUserStory(prev => [...prev, formData]); //temporary only
       setIsLoading(false);
     } else {
       const updatedData = {
@@ -494,15 +543,17 @@ const ProjectDetails = () => {
         description: userStoryToEdit.description,
         priority: userStoryToEdit.priority,
         deadline: userStoryToEdit.deadline,
+        epicId: selectedEpicId,
       };
       console.log("Updating userstory:", updatedData);
       setIsLoading(true);
-      //await editUserstory(userStoryToEdit.id, updatedData);
-      setUserStory(prev =>
-        prev.map(userStory =>
-          userStory.id === userStoryToEdit.id ? userStoryToEdit : userStory
-        )
-      );
+      await editUserstory(userStoryToEdit.id, updatedData);
+      // setUserStory(prev =>
+      //   prev.map(userStory =>
+      //     userStory.id === userStoryToEdit.id ? userStoryToEdit : userStory
+      //   )
+      // );
+      fetchUserstories(); // Refresh the user stories list after editing
       setIsLoading(false);
 
       // setEpics(prev =>
@@ -519,7 +570,7 @@ const ProjectDetails = () => {
   const createUserstory = async (projectId, formData) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`,
+        `${import.meta.env.VITE_BASE_URL}/api/scrummaster/projects/${projectId}/userstories`,
         formData,
         {
           headers: {
@@ -532,19 +583,22 @@ const ProjectDetails = () => {
       fetchEpics(); // Refresh the epics list after creation
       // setEpics(prev => [...prev, epicToEdit]);
     } catch (error) {
-      console.error("Epic creation failed:", error.response?.data?.message || error.message);
+      console.error("Userstory creation failed:", error.response?.data?.message || error.message);
+      toast.error("Userstory creation failed");
     }
   };
 
   const handleEditClickUserstory = (userstory) => {
     setUserStoryToEdit(userstory);
+    const tempEpic = epicOptions.find(epic => epic.value === userstory.epicId);
+    setSelecteddEpic(tempEpic);
     setShowUserStoryModal(true);
   };
 
-  const editUserstory = async (epicId, updatedData) => {
+  const editUserstory = async (userStoryId, updatedData) => {
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics/${epicId}`,
+        `${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${projectId}/userstories/${userStoryId}`,
         updatedData,
         {
           headers: {
@@ -554,43 +608,43 @@ const ProjectDetails = () => {
       );
       console.log(response.data.message);
       toast.success(response.data.message);
-      fetchEpics(); // Refresh the epics list after editing
+      fetchUserstories(); // Refresh the user stories list after editing
     } catch (error) {
-      console.error("Failed to update epic:", error.response?.data?.message || error.message);
-      toast.error("Failed to update epic");
+      console.error("Failed to update userstory:", error.response?.data?.message || error.message);
+      toast.error("Failed to update userstory");
     }
   };
 
   const handleDeleteUserstory = async(id) => {
     console.log("Deleting Userstory with ID:", id);
-    // toast(
-    //   <ConfirmToast
-    //     message="Are you sure you want to delete this Epic? This action cannot be undone."
-    //     onConfirm={ async() => {
-    //       try {
-    //        const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`, {
-    //           data: { epicId: id },
-    //           headers: {
-    //             Authorization: token
-    //           }
-    //         });
+    toast(
+      <ConfirmToast
+        message="Are you sure you want to delete this userstory? This action cannot be undone."
+        onConfirm={ async() => {
+          try {
+           const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${projectId}/userstories`, {
+              data: { userStoryId: id },
+              headers: {
+                Authorization: token
+              }
+            });
 
-    //         if (response.status === 200) {
-    //           toast.success(response.data.message);
-    //           fetchEpics();
-    //         }
-    //       } catch (error) {
-    //         console.error("Failed to delete Epic:", error);
-    //         toast.error("Failed to delete Epic");
-    //       }
-    //       //setProjects(prev => prev.filter(p => p.id !== projectId));
-    //       //toast.success("Project deleted successfully!✅");
-    //     }}
-    //   />,
-    //   { autoClose: false }
-    // );
-    setUserStory(prev => prev.filter(p => p.id !== id));
-    toast.success("Userstory deleted successfully! temp only ✅");
+            if (response.status === 200) {
+              toast.success(response.data.message);
+              fetchUserstories();
+            }
+          } catch (error) {
+            console.error("Failed to delete userstory:", error);
+            toast.error("Failed to delete userstory");
+          }
+          //setProjects(prev => prev.filter(p => p.id !== projectId));
+          //toast.success("Project deleted successfully!✅");
+        }}
+      />,
+      { autoClose: false }
+    );
+    // setUserStory(prev => prev.filter(p => p.id !== id));
+    // toast.success("Userstory deleted successfully! temp only ✅");
   };
 
   //tasks part
@@ -1019,7 +1073,15 @@ const ProjectDetails = () => {
             ) : (
               <tr>
                   <td colSpan={4} className="text-center py-4 text-purple-400">
-                    {"Loading..."}
+                    {/* {"Loading..."} */}
+                        <div className="flex justify-center items-center h-32">
+                          <div className="relative w-10 h-10 animate-[spin-dots_1.2s_linear_infinite]">
+                            <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full transform -translate-x-1/2"></div>
+                            <div className="absolute top-1/2 left-0 w-2 h-2 bg-purple-400 rounded-full transform -translate-y-1/2"></div>
+                            <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-purple-300 rounded-full transform -translate-x-1/2"></div>
+                            <div className="absolute top-1/2 right-0 w-2 h-2 bg-purple-200 rounded-full transform -translate-y-1/2"></div>
+                          </div>
+                        </div>
                   </td>
                 </tr>
             )}
@@ -1210,7 +1272,15 @@ const ProjectDetails = () => {
             ) : (
               <tr>
                   <td colSpan={4} className="text-center py-4 text-purple-400">
-                    {"Loading..."}
+                    {/* {"Loading..."} */}
+                        <div className="flex justify-center items-center h-32">
+                          <div className="relative w-10 h-10 animate-[spin-dots_1.2s_linear_infinite]">
+                            <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full transform -translate-x-1/2"></div>
+                            <div className="absolute top-1/2 left-0 w-2 h-2 bg-purple-400 rounded-full transform -translate-y-1/2"></div>
+                            <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-purple-300 rounded-full transform -translate-x-1/2"></div>
+                            <div className="absolute top-1/2 right-0 w-2 h-2 bg-purple-200 rounded-full transform -translate-y-1/2"></div>
+                          </div>
+                        </div>
                   </td>
                 </tr>
             )}
@@ -1286,6 +1356,15 @@ const ProjectDetails = () => {
                 value={userStoryToEdit.deadline}
                 onChange={(e) => setUserStoryToEdit({ ...userStoryToEdit, deadline: e.target.value })}
               />
+              <Select
+                options={epicOptions}
+                value={selecteddEpic}
+                onChange={(selected) => setSelecteddEpic(selected)}
+                placeholder="Select an Epic..."
+                className="w-full"
+                styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }} // optional fix for modal overlap
+              />
+
             </div>
             <div className="flex justify-end mt-5 gap-3">
               <button
@@ -1401,7 +1480,15 @@ const ProjectDetails = () => {
             ) : (
               <tr>
                   <td colSpan={4} className="text-center py-4 text-purple-400">
-                    {"Loading..."}
+                    {/* {"Loading..."} */}
+                        <div className="flex justify-center items-center h-32">
+                          <div className="relative w-10 h-10 animate-[spin-dots_1.2s_linear_infinite]">
+                            <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full transform -translate-x-1/2"></div>
+                            <div className="absolute top-1/2 left-0 w-2 h-2 bg-purple-400 rounded-full transform -translate-y-1/2"></div>
+                            <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-purple-300 rounded-full transform -translate-x-1/2"></div>
+                            <div className="absolute top-1/2 right-0 w-2 h-2 bg-purple-200 rounded-full transform -translate-y-1/2"></div>
+                          </div>
+                        </div>
                   </td>
                 </tr>
             )}
