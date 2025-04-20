@@ -34,60 +34,82 @@ const homePageHandler = async(req,res)=>{
 
 const projectsPageHandler = async (req, res) => {
     try {
-        const userId = req.user.id;
-
-        // Fetch the projects with all their Epics
-        const userObjectId = new mongoose.Types.ObjectId(userId);
-        const projects = await projectModel.aggregate([
-            {
-                $match: { productOwnerId: userObjectId }
-            },
-            {
-                $lookup: {
-                    from: "epics", // Assuming the Epic collection is called "epics"
-                    localField: "_id", // Join on project _id
-                    foreignField: "projectId", // Epic's projectId
-                    as: "epics"
-                }
-            }
-        ]);
-        // Check if projects are found
-        if (projects.length === 0) {
-            return res.status(200).json({
-                message: "No projects found. Start by creating a project.",
-                projects: []
-            });
+      const userId = req.user.id;
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+  
+      const projects = await projectModel.aggregate([
+        {
+          $match: { productOwnerId: userObjectId }
+        },
+        {
+          $lookup: {
+            from: "epics",
+            localField: "_id",
+            foreignField: "projectId",
+            as: "epics"
+          }
+        },
+        {
+          $lookup: {
+            from: "users", // Assuming users collection
+            localField: "scrumMasterId",
+            foreignField: "_id",
+            as: "scrumMasterInfo"
+          }
+        },
+        {
+          $unwind: {
+            path: "$scrumMasterInfo",
+            preserveNullAndEmptyArrays: true // In case scrumMaster is not assigned yet
+          }
+        },
+        {
+          $project: {
+            title: 1,
+            description: 1,
+            start: 1,
+            deadline: 1,
+            status: 1,
+            epics: 1,
+            scrumMaster: "$scrumMasterInfo.username", // You can use .fullName if that's the field
+          }
         }
-
-        // Calculate completion percentage for each project
-        const projectsWithCompletion = projects.map(project => {
-            const totalEpics = project.epics.length; // Total number of Epics for this project
-            const completedEpics = project.epics.filter(epic => epic.status === "Completed").length; // Completed Epics
-
-            // Calculate completion percentage
-            const completionPercentage = totalEpics === 0
-                ? 0
-                : Math.round((completedEpics / totalEpics) * 100);
-
-            // Return project data with completion percentage
-            return {
-                ...project,
-                completionPercentage
-            };
-        });
-
+      ]);
+  
+      if (projects.length === 0) {
         return res.status(200).json({
-            message: "Projects retrieved successfully.",
-            projects: projectsWithCompletion
+          message: "No projects found. Start by creating a project.",
+          projects: []
         });
-
+      }
+  
+      const projectsWithCompletion = projects.map(project => {
+        const totalEpics = project.epics.length;
+        const completedEpics = project.epics.filter(epic => epic.status === "Completed").length;
+  
+        const completionPercentage = totalEpics === 0
+          ? 0
+          : Math.round((completedEpics / totalEpics) * 100);
+  
+        return {
+          ...project,
+          completionPercentage
+        };
+      });
+      console.log(projectsWithCompletion);
+      return res.status(200).json({
+        message: "Projects retrieved successfully.",
+        projects: projectsWithCompletion
+      });
+  
     } catch (e) {
-        console.log("Error in projects page Handler block : ", e);
-        return res.status(500).json({
-            message: "Error in retrieving projects. Kindly try again later."
-        });
+      console.log("Error in projects page Handler block : ", e);
+      return res.status(500).json({
+        message: "Error in retrieving projects. Kindly try again later."
+      });
     }
-};
+  };
+  
 
 
 const companyMembersHandler = async(req,res)=>{
