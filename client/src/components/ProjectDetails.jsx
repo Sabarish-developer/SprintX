@@ -68,11 +68,16 @@ const ProjectDetails = () => {
   const[showTaskModal, setShowTaskModal] = useState(false);
   const[selectedTask, setSelectedTask] = useState(null);
 
-  const [Sprints, setSprints] = useState(sprintData);
+  //sprint part
+  const [Sprints, setSprints] = useState([]);
+  const [sprintsData, setSprintsData] = useState([]);
   const [sprintAction, setSprintAction] = useState('');
-  const [sprintToEdit, setSprintToEdit] = useState();
+  const [sprintToEdit, setSprintToEdit] = useState(null);
   const [isSprintCreating, setIsSprintCreating] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [errorSprint, setErrorSprint] = useState(null);
+
+
   const [Epics, setEpics] = useState([]);
   const [EpicsData, setEpicsData] = useState([]); 
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -80,7 +85,7 @@ const ProjectDetails = () => {
   const [isCreating, setIsCreating] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortOption, setSortOption] = useState('');
+  const [sortType, setSortType] = useState('');
   const [selectedEpic, setSelectedEpic] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -148,19 +153,92 @@ const ProjectDetails = () => {
     fetchEpics();}
   }, []);
 
-  const filteredSprints = [...Sprints]
-    .filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort((a, b) => {
-      if (sortOption === 'Sprints') {
-        return a.title.localeCompare(b.title);
-      } else if (sortOption === 'Date') {
-        return new Date(b.start) - new Date(a.start);
+  const fetchSprints = async () => {
+    try {
+      console.log("Fetching Sprints...");
+  
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/scrummaster/projects/${projectId}`, {
+        headers: {
+          Authorization: token
+        }
+      });
+  
+      if (res.status === 200) {
+        if (res.data.sprints.length == 0) {
+          setErrorSprint(res.data.message);
+          return;
+        }
+        
+        const fetchedSprints = res.data.sprints.map((p) => {
+          console.log(p);
+          return {
+            id: p._id,
+            title: p.title,
+            deadline: new Date(p.deadline).toISOString().slice(0, 10), // ✅ good for <input type="date" />
+            priority: p.priority,
+            description: p.description,
+            // owner: p.description,
+            // scrumMaster: "SEENU",
+            // start: new Date(p.start).toISOString().slice(0, 10), // ✅ good for <input type="date" />
+            // from: new Date(p.start).toLocaleDateString("en-US", {
+            //   month: "short",
+            //   day: "numeric",
+            //   year: "numeric",
+            // }),
+            // to: new Date(p.deadline).toLocaleDateString("en-US", {
+            //   month: "short",
+            //   day: "numeric",
+            //   year: "numeric",
+            // }),
+            // status: p.status,
+            // progress: p.completionPercentage,
+            // scrumMasterId: p.scrumMasterId,
+            // productOwnerId:p.productOwnerId,
+            // teamMembersId: p.teamMembersId,
+            // description:p.description
+          };
+        });
+  
+        setSprints(fetchedSprints);
+        setSprintsData(fetchedSprints);
       }
-      return 0;
-    });
+    } catch (err) {
+      console.error("Error fetching Sprints data:", err);
+      setErrorSprint("Error fetching Sprints data");
+      toast.error("Error fetching Sprints data");
+    }
+  };
+  
+  useEffect(() => {
+    fetchSprints();
+  }, []);
+
+  // const filteredSprints = [...Sprints]
+  //   .filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase()))
+  //   .sort((a, b) => {
+  //     if (sortOption === 'Sprints') {
+  //       return a.title.localeCompare(b.title);
+  //     } else if (sortOption === 'Date') {
+  //       return new Date(b.start) - new Date(a.start);
+  //     }
+  //     return 0;
+  //   });
+
+  const sortByProjects = () => {
+    const sorted = [...Sprints].sort((a, b) => a.name.localeCompare(b.name));
+    setSprints(sorted);
+  };
+
+  // Sort by start date
+  const sortByDate = () => {
+    const sorted = [...Sprints].sort(
+      (a, b) => new Date(a.from) - new Date(b.from)
+    );
+    setSprints(sorted);
+  };
 
   const clearSort = () => {
-    setSortOption('');
+    fetchSprints();
   };
 
   const handleEditClick = (epic) => {
@@ -180,16 +258,16 @@ const ProjectDetails = () => {
     if (isSprintCreating) {
       console.log("new sprint:", sprintToEdit);
       const formData = {
-        id: Date.now(),
+        //id: Date.now(),
         // id: sprintToEdit.id,
         title: sprintToEdit.title,
         start: sprintToEdit.start,
         deadline: sprintToEdit.deadline,
-        status: "Active",
+        // status: "Active",
       };
       setIsLoading(true);
-      // await createSprint(projectId, formData);
-      setSprints(prev => [...prev, formData]);
+      await createSprint(projectId, formData);
+      //setSprints(prev => [...prev, formData]);
       console.log("Sprint created:", formData); //temporary only
       setIsLoading(false);
     } else {
@@ -222,7 +300,7 @@ const ProjectDetails = () => {
   const createSprint = async (projectId, formData) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`,
+        `${import.meta.env.VITE_BASE_URL}/api/scrummaster/projects/${projectId}/sprints`,
         formData,
         {
           headers: {
@@ -232,9 +310,10 @@ const ProjectDetails = () => {
       );
       console.log(response.data.message);
       toast.success(response.data.message);
-      fetchEpics();
+      //fetchEpics();
     } catch (error) {
       console.error("Epic creation failed:", error.response?.data?.message || error.message);
+      toast.error("Epic creation failed");
     }
   };
 
@@ -663,11 +742,17 @@ const ProjectDetails = () => {
           />
         </div>
         <SortDropdown
-          sortType={sortOption}
-          sortByProjects={() => setSortOption('Sprints')}
-          sortByDate={() => setSortOption('Date')}
+          sortType={sortType}
+          sortByProjects={sortByProjects}
+          sortByDate={sortByDate}
           clearSort={clearSort}
         />
+        {/* <SortDropdown
+                sortByProjects={sortByProjects}
+                sortByDate={sortByDate}
+                sortType={sortType}
+                clearSort={clearSort}
+              /> */}
       </div>
 
       <div className="lg:hidden">
@@ -704,12 +789,18 @@ const ProjectDetails = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <SortDropdown
+          {/* <SortDropdown
             sortType={sortOption}
             sortByProjects={() => setSortOption('Sprints')}
             sortByDate={() => setSortOption('Date')}
             clearSort={clearSort}
-          />
+          /> */}
+          <SortDropdown
+          sortType={sortType}
+          sortByProjects={sortByProjects}
+          sortByDate={sortByDate}
+          clearSort={clearSort}
+        />
         </div>
       )}
       </div>
@@ -717,7 +808,12 @@ const ProjectDetails = () => {
       {/* Sprint Cards */}
       <h2 className="text-lg font-semibold mb-2">Sprints</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredSprints.map(sprint => (
+      {errorSprint ? (
+          <div className="text-red-500 text-center">{errorSprint}</div>
+        ) : Sprints.length > 0 ? (
+          <>
+            {/* Render your list of Sprints here */}
+            {Sprints.map(sprint => (
           <div key={sprint.id} className="relative border-0 bg-white rounded-xl bottom-shadow p-4">
             <h3 className="text-lg font-semibold">{sprint.title}</h3>
             <p className="text-sm text-gray-500">Start: {sprint.start}</p>
@@ -740,6 +836,17 @@ const ProjectDetails = () => {
             )}
           </div>
         ))}
+          </>
+        ) : (
+              <div className="flex justify-center items-center h-32">
+                <div className="relative w-10 h-10 animate-[spin-dots_1.2s_linear_infinite]">
+                  <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full transform -translate-x-1/2"></div>
+                  <div className="absolute top-1/2 left-0 w-2 h-2 bg-purple-400 rounded-full transform -translate-y-1/2"></div>
+                  <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-purple-300 rounded-full transform -translate-x-1/2"></div>
+                  <div className="absolute top-1/2 right-0 w-2 h-2 bg-purple-200 rounded-full transform -translate-y-1/2"></div>
+                </div>
+              </div>
+        )}
       </div>
 
       {showModal && (
