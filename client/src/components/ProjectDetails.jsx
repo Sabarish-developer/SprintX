@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, SortAsc, X, Plus, Pencil, Trash2, FolderPlus } from 'lucide-react';
+import { Menu, SortAsc, X, Plus, Pencil, Trash2, FolderPlus, User } from 'lucide-react';
 import '../SignUp.css';
 import useAuth from "../hooks/useAuth";
 import { useNavigate, useParams } from 'react-router-dom';
@@ -16,6 +16,16 @@ const sprintData = [
 const epicData = [
   { id: 1, title: 'Epic A', deadline: '2024-05-01', priority: 'High', description: 'This is a detailed description for Epic A that is long enough to show scrolling behavior inside the popup.' },
   { id: 2, title: 'Epic B', deadline: '2024-06-01', priority: 'Medium', description: 'Epic B involves creating UI for reports and analytics.' },
+];
+
+const userStoriesData = [
+  { id: 1, title: 'Userstory A', deadline: '2024-05-02', priority: 'High', description: 'This is a detailed description for Uerstory A that is long enough to show scrolling behavior inside the popup.' },
+  { id: 2, title: 'Userstory B', deadline: '2024-06-02', priority: 'Medium', description: 'Userstory B involves creating UI for reports and analytics.' },
+];
+
+const tasksData = [
+  { id: 1, title: 'Task A', deadline: '2024-05-03', priority: 'Medium', description: 'This is a detailed description for Task A that is long enough to show scrolling behavior inside the popup.' },
+  { id: 2, title: 'Task B', deadline: '2024-06-03', priority: 'High', description: 'Task B involves creating UI for reports and analytics.' },
 ];
 
 const ProjectDetails = () => {
@@ -41,6 +51,22 @@ const ProjectDetails = () => {
   console.log("Project ID:", projectId);
   console.log("User Role:", user?.role);
   const token = localStorage.getItem("token");
+
+  //userstory part
+  const[userStory, setUserStory] = useState(userStoriesData);
+  const[userStoryAction, setUserStoryAction] = useState('');
+  const[userStoryToEdit, setUserStoryToEdit] = useState();
+  const[isUserStoryCreating, setIsUserStoryCreating] = useState(false);
+  const[showUserStoryModal, setShowUserStoryModal] = useState(false);
+  const[selectedUserStory, setSelectedUserStory] = useState(null);
+
+  //task part
+  const[task, setTask] = useState(tasksData);
+  const[taskAction, setTaskAction] = useState('');
+  const[taskToEdit, setTaskToEdit] = useState();
+  const[isTaskCreating, setIsTaskCreating] = useState(false);
+  const[showTaskModal, setShowTaskModal] = useState(false);
+  const[selectedTask, setSelectedTask] = useState(null);
 
   const [Sprints, setSprints] = useState(sprintData);
   const [sprintAction, setSprintAction] = useState('');
@@ -369,6 +395,244 @@ const ProjectDetails = () => {
     );
   };
   
+  const handleEditSaveUserstory = async() => {
+    if (isUserStoryCreating) {
+      console.log("new Usrstory:", userStoryToEdit);
+      const formData = {
+        id: Date.now(),
+        title: userStoryToEdit.title,
+        description: userStoryToEdit.description,
+        priority: userStoryToEdit.priority,
+        deadline: userStoryToEdit.deadline,
+      };
+      setIsLoading(true);
+      //await createUserstory(projectId, formData);
+      setUserStory(prev => [...prev, formData]); //temporary only
+      setIsLoading(false);
+    } else {
+      const updatedData = {
+        title: userStoryToEdit.title,
+        description: userStoryToEdit.description,
+        priority: userStoryToEdit.priority,
+        deadline: userStoryToEdit.deadline,
+      };
+      console.log("Updating userstory:", updatedData);
+      setIsLoading(true);
+      //await editUserstory(userStoryToEdit.id, updatedData);
+      setUserStory(prev =>
+        prev.map(userStory =>
+          userStory.id === userStoryToEdit.id ? userStoryToEdit : userStory
+        )
+      );
+      setIsLoading(false);
+
+      // setEpics(prev =>
+      //   prev.map(epic =>
+      //     epic.id === epicToEdit.id ? epicToEdit : epic
+      //   )
+      // );
+    }
+    setShowUserStoryModal(false);
+    setIsUserStoryCreating(false);
+    toast.success("operation success temp only!✅");
+  };
+
+  const createUserstory = async (projectId, formData) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`,
+        formData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log(response.data.message);
+      toast.success(response.data.message);
+      fetchEpics(); // Refresh the epics list after creation
+      // setEpics(prev => [...prev, epicToEdit]);
+    } catch (error) {
+      console.error("Epic creation failed:", error.response?.data?.message || error.message);
+    }
+  };
+
+  const handleEditClickUserstory = (userstory) => {
+    setUserStoryToEdit(userstory);
+    setShowUserStoryModal(true);
+  };
+
+  const editUserstory = async (epicId, updatedData) => {
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics/${epicId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log(response.data.message);
+      toast.success(response.data.message);
+      fetchEpics(); // Refresh the epics list after editing
+    } catch (error) {
+      console.error("Failed to update epic:", error.response?.data?.message || error.message);
+      toast.error("Failed to update epic");
+    }
+  };
+
+  const handleDeleteUserstory = async(id) => {
+    console.log("Deleting Userstory with ID:", id);
+    // toast(
+    //   <ConfirmToast
+    //     message="Are you sure you want to delete this Epic? This action cannot be undone."
+    //     onConfirm={ async() => {
+    //       try {
+    //        const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`, {
+    //           data: { epicId: id },
+    //           headers: {
+    //             Authorization: token
+    //           }
+    //         });
+
+    //         if (response.status === 200) {
+    //           toast.success(response.data.message);
+    //           fetchEpics();
+    //         }
+    //       } catch (error) {
+    //         console.error("Failed to delete Epic:", error);
+    //         toast.error("Failed to delete Epic");
+    //       }
+    //       //setProjects(prev => prev.filter(p => p.id !== projectId));
+    //       //toast.success("Project deleted successfully!✅");
+    //     }}
+    //   />,
+    //   { autoClose: false }
+    // );
+    setUserStory(prev => prev.filter(p => p.id !== id));
+    toast.success("Userstory deleted successfully! temp only ✅");
+  };
+
+  //tasks part
+  const handleEditSaveTask = async() => {
+    if (isTaskCreating) {
+      console.log("new Task:", taskToEdit);
+      const formData = {
+        id: Date.now(),
+        title: taskToEdit.title,
+        description: taskToEdit.description,
+        priority: taskToEdit.priority,
+        deadline: taskToEdit.deadline,
+      };
+      setIsLoading(true);
+      //await createTask(projectId, formData);
+      setTask(prev => [...prev, formData]); //temporary only
+      setIsLoading(false);
+    } else {
+      const updatedData = {
+        title: taskToEdit.title,
+        description: taskToEdit.description,
+        priority: taskToEdit.priority,
+        deadline: taskToEdit.deadline,
+      };
+      console.log("Updating Task:", updatedData);
+      setIsLoading(true);
+      //await editTask(taskToEdit.id, updatedData);
+      setTask(prev =>
+        prev.map(task =>
+          task.id === taskToEdit.id ? taskToEdit : task
+        )
+      );
+      setIsLoading(false);
+
+      // setEpics(prev =>
+      //   prev.map(epic =>
+      //     epic.id === epicToEdit.id ? epicToEdit : epic
+      //   )
+      // );
+    }
+    setShowTaskModal(false);
+    setIsTaskCreating(false);
+    toast.success("operation(task) success temp only!✅");
+  };
+
+  const createTask = async (projectId, formData) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`,
+        formData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log(response.data.message);
+      toast.success(response.data.message);
+      fetchEpics(); // Refresh the epics list after creation
+      // setEpics(prev => [...prev, epicToEdit]);
+    } catch (error) {
+      console.error("Epic creation failed:", error.response?.data?.message || error.message);
+    }
+  };
+
+  const handleEditClickTask = (taskk) => {
+    setTaskToEdit(taskk);
+    setShowTaskModal(true);
+  };
+
+  const editTask = async (taskId, updatedData) => {
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics/${taskId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log(response.data.message);
+      toast.success(response.data.message);
+      fetchEpics(); // Refresh the epics list after editing
+    } catch (error) {
+      console.error("Failed to update epic:", error.response?.data?.message || error.message);
+      toast.error("Failed to update epic");
+    }
+  };
+
+  const handleDeleteTask = async(id) => {
+    console.log("Deleting Task with ID:", id);
+    // toast(
+    //   <ConfirmToast
+    //     message="Are you sure you want to delete this Epic? This action cannot be undone."
+    //     onConfirm={ async() => {
+    //       try {
+    //        const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`, {
+    //           data: { epicId: id },
+    //           headers: {
+    //             Authorization: token
+    //           }
+    //         });
+
+    //         if (response.status === 200) {
+    //           toast.success(response.data.message);
+    //           fetchEpics();
+    //         }
+    //       } catch (error) {
+    //         console.error("Failed to delete Epic:", error);
+    //         toast.error("Failed to delete Epic");
+    //       }
+    //       //setProjects(prev => prev.filter(p => p.id !== projectId));
+    //       //toast.success("Project deleted successfully!✅");
+    //     }}
+    //   />,
+    //   { autoClose: false }
+    // );
+    setTask(prev => prev.filter(p => p.id !== id));
+    toast.success("Task deleted successfully! temp only ✅");
+  };
 
   return (
     <div className="p-4 space-y-6">
@@ -765,6 +1029,388 @@ const ProjectDetails = () => {
                 "Save"
               )}
             </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Userstory Table */}
+      {isScrumMaster && (
+        <h2 className="text-lg font-semibold mt-8 mb-2">Userstories</h2>
+      )}
+      {isScrumMaster && (
+        <button
+        onClick={() => {
+          setUserStoryToEdit({ title: "", description: "", deadline: "", priority: "High", id: Date.now() });
+          setShowUserStoryModal(true);
+          setIsUserStoryCreating(true);
+          setUserStoryAction('Create Userstory');
+        }}
+        className="flex items-center gap-2 px-4 py-2 border-0 rounded-lg bg-[#a40ff3] text-white cursor-pointer hover:bg-white hover:text-[#a40ff3] transition-colors duration-200 group hover:border-b-2 border-[#a40ff3]"
+      >
+        <Plus size={16} className="text-white transition-colors duration-200 group-hover:text-[#a40ff3]" />
+        <span className="group-hover:text-purple-500">Create Userstory</span>
+      </button>
+      )}
+      {isScrumMaster && (
+        <div className="overflow-x-auto">
+        <table className="min-w-full border rounded-xl overflow-hidden">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-3 text-left text-sm font-medium text-gray-700">S.No</th>
+              <th className="p-3 text-left text-sm font-medium text-gray-700">Title</th>
+              <th className="p-3 text-left text-sm font-medium text-gray-700">Priority</th>
+              <th className="p-3 text-left text-sm font-medium text-gray-700">Deadline</th>
+              {isScrumMaster && (
+                <th className="p-3 text-left text-sm font-medium text-gray-700">Actions</th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {userStory.length > 0 ? (
+              userStory.map((userstory, idx) => (
+                  <tr key={userstory.id} className="border-t">
+                    <td className="p-3 text-sm">{idx + 1}</td>
+                    <td
+                      className="p-3 text-sm text-blue-600 cursor-pointer hover:underline"
+                      onClick={() => setSelectedUserStory(userstory)}
+                    >
+                      {userstory.title}
+                    </td>
+                    <td className="p-3 text-sm">{userstory.priority}</td>
+                    <td className="p-3 text-sm">{userstory.deadline}</td>
+                    {isScrumMaster && (
+                      <td className="p-3 text-sm">
+                        <div className="flex items-center gap-3 text-gray-600">
+                          <button onClick={() => {handleEditClickUserstory(userstory); setUserStoryAction('Edit Userstory')}} className="cursor-pointer text-gray-800 hover:text-gray-600">
+                            <Pencil size={18} />
+                          </button>
+                          <div className="h-5 w-px bg-gray-300" />
+                          <button onClick={() => handleDeleteUserstory(userstory.id)} className="text-red-500 cursor-pointer hover:text-red-600">
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+              ))
+            ): error ? (
+              <tr>
+                  <td colSpan={4} className="text-center py-4 text-purple-400">
+                    {error}
+                  </td>
+                </tr>
+            ) : (
+              <tr>
+                  <td colSpan={4} className="text-center py-4 text-purple-400">
+                    {"Loading..."}
+                  </td>
+                </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      )}
+
+
+      {/* userstory Modal Popup */}
+          {selectedUserStory && (
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-100">
+              <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-xl relative">
+                <h2 className="text-lg font-bold mb-2">{selectedUserStory.title} - Description</h2>
+                <div className="h-[200px] overflow-y-auto text-sm text-gray-700 border p-3 rounded">
+                  {selectedUserStory.description}
+                </div>
+                <button
+                  className="absolute top-2 right-3 text-gray-500 hover:text-gray-700"
+                  onClick={() => setSelectedUserStory(null)}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+
+      {showUserStoryModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-100 p-4">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">{userStoryAction}</h2>
+            <div className="space-y-3">
+              <label className="text-md font-medium mb-1">Title</label>
+              <input
+                type="text"
+                className="w-full border rounded px-3 py-2"
+                placeholder="Title"
+                value={userStoryToEdit.title}
+                onChange={(e) => setUserStoryToEdit({ ...userStoryToEdit, title: e.target.value })}
+              />
+              <label className="text-md font-medium mb-1">Description</label>
+              <textarea
+                className="w-full p-2 border rounded-md h-28 resize-none overflow-y-auto mb-0"
+                placeholder="Enter epic description..."
+                value={userStoryToEdit.description}
+                // onChange={(e) => setEpicToEdit({ ...epicToEdit, description: e.target.value })}
+                onChange={(e) => {
+                  const words = e.target.value.trim().split(/\s+/);
+                  if (words.length <= 15) {
+                    setUserStoryToEdit({ ...userStoryToEdit, description: e.target.value });
+                  }
+                }}
+              />
+              <p className="text-xs text-gray-500 text-right">
+                {userStoryToEdit.description.trim().split(/\s+/).filter(Boolean).length}/15 words
+              </p>
+
+              <label className="text-md font-medium mb-1">Priority</label>
+              <select
+                className="w-full border rounded px-3 py-2"
+                onChange={(e) => setUserStoryToEdit({ ...userStoryToEdit, priority: e.target.value })}
+                value={userStoryToEdit.priority}
+              >
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+
+              <label className="text-md font-medium mb-1">Deadline</label>
+              <input
+                type="date"
+                className="w-full border rounded px-3 py-2"
+                value={userStoryToEdit.deadline}
+                onChange={(e) => setUserStoryToEdit({ ...userStoryToEdit, deadline: e.target.value })}
+              />
+            </div>
+            <div className="flex justify-end mt-5 gap-3">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-100"
+                onClick={() => {
+                  setShowUserStoryModal(false);
+                  setIsUserStoryCreating(false);
+                }}>
+                Cancel
+              </button>
+
+              <button
+                className="px-4 py-2 bg-[#a40ff3] text-white rounded hover:bg-purple-500"
+                onClick={handleEditSaveUserstory}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5h-3z"
+                    ></path>
+                  </svg>
+                ) : (
+                  "Save"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* task */}
+      {isScrumMaster && (
+        <h2 className="text-lg font-semibold mt-8 mb-2">Tasks</h2>
+      )}
+      {isScrumMaster && (
+        <button
+        onClick={() => {
+          setTaskToEdit({ title: "", description: "", deadline: "", priority: "High", id: Date.now() });
+          setShowTaskModal(true);
+          setIsTaskCreating(true);
+          setTaskAction('Create Task');
+        }}
+        className="flex items-center gap-2 px-4 py-2 border-0 rounded-lg bg-[#a40ff3] text-white cursor-pointer hover:bg-white hover:text-[#a40ff3] transition-colors duration-200 group hover:border-b-2 border-[#a40ff3]"
+      >
+        <Plus size={16} className="text-white transition-colors duration-200 group-hover:text-[#a40ff3]" />
+        <span className="group-hover:text-purple-500">Create Task</span>
+      </button>
+      )}
+      {isScrumMaster && (
+        <div className="overflow-x-auto">
+        <table className="min-w-full border rounded-xl overflow-hidden">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-3 text-left text-sm font-medium text-gray-700">S.No</th>
+              <th className="p-3 text-left text-sm font-medium text-gray-700">Title</th>
+              <th className="p-3 text-left text-sm font-medium text-gray-700">Priority</th>
+              <th className="p-3 text-left text-sm font-medium text-gray-700">Deadline</th>
+              {isScrumMaster && (
+                <th className="p-3 text-left text-sm font-medium text-gray-700">Actions</th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {task.length > 0 ? (
+              task.map((taskk, idx) => (
+                  <tr key={taskk.id} className="border-t">
+                    <td className="p-3 text-sm">{idx + 1}</td>
+                    <td
+                      className="p-3 text-sm text-blue-600 cursor-pointer hover:underline"
+                      onClick={() => setSelectedUserStory(taskk)}
+                    >
+                      {taskk.title}
+                    </td>
+                    <td className="p-3 text-sm">{taskk.priority}</td>
+                    <td className="p-3 text-sm">{taskk.deadline}</td>
+                    {isScrumMaster && (
+                      <td className="p-3 text-sm">
+                        <div className="flex items-center gap-3 text-gray-600">
+                          <button onClick={() => {handleEditClickTask(taskk); setTaskAction('Edit Task')}} className="cursor-pointer text-gray-800 hover:text-gray-600">
+                            <Pencil size={18} />
+                          </button>
+                          <div className="h-5 w-px bg-gray-300" />
+                          <button onClick={() => handleDeleteTask(taskk.id)} className="text-red-500 cursor-pointer hover:text-red-600">
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+              ))
+            ): error ? (
+              <tr>
+                  <td colSpan={4} className="text-center py-4 text-purple-400">
+                    {error}
+                  </td>
+                </tr>
+            ) : (
+              <tr>
+                  <td colSpan={4} className="text-center py-4 text-purple-400">
+                    {"Loading..."}
+                  </td>
+                </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      )}
+
+
+      {/* task Modal Popup */}
+          {selectedTask && (
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-100">
+              <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-xl relative">
+                <h2 className="text-lg font-bold mb-2">{selectedTask.title} - Description</h2>
+                <div className="h-[200px] overflow-y-auto text-sm text-gray-700 border p-3 rounded">
+                  {selectedTask.description}
+                </div>
+                <button
+                  className="absolute top-2 right-3 text-gray-500 hover:text-gray-700"
+                  onClick={() => setSelectedTask(null)}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+
+      {showTaskModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-100 p-4">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">{taskAction}</h2>
+            <div className="space-y-3">
+              <label className="text-md font-medium mb-1">Title</label>
+              <input
+                type="text"
+                className="w-full border rounded px-3 py-2"
+                placeholder="Title"
+                value={taskToEdit.title}
+                onChange={(e) => setTaskToEdit({ ...taskToEdit, title: e.target.value })}
+              />
+              <label className="text-md font-medium mb-1">Description</label>
+              <textarea
+                className="w-full p-2 border rounded-md h-28 resize-none overflow-y-auto mb-0"
+                placeholder="Enter epic description..."
+                value={taskToEdit.description}
+                // onChange={(e) => setEpicToEdit({ ...epicToEdit, description: e.target.value })}
+                onChange={(e) => {
+                  const words = e.target.value.trim().split(/\s+/);
+                  if (words.length <= 15) {
+                    setTaskToEdit({ ...taskToEdit, description: e.target.value });
+                  }
+                }}
+              />
+              <p className="text-xs text-gray-500 text-right">
+                {taskToEdit.description.trim().split(/\s+/).filter(Boolean).length}/15 words
+              </p>
+
+              <label className="text-md font-medium mb-1">Priority</label>
+              <select
+                className="block w-[50%] border rounded px-3 py-2"
+                onChange={(e) => setTaskToEdit({ ...taskToEdit, priority: e.target.value })}
+                value={taskToEdit.priority}
+              >
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+
+              <label className="text-md font-medium mb-1">Deadline</label>
+              <input
+                type="date"
+                className="w-full border rounded px-3 py-2"
+                value={taskToEdit.deadline}
+                onChange={(e) => setTaskToEdit({ ...taskToEdit, deadline: e.target.value })}
+              />
+            </div>
+            <div className="flex justify-end mt-5 gap-3">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-100"
+                onClick={() => {
+                  setShowTaskModal(false);
+                  setIsTaskCreating(false);
+                }}>
+                Cancel
+              </button>
+
+              <button
+                className="px-4 py-2 bg-[#a40ff3] text-white rounded hover:bg-purple-500"
+                onClick={handleEditSaveTask}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5h-3z"
+                    ></path>
+                  </svg>
+                ) : (
+                  "Save"
+                )}
+              </button>
             </div>
           </div>
         </div>
