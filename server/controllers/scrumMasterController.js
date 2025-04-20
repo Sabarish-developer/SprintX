@@ -4,6 +4,7 @@ import taskModel from "../models/task.js";
 import sprintModel from "../models/sprint.js";
 import epicModel from "../models/epic.js";
 import userModel from "../models/user.js";
+import mongoose from "mongoose";
 
 const homePageHandler = async(req,res)=>{
 
