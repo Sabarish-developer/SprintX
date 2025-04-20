@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, SortAsc, X, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Menu, SortAsc, X, Plus, Pencil, Trash2, FolderPlus } from 'lucide-react';
 import '../SignUp.css';
 import useAuth from "../hooks/useAuth";
 import { useNavigate, useParams } from 'react-router-dom';
@@ -8,9 +8,9 @@ import { toast } from 'react-toastify';
 import ConfirmToast from './ConfirmToast';
 
 const sprintData = [
-  { id: 1, title: 'seenu', start: '2024-04-01', deadline: '2024-05-15', priority: 'Active' },
-  { id: 2, title: 'zzzz', start: '2024-04-16', deadline: '2024-04-30', priority: 'Completed' },
-  { id: 3, title: 'aaaa', start: '2024-05-01', deadline: '2024-04-15', priority: 'Active' },
+  { id: 1, title: 'seenu', start: '2024-04-01', deadline: '2024-05-15', status: 'Active' },
+  { id: 2, title: 'zzzz', start: '2024-04-16', deadline: '2024-04-30', status: 'Completed' },
+  { id: 3, title: 'aaaa', start: '2024-05-01', deadline: '2024-04-15', status: 'Active' },
 ];
 
 const epicData = [
@@ -21,7 +21,21 @@ const epicData = [
 const ProjectDetails = () => {
 
   const user = useAuth();
+  const whoIsLoggedIn = user?.getWhoIsLoggedIn(); // Get the role of the logged-in user
+  if (user) {
+    // whoIsLoggedIn = user.getWhoIsLoggedIn();
+    console.log("who is logged in", whoIsLoggedIn);
+    console.log("user", user);
+  }
+  else {
+    console.log("unAuthenticated user");
+    toast.error("No user found, please login again.");
+    navigate("/login"); // Redirect to login if not authenticated
+  }
+    
   const isProductOwner = user?.role === "Product owner";
+  const isScrumMaster = user?.role === "Scrum master";
+  const isTeamMember = user?.role === "Team member";
   const { projectId } = useParams();
   const navigate = useNavigate();
   console.log("Project ID:", projectId);
@@ -29,6 +43,10 @@ const ProjectDetails = () => {
   const token = localStorage.getItem("token");
 
   const [Sprints, setSprints] = useState(sprintData);
+  const [sprintAction, setSprintAction] = useState('');
+  const [sprintToEdit, setSprintToEdit] = useState();
+  const [isSprintCreating, setIsSprintCreating] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [Epics, setEpics] = useState([]);
   const [EpicsData, setEpicsData] = useState([]); 
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -100,7 +118,8 @@ const ProjectDetails = () => {
   };
   
   useEffect(() => {
-    fetchEpics();
+    if(isProductOwner){
+    fetchEpics();}
   }, []);
 
   const filteredSprints = [...Sprints]
@@ -123,7 +142,128 @@ const ProjectDetails = () => {
     setEditModalOpen(true);
   };
 
+  const handleSprintEditClick = (sprint) => {
+    setSprintToEdit(sprint);
+    setIsSprintCreating(false);
+    setShowModal(true);
+  };
+
   const [isLoading, setIsLoading] = useState(false);
+  
+  const handleSprintEditSave = async() => {
+    if (isSprintCreating) {
+      console.log("new sprint:", sprintToEdit);
+      const formData = {
+        id: Date.now(),
+        // id: sprintToEdit.id,
+        title: sprintToEdit.title,
+        start: sprintToEdit.start,
+        deadline: sprintToEdit.deadline,
+        status: "Active",
+      };
+      setIsLoading(true);
+      // await createSprint(projectId, formData);
+      setSprints(prev => [...prev, formData]);
+      console.log("Sprint created:", formData); //temporary only
+      setIsLoading(false);
+    } else {
+      const updatedData = {
+        title: sprintToEdit.title,
+        start: sprintToEdit.start,
+        deadline: sprintToEdit.deadline,
+      };
+      console.log("Updating epic:", updatedData);
+      setIsLoading(true);
+      //await editSprint(sprintToEdit.id, updatedData);
+      setSprints(prev =>
+        prev.map(sprint =>
+          sprint.id === sprintToEdit.id ? sprintToEdit : sprint
+        )
+      );
+      console.log("Sprint updated:", updatedData); //temporary only
+      setIsLoading(false);
+
+      // setEpics(prev =>
+      //   prev.map(epic =>
+      //     epic.id === epicToEdit.id ? epicToEdit : epic
+      //   )
+      // );
+    }
+    setShowModal(false);
+    setIsSprintCreating(false);
+  };
+
+  const createSprint = async (projectId, formData) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`,
+        formData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log(response.data.message);
+      toast.success(response.data.message);
+      fetchEpics();
+    } catch (error) {
+      console.error("Epic creation failed:", error.response?.data?.message || error.message);
+    }
+  };
+
+  const editSprint = async (epicId, updatedData) => {
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics/${epicId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log(response.data.message);
+      toast.success(response.data.message);
+      fetchEpics(); // Refresh the epics list after editing
+    } catch (error) {
+      console.error("Failed to update epic:", error.response?.data?.message || error.message);
+      toast.error("Failed to update epic");
+    }
+  };
+
+  const handleSprintDelete = async(id) => {
+    console.log("Deleting sprint with ID:", id);
+    // toast(
+    //   <ConfirmToast
+    //     message="Are you sure you want to delete this Epic? This action cannot be undone."
+    //     onConfirm={ async() => {
+    //       try {
+    //        const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`, {
+    //           data: { epicId: id },
+    //           headers: {
+    //             Authorization: token
+    //           }
+    //         });
+
+    //         if (response.status === 200) {
+    //           toast.success(response.data.message);
+    //           fetchEpics();
+    //         }
+    //       } catch (error) {
+    //         console.error("Failed to delete Epic:", error);
+    //         toast.error("Failed to delete Epic");
+    //       }
+    //       //setProjects(prev => prev.filter(p => p.id !== projectId));
+    //       //toast.success("Project deleted successfully!✅");
+    //     }}
+    //   />,
+    //   { autoClose: false }
+    // );
+    setSprints(prev => prev.filter(p => p.id !== id));
+    toast.success("Sprint deleted successfully!✅");
+  };
+
   const handleEditSave = async() => {
     if (isCreating) {
       console.log("new epic:", epicToEdit);
@@ -235,6 +375,20 @@ const ProjectDetails = () => {
       {/* Top Search & Sort */}
       <div className='bottom-shadow-nav p-2'>
       <div className="hidden lg:flex lg:items-center gap-4 max-w-5xl">
+      {isScrumMaster &&
+          <button
+          onClick={() => {
+            setSprintToEdit({title: "", start: "", deadline: ""}); 
+            setIsSprintCreating(true); 
+            setSprintAction('Create Sprint'); 
+            setShowModal(true)
+          }} 
+          className="bg-[#a40ff3] hover:bg-white cursor-pointer hover:text-[#a40ff3] text-white px-4 py-2 rounded shadow hover:shadow-md text-sm flex items-center gap-2 w-40"
+          >
+            <FolderPlus size={18} />
+            Create sprint
+          </button>
+          }
         <div className="flex items-center border-0 rounded-lg px-3 py-2">
           <input
             type="text"
@@ -264,6 +418,19 @@ const ProjectDetails = () => {
       {/* Mobile Dropdown Menu */}
       {menuOpen && (
         <div className="lg:hidden px-4 mt-3 space-y-3">
+          {isScrumMaster &&
+          <button
+          onClick={() => {
+            setSprintToEdit({title: "", start: "", deadline: ""}); 
+            setIsSprintCreating(true); 
+            setSprintAction('Create Sprint'); 
+            setShowModal(true)}}
+            className="bg-[#a40ff3] hover:bg-white cursor-pointer hover:text-[#a40ff3] text-white px-4 py-2 rounded shadow hover:shadow-md text-sm flex items-center gap-2 w-40"
+          >
+            <FolderPlus size={18} />
+            Create sprint
+          </button>
+          }
           <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2">
             <input
               type="text"
@@ -284,21 +451,138 @@ const ProjectDetails = () => {
       </div>
 
       {/* Sprint Cards */}
+      <h2 className="text-lg font-semibold mb-2">Sprints</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredSprints.map(sprint => (
-          <div key={sprint.id} className="border-0 bg-white rounded-xl bottom-shadow p-4">
+          <div key={sprint.id} className="relative border-0 bg-white rounded-xl bottom-shadow p-4">
             <h3 className="text-lg font-semibold">{sprint.title}</h3>
             <p className="text-sm text-gray-500">Start: {sprint.start}</p>
             <p className="text-sm text-gray-500">Deadline: {sprint.deadline}</p>
-            <span className={`inline-block mt-2 px-3 py-1 text-xs font-medium rounded-full ${sprint.priority === 'Active' ? 'bg-orange-100 text-orange-800' : 'bg-green-200 text-green-700'}`}>
-              {sprint.priority}
+            <span className={`inline-block mt-2 px-3 py-1 text-xs font-medium rounded-full ${sprint.status === 'Active' ? 'bg-orange-100 text-orange-800' : 'bg-green-200 text-green-700'}`}>
+              {sprint.status}
             </span>
+            {isScrumMaster && (
+              <div className="p-0 m-0 text-sm absolute top-3 right-3">
+                <div className="flex items-center gap-3 text-gray-600">
+                  <button onClick={() => { handleSprintEditClick(sprint); setSprintAction('Edit sprint') }} className="cursor-pointer text-gray-800 hover:text-gray-600">
+                    <Pencil size={18} />
+                  </button>
+                  <div className="h-5 w-px bg-gray-300" />
+                  <button onClick={() => handleSprintDelete(sprint.id)} className="text-red-500 cursor-pointer hover:text-red-600">
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
 
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-100 p-4">
+        <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-lg">
+          <h2 className="text-lg font-semibold mb-4">{sprintAction}</h2>
+          <div className="space-y-3">
+          <label className="text-md font-medium mb-1">Title</label>
+            <input
+              type="text"
+              className="w-full border rounded px-3 py-2"
+              placeholder="Title"
+              value={sprintToEdit.title}
+              onChange={(e) => setSprintToEdit({ ...sprintToEdit, title: e.target.value })}
+            />
+            {/* <label className="text-md font-medium mb-1">Description</label>
+            <textarea
+              className="w-full p-2 border rounded-md h-28 resize-none overflow-y-auto mb-0"
+              placeholder="Enter epic description..."
+              value={epicToEdit.description}
+              // onChange={(e) => setEpicToEdit({ ...epicToEdit, description: e.target.value })}
+              onChange={(e) => {
+                const words = e.target.value.trim().split(/\s+/);
+                if (words.length <= 15) {
+                  setEpicToEdit({ ...epicToEdit, description: e.target.value });
+                }
+              }}                
+            />
+            <p className="text-xs text-gray-500 text-right">
+              {epicToEdit.description.trim().split(/\s+/).filter(Boolean).length}/15 words
+            </p>
+
+            <label className="text-md font-medium mb-1">Priority</label>
+            <select
+              className="w-full border rounded px-3 py-2"
+              onChange={(e) => setEpicToEdit({ ...epicToEdit, priority: e.target.value })}
+              value={epicToEdit.priority}
+            >
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select> */}
+            <label className="text-md font-medium mb-1">Start</label>
+            <input
+              type="date"
+              className="w-full border rounded px-3 py-2"
+              value={sprintToEdit.start}
+              onChange={(e) => setSprintToEdit({ ...sprintToEdit, start: e.target.value })}
+            />
+
+            <label className="text-md font-medium mb-1">Deadline</label>
+            <input
+              type="date"
+              className="w-full border rounded px-3 py-2"
+              value={sprintToEdit.deadline}
+              onChange={(e) => setSprintToEdit({ ...sprintToEdit, deadline: e.target.value })}
+            />
+          </div>
+          <div className="flex justify-end mt-5 gap-3">
+          <button
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-100"
+            onClick={() => {
+              setShowModal(false);
+              setIsSprintCreating(false);
+            }}>
+              Cancel
+          </button>
+
+          <button
+            className="px-4 py-2 bg-[#a40ff3] text-white rounded hover:bg-purple-500"
+            onClick={handleSprintEditSave}
+            disabled={isLoading}
+          >
+          {isLoading ? (
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5h-3z"
+                ></path>
+              </svg>
+            ) : (
+              "Save"
+            )}
+          </button>
+          </div>
+        </div>
+      </div>
+      )}
+
       {/* Epic Table */}
-      <h2 className="text-lg font-semibold mt-8 mb-2">Epics</h2>
+      {isProductOwner && (
+        <h2 className="text-lg font-semibold mt-8 mb-2">Epics</h2>
+      )}
       {isProductOwner && (
         <button
         onClick={() => {
@@ -313,13 +597,14 @@ const ProjectDetails = () => {
         <span className="group-hover:text-purple-500">Create Epics</span>
       </button>
       )}
-    <div className="overflow-x-auto">
+      {isProductOwner && (
+        <div className="overflow-x-auto">
         <table className="min-w-full border rounded-xl overflow-hidden">
           <thead className="bg-gray-100">
             <tr>
               <th className="p-3 text-left text-sm font-medium text-gray-700">S.No</th>
               <th className="p-3 text-left text-sm font-medium text-gray-700">Title</th>
-              <th className="p-3 text-left text-sm font-medium text-gray-700">priority</th>
+              <th className="p-3 text-left text-sm font-medium text-gray-700">Priority</th>
               <th className="p-3 text-left text-sm font-medium text-gray-700">Deadline</th>
               {isProductOwner && (
                 <th className="p-3 text-left text-sm font-medium text-gray-700">Actions</th>
@@ -370,6 +655,7 @@ const ProjectDetails = () => {
           </tbody>
         </table>
       </div>
+      )}
 
 
       {/* Modal Popup */}

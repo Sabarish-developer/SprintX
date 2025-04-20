@@ -26,6 +26,24 @@ import '../SignUp.css';
 //   ];
 
 export default function Projects() {
+
+  const user = useAuth();
+  const whoIsLoggedIn = user?.getWhoIsLoggedIn(); // Get the role of the logged-in user
+  if (user) {
+    // whoIsLoggedIn = user.getWhoIsLoggedIn();
+    console.log("who is logged in", whoIsLoggedIn);
+    console.log("user", user);
+  }
+  else {
+    console.log("unAuthenticated user");
+    toast.error("No user found, please login again.");
+    navigate("/login"); // Redirect to login if not authenticated
+  }
+  
+  const isProductOwner = user?.role === "Product owner";
+  const isScrumMaster = user?.role === "Scrum master";
+  const isTeamMember = user?.role === "Team member";
+
   const token = localStorage.getItem("token");
   const [search, setSearch] = useState("");
   const [showIcon, setShowIcon] = useState(false);
@@ -38,11 +56,23 @@ export default function Projects() {
   const navigate = useNavigate();
   const [sortType, setSortType] = useState("");
   const [error, setError] = useState("");
+ 
+  // const isProductOwner = user?.role === "Product owner";
+  // const isScrumMaster = user?.role === "Scrum master";
+  // const isTeamMember = user?.role === "Team member";
+  // let whoIsLoggedIn = null;
+  // console.log(isScrumMaster);
+  // console.log("hello");
 
-  const user = useAuth();
-  const isProductOwner = user?.role === "Product owner";
-  console.log(isProductOwner);
-  console.log("hello");
+  // if(isScrumMaster){
+  //   whoIsLoggedIn = "scrummaster";
+  // }
+  // else if(isTeamMember){
+  //   whoIsLoggedIn = "teammember";
+  // }
+  // else if(isProductOwner){
+  //   whoIsLoggedIn = "productowner";
+  // }
 
   const [scrumMasters, setScrumMasters] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
@@ -80,7 +110,7 @@ export default function Projects() {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/companymembers`, {
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/companymembers`, {
                    headers: {
                      Authorization: token
                    }
@@ -98,9 +128,12 @@ export default function Projects() {
         toast.error("Failed to load members");
       }
     };
-  
-    fetchMembers();
+
+    if(isProductOwner) {
+    fetchMembers();}
   }, []);
+
+  
   
   console.log("1",teamMembers);
   const scrumMasterOptions = scrumMasters.map(member => ({
@@ -116,7 +149,7 @@ export default function Projects() {
     try {
       console.log("Fetching projects...");
   
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects`, {
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects`, {
         headers: {
           Authorization: token
         }

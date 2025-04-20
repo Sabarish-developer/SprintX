@@ -7,9 +7,40 @@ export default function useAuth() {
 
   try {
     const decoded = jwtDecode(token);
-    return decoded; // { username, email, role, ... }
+
+    // Function to determine who is logged in
+    const getWhoIsLoggedIn = () => {
+      if (decoded.role === "Scrum master") return "scrummaster";
+      if (decoded.role === "Team member") return "teammember";
+      if (decoded.role === "Product owner") return "productowner";
+      return null; // Fallback
+    };
+
+    return {
+      ...decoded,
+      getWhoIsLoggedIn,
+    }; // Return decoded user data along with the function
   } catch (error) {
     console.error("Invalid token:", error);
     return null;
   }
 }
+
+
+
+
+// import { jwtDecode } from "jwt-decode";
+
+// export default function useAuth() {
+//   const token = localStorage.getItem("token");
+
+//   if (!token) return null;
+
+//   try {
+//     const decoded = jwtDecode(token);
+//     return decoded; // { username, email, role, ... }
+//   } catch (error) {
+//     console.error("Invalid token:", error);
+//     return null;
+//   }
+// }
