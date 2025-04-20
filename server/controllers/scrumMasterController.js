@@ -440,6 +440,8 @@ const createSprintHandler = async (req, res) => {
       if (!projectId) {
         return res.status(400).json({ message: "Project Id is required." });
       }
+
+      const scrumMasterId = req.user.id;
   
       const { title, start, deadline } = req.body;
   
@@ -451,7 +453,8 @@ const createSprintHandler = async (req, res) => {
         title: title.trim(),
         start,
         deadline,
-        projectId
+        projectId,
+        scrumMasterId
       });
   
       return res.status(201).json({ message: "Sprint created successfully", sprint });
