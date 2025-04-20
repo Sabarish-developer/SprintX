@@ -32,23 +32,100 @@ const homePageHandler = async(req,res)=>{
     }
 }
 
-const projectsPageHandler = async(req,res)=>{
-    
-    try{
-        const userId = req.user.id;
-        if(!userId){
-            return res.status(400).json({message: "User Id is required."});
+const projectsPageHandler = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+  
+      const projects = await projectModel.aggregate([
+        {
+          $match: { teamMembersId: userObjectId } // Match where user is in teamMembers
+        },
+        {
+          $lookup: {
+            from: "epics",
+            localField: "_id",
+            foreignField: "projectId",
+            as: "epics"
+          }
+        },
+        {
+          $lookup: {
+            from: "users", // Get Product Owner
+            localField: "productOwnerId",
+            foreignField: "_id",
+            as: "productOwnerInfo"
+          }
+        },
+        {
+          $lookup: {
+            from: "users", // Get Scrum Master
+            localField: "scrumMasterId",
+            foreignField: "_id",
+            as: "scrumMasterInfo"
+          }
+        },
+        {
+          $unwind: {
+            path: "$productOwnerInfo",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $unwind: {
+            path: "$scrumMasterInfo",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $project: {
+            title: 1,
+            description: 1,
+            start: 1,
+            end: 1,
+            deadline: 1,
+            status: 1,
+            epics: 1,
+            productOwner: "$productOwnerInfo.username", // or .fullName if preferred
+            scrumMaster: "$scrumMasterInfo.username"
+          }
         }
-        const projects = await projectModel.find({teamMembersId: userId});
-        if(projects.length == 0)
-            return res.status(200).json({message: "No projects found.", projects: []});
-        else
-            return res.status(200).json({message: "Projects retrieved successfully.", projects});
-    }catch(e){
-        console.log("Error in projects block: ",e);
-        return res.status(500).json({message: "Internal server error. Please try again later."});
+      ]);
+  
+      if (projects.length === 0) {
+        return res.status(200).json({
+          message: "No projects found. Contact your Scrum Master.",
+          projects: []
+        });
+      }
+  
+      const projectsWithCompletion = projects.map(project => {
+        const totalEpics = project.epics.length;
+        const completedEpics = project.epics.filter(epic => epic.status === "Completed").length;
+  
+        const completionPercentage = totalEpics === 0
+          ? 0
+          : Math.round((completedEpics / totalEpics) * 100);
+  
+        return {
+          ...project,
+          completionPercentage
+        };
+      });
+  
+      return res.status(200).json({
+        message: "Projects retrieved successfully.",
+        projects: projectsWithCompletion
+      });
+  
+    } catch (e) {
+      console.log("Error in Team Member projects handler: ", e);
+      return res.status(500).json({
+        message: "Error retrieving projects. Please try again later."
+      });
     }
-}
+  };
+  
 
 const readProjectHandler = async(req,res)=>{
     
