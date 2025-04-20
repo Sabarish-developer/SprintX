@@ -316,6 +316,7 @@ const ProjectDetails = () => {
       await createSprint(projectId, formData);
       //setSprints(prev => [...prev, formData]);
       console.log("Sprint created:", formData); //temporary only
+      fetchSprints(); // Refresh the sprints list after creation
       setIsLoading(false);
     } else {
       const updatedData = {
