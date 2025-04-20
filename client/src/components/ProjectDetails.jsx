@@ -564,7 +564,6 @@ const ProjectDetails = () => {
     }
     setShowUserStoryModal(false);
     setIsUserStoryCreating(false);
-    toast.success("operation success temp only!✅");
   };
 
   const createUserstory = async (projectId, formData) => {
