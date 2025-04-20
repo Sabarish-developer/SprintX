@@ -171,6 +171,7 @@ const ProjectDetails = () => {
           return {
             id: p._id,
             title: p.title,
+            start: new Date(p.start).toISOString().slice(0, 10), // ✅ good for <input type="date" />
             deadline: new Date(p.deadline).toISOString().slice(0, 10), // ✅ good for <input type="date" />
             priority: p.priority,
             description: p.description,
