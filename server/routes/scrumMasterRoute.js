@@ -23,7 +23,7 @@ scrumMasterRouter.get("/projects/:id/userstories/:userStoryId", readUserStoriesH
 scrumMasterRouter.get("/projects/:id/epics", projectEpicsHandler);
 scrumMasterRouter.post("/projects/:id/userstories", createUserStoriesHandler);
 scrumMasterRouter.delete("/projects/:id/userstories", deleteUserStoriesHandler);
-scrumMasterRouter.put("/projects/:id/userstories/:id", editUserStoriesHandler);
+scrumMasterRouter.put("/projects/:id/userstories/:userStoryId", editUserStoriesHandler);
 
 scrumMasterRouter.get("/projects/:id/tasks", tasksPageHandler);
 scrumMasterRouter.get("/projects/:id/tasks/userstories", projectsUserStoriesHandler);
