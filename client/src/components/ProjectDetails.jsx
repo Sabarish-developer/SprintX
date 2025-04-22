@@ -192,7 +192,9 @@ useEffect(() => {
   };
   
   useEffect(() => {
+    if (isProductOwner) {
     fetchEpics();
+    }
   }, []);
 
   const fetchSprints = async () => {
@@ -304,18 +306,33 @@ useEffect(() => {
   };
   
   useEffect(() => {
-    fetchUserstories();
+    if (isScrumMaster) {
+      fetchUserstories();
+    }
   }, []);
+
+  const id = projectId;
+  const url = isScrumMaster ? `/api/scrummaster/projects/${projectId}/tasks` : `/api/teammember/projects/${id}/tasks`;
 
   const fetchTasks = async () => {
     try {
+      let id = projectId;
+      let res;
       console.log("Fetching Tasks...");
-  
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${projectId}/tasks`, {
+
+      if (isScrumMaster) {
+      res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${projectId}/tasks`, {
         headers: {
           Authorization: token
         }
-      });
+      });}
+      else{
+        res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${id}/tasks`, {
+          headers: {
+            Authorization: token
+          }
+        });
+      }
   
       if (res.status === 200) {
         if (res.data.tasks.length == 0) {
