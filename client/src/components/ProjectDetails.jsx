@@ -43,6 +43,8 @@ const ProjectDetails = () => {
     toast.error("No user found, please login again.");
     navigate("/login"); // Redirect to login if not authenticated
   }
+
+  const tr = true;
     
   const isProductOwner = user?.role === "Product owner";
   const isScrumMaster = user?.role === "Scrum master";
@@ -197,7 +199,7 @@ useEffect(() => {
     try {
       console.log("Fetching Sprints...");
   
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/scrummaster/projects/${projectId}`, {
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${projectId}`, {
         headers: {
           Authorization: token
         }
@@ -807,9 +809,11 @@ useEffect(() => {
           },
         }
       );
+      fetchTasks(); 
+      setSelectedUS(null);
+      setSelectedTM(null);
       console.log(response.data.message);
       toast.success(response.data.message);
-      fetchTasks(); 
     } catch (error) {
       console.error("Epic creation failed:", error.response?.data?.message || error.message);
     }
@@ -1127,6 +1131,7 @@ useEffect(() => {
       {isProductOwner && (
         <h2 className="text-lg font-semibold mt-8 mb-2">Epics</h2>
       )}
+      {/* <h2 className="text-lg font-semibold mt-8 mb-2">Epics</h2> */}
       {isProductOwner && (
         <button
         onClick={() => {
@@ -1141,7 +1146,9 @@ useEffect(() => {
         <span className="group-hover:text-purple-500">Create Epics</span>
       </button>
       )}
-      {isProductOwner && (
+      {/* {isProductOwner && ( */}   
+      {/* now showing epics too all but actions only to PO. tr = true we defined it first itself. */}
+        {isProductOwner && (
         <div className="overflow-x-auto">
         <table className="min-w-full border rounded-xl overflow-hidden">
           <thead className="bg-gray-100">
@@ -1326,6 +1333,7 @@ useEffect(() => {
       {isScrumMaster && (
         <h2 className="text-lg font-semibold mt-8 mb-2">Userstories</h2>
       )}
+      {/* <h2 className="text-lg font-semibold mt-8 mb-2">Userstories</h2> */}
       {isScrumMaster && (
         <button
         onClick={() => {
@@ -1340,7 +1348,8 @@ useEffect(() => {
         <span className="group-hover:text-purple-500">Create Userstory</span>
       </button>
       )}
-      {isScrumMaster && (
+      {isScrumMaster && (  
+        // if want only render to scrum master then just replace "tr" by  "isScrumMaster"    
         <div className="overflow-x-auto">
         <table className="min-w-full border rounded-xl overflow-hidden">
           <thead className="bg-gray-100">
@@ -1532,9 +1541,10 @@ useEffect(() => {
       )}
 
       {/* task */}
-      {isScrumMaster && (
+      {/* {isScrumMaster && (
         <h2 className="text-lg font-semibold mt-8 mb-2">Tasks</h2>
-      )}
+      )} */}
+      <h2 className="text-lg font-semibold mt-8 mb-2">Tasks</h2>
       {isScrumMaster && (
         <button
         onClick={() => {
@@ -1549,7 +1559,9 @@ useEffect(() => {
         <span className="group-hover:text-purple-500">Create Task</span>
       </button>
       )}
-      {isScrumMaster && (
+      {(isScrumMaster || isTeamMember) && (
+        // replace tr by isScrumMaster if want to show only to scrum master.
+        // if want to show to all then just replace tr by true.
         <div className="overflow-x-auto">
         <table className="min-w-full border rounded-xl overflow-hidden">
           <thead className="bg-gray-100">
