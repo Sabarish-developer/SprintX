@@ -67,7 +67,7 @@ const ProjectDetails = () => {
 
 
   //task part
-  const[task, setTask] = useState(tasksData);
+  const[task, setTask] = useState([]);
   const[taskAction, setTaskAction] = useState('');
   const[taskToEdit, setTaskToEdit] = useState();
   const[isTaskCreating, setIsTaskCreating] = useState(false);
@@ -76,6 +76,11 @@ const ProjectDetails = () => {
   const [USOptions, setUSOptions] = useState([]);
   const [selectedUS, setSelectedUS] = useState(null);
   const selectedUSId = selectedUS?.value;
+  const [TMOptions, setTMOptions] = useState([]);
+  const [selectedTM, setSelectedTM] = useState(null);
+  const selectedTMId = selectedTM?.value;
+  const [taskError, setTaskError] = useState(null);
+  console.log("selectedTMId", selectedTMId);
 
   //sprint part
   const [Sprints, setSprints] = useState([]);
@@ -85,6 +90,7 @@ const ProjectDetails = () => {
   const [isSprintCreating, setIsSprintCreating] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [errorSprint, setErrorSprint] = useState(null);
+  const [editStatus, setEditStatus] = useState(false);
 
 
   const [Epics, setEpics] = useState([]);
@@ -100,6 +106,43 @@ const ProjectDetails = () => {
 
   const [epicAction, setEpicAction] = useState('');
   const [error, setError] = useState(null);
+
+ 
+  const fetchTeamMembers = async (projectId) => {
+    try {
+      console.log("Fetching Team Members...");
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/scrummaster/projects/${projectId}/teammembers`, {
+        headers: {
+          Authorization: token
+        }
+      });
+  
+      console.log("Team Members Response:", response.data);
+  
+      const teamMembers = response.data.teamMembers;
+  
+      const formattedOptions = teamMembers.map(member => ({
+        value: member._id,
+        label: member.username
+      }));
+  
+      setTMOptions(formattedOptions);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+      toast.error("Error fetching team members for tasks");
+    }
+  };
+  
+
+useEffect(() => {
+    fetchTeamMembers(projectId);
+}, []);
+
+  // useEffect(() => {
+  //   if (isScrumMaster) {
+  //     fetchTeamMembers(projectId);
+  //   }
+  // }, [isScrumMaster, projectId]);
 
   const fetchEpics = async () => {
     try {
@@ -167,7 +210,7 @@ const ProjectDetails = () => {
         }
         
         const fetchedSprints = res.data.sprints.map((p) => {
-          console.log(p);
+          console.log("sprints",p);
           return {
             id: p._id,
             title: p.title,
@@ -175,6 +218,7 @@ const ProjectDetails = () => {
             deadline: new Date(p.deadline).toISOString().slice(0, 10), // ✅ good for <input type="date" />
             priority: p.priority,
             description: p.description,
+            status: p.status,
             // owner: p.description,
             // scrumMaster: "SEENU",
             // start: new Date(p.start).toISOString().slice(0, 10), // ✅ good for <input type="date" />
@@ -261,6 +305,65 @@ const ProjectDetails = () => {
     fetchUserstories();
   }, []);
 
+  const fetchTasks = async () => {
+    try {
+      console.log("Fetching Tasks...");
+  
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${projectId}/tasks`, {
+        headers: {
+          Authorization: token
+        }
+      });
+  
+      if (res.status === 200) {
+        if (res.data.tasks.length == 0) {
+          setTaskError(res.data.message);
+          return;
+        }
+        
+        const fetchedTasks = res.data.tasks.map((p) => {
+          console.log("Tasks",p);
+          return {
+            id: p._id,
+            title: p.title,
+            deadline: new Date(p.deadline).toISOString().slice(0, 10),
+            priority: p.priority,
+            description: p.description,
+            userStoryId: p.userStoryId,
+            teamMemberId: p.teamMemberId,
+          };
+        });
+  
+        setTask(fetchedTasks);
+        //setEpicsData(fetchedEpics);
+
+        //this will Create TaskOptions for <Select />
+        // const options = res.data.epics.map((p) => ({
+        //   value: p._id,
+        //   label: p.title,
+        // }));
+
+        //setEpicOptions(options);
+      }
+    } catch (err) {
+      console.error("Error fetching Tasks data:", err);
+      setTaskError("Error fetching Tasks data");
+      toast.error("Error fetching Tasks data");
+    }
+  };
+  
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+
+  // Filter projects by search text
+  useEffect(() => {
+    const filtered = sprintsData.filter((p) =>  
+      p.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setSprints(filtered);
+  }, [searchTerm]);
   // const filteredSprints = [...Sprints]
   //   .filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase()))
   //   .sort((a, b) => {
@@ -272,15 +375,15 @@ const ProjectDetails = () => {
   //     return 0;
   //   });
 
-  const sortByProjects = () => {
-    const sorted = [...Sprints].sort((a, b) => a.name.localeCompare(b.name));
+  const sortBySprints = () => {
+    const sorted = [...Sprints].sort((a, b) => a.title.localeCompare(b.title));
     setSprints(sorted);
   };
 
   // Sort by start date
   const sortByDate = () => {
     const sorted = [...Sprints].sort(
-      (a, b) => new Date(a.from) - new Date(b.from)
+      (a, b) => new Date(b.start) - new Date(a.start)
     );
     setSprints(sorted);
   };
@@ -298,6 +401,7 @@ const ProjectDetails = () => {
     setSprintToEdit(sprint);
     setIsSprintCreating(false);
     setShowModal(true);
+    console.log("clicked edit icon", sprintToEdit);
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -324,16 +428,17 @@ const ProjectDetails = () => {
         title: sprintToEdit.title,
         start: sprintToEdit.start,
         deadline: sprintToEdit.deadline,
+        status: sprintToEdit.status,
       };
-      console.log("Updating epic:", updatedData);
+      console.log("Updating Sprint:", updatedData);
       setIsLoading(true);
-      //await editSprint(sprintToEdit.id, updatedData);
-      setSprints(prev =>
-        prev.map(sprint =>
-          sprint.id === sprintToEdit.id ? sprintToEdit : sprint
-        )
-      );
-      console.log("Sprint updated:", updatedData); //temporary only
+      await editSprint(sprintToEdit.id, updatedData);
+      // setSprints(prev =>
+      //   prev.map(sprint =>
+      //     sprint.id === sprintToEdit.id ? sprintToEdit : sprint
+      //   )
+      // );
+      console.log("Sprint updated:", updatedData);
       setIsLoading(false);
 
       // setEpics(prev =>
@@ -357,19 +462,19 @@ const ProjectDetails = () => {
           },
         }
       );
+      fetchSprints();
       console.log(response.data.message);
       toast.success(response.data.message);
-      //fetchEpics();
     } catch (error) {
       console.error("Epic creation failed:", error.response?.data?.message || error.message);
       toast.error("Epic creation failed");
     }
   };
 
-  const editSprint = async (epicId, updatedData) => {
+  const editSprint = async (sprintId, updatedData) => {
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics/${epicId}`,
+        `${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${projectId}/sprints/${sprintId}`,
         updatedData,
         {
           headers: {
@@ -379,43 +484,39 @@ const ProjectDetails = () => {
       );
       console.log(response.data.message);
       toast.success(response.data.message);
-      fetchEpics(); // Refresh the epics list after editing
+      fetchSprints();
     } catch (error) {
-      console.error("Failed to update epic:", error.response?.data?.message || error.message);
-      toast.error("Failed to update epic");
+      console.error("Failed to update sprint:", error.response?.data?.message || error.message);
+      toast.error("Failed to update sprint");
     }
   };
 
   const handleSprintDelete = async(id) => {
     console.log("Deleting sprint with ID:", id);
-    // toast(
-    //   <ConfirmToast
-    //     message="Are you sure you want to delete this Epic? This action cannot be undone."
-    //     onConfirm={ async() => {
-    //       try {
-    //        const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`, {
-    //           data: { epicId: id },
-    //           headers: {
-    //             Authorization: token
-    //           }
-    //         });
+    toast(
+      <ConfirmToast
+        message="Are you sure you want to delete this Sprint? This action cannot be undone."
+        onConfirm={ async() => {
+          try {
+           const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${id}/sprints`, {
+              // data: { sprintId: id },
+              headers: {
+                Authorization: token
+              }
+            });
 
-    //         if (response.status === 200) {
-    //           toast.success(response.data.message);
-    //           fetchEpics();
-    //         }
-    //       } catch (error) {
-    //         console.error("Failed to delete Epic:", error);
-    //         toast.error("Failed to delete Epic");
-    //       }
-    //       //setProjects(prev => prev.filter(p => p.id !== projectId));
-    //       //toast.success("Project deleted successfully!✅");
-    //     }}
-    //   />,
-    //   { autoClose: false }
-    // );
-    setSprints(prev => prev.filter(p => p.id !== id));
-    toast.success("Sprint deleted successfully!✅");
+            if (response.status === 200) {
+              toast.success(response.data.message);
+              fetchSprints();
+            }
+          } catch (error) {
+            console.error("Failed to delete sprint:", error);
+            toast.error("Failed to delete sprint");
+          }
+        }}
+      />,
+      { autoClose: false }
+    );
   };
 
   const handleEditSave = async() => {
@@ -653,15 +754,17 @@ const ProjectDetails = () => {
     if (isTaskCreating) {
       console.log("new Task:", taskToEdit);
       const formData = {
-        id: Date.now(),
+        //id: Date.now(),
         title: taskToEdit.title,
         description: taskToEdit.description,
         priority: taskToEdit.priority,
         deadline: taskToEdit.deadline,
+        userStoryId: selectedUSId,
+        teamMemberId: selectedTMId,
       };
       setIsLoading(true);
-      //await createTask(projectId, formData);
-      setTask(prev => [...prev, formData]); //temporary only
+      await createTask(projectId, formData);
+      //setTask(prev => [...prev, formData]); //temporary only
       setIsLoading(false);
     } else {
       const updatedData = {
@@ -669,15 +772,17 @@ const ProjectDetails = () => {
         description: taskToEdit.description,
         priority: taskToEdit.priority,
         deadline: taskToEdit.deadline,
+        userStoryId: selectedUSId,
+        teamMemberId: selectedTMId,
       };
       console.log("Updating Task:", updatedData);
       setIsLoading(true);
-      //await editTask(taskToEdit.id, updatedData);
-      setTask(prev =>
-        prev.map(task =>
-          task.id === taskToEdit.id ? taskToEdit : task
-        )
-      );
+      await editTask(taskToEdit.id, updatedData);
+      // setTask(prev =>
+      //   prev.map(task =>
+      //     task.id === taskToEdit.id ? taskToEdit : task
+      //   )
+      // );
       setIsLoading(false);
 
       // setEpics(prev =>
@@ -694,7 +799,7 @@ const ProjectDetails = () => {
   const createTask = async (projectId, formData) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`,
+        `${import.meta.env.VITE_BASE_URL}/api/scrummaster/projects/${projectId}/tasks`,
         formData,
         {
           headers: {
@@ -704,8 +809,7 @@ const ProjectDetails = () => {
       );
       console.log(response.data.message);
       toast.success(response.data.message);
-      fetchEpics(); // Refresh the epics list after creation
-      // setEpics(prev => [...prev, epicToEdit]);
+      fetchTasks(); 
     } catch (error) {
       console.error("Epic creation failed:", error.response?.data?.message || error.message);
     }
@@ -713,13 +817,19 @@ const ProjectDetails = () => {
 
   const handleEditClickTask = (taskk) => {
     setTaskToEdit(taskk);
+    const tempUS = USOptions.find(us => us.value === taskk.userStoryId);
+    const tempTM = TMOptions.find(tm => tm.value === taskk.teamMemberId);
+    setSelectedUS(tempUS);
+    setSelectedTM(tempTM);
+    console.log("kkkselectedUS", selectedUS);
+    console.log("kkkselectedTM", selectedTM);
     setShowTaskModal(true);
   };
 
   const editTask = async (taskId, updatedData) => {
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics/${taskId}`,
+        `${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${taskId}/tasks/${projectId}`,
         updatedData,
         {
           headers: {
@@ -729,43 +839,39 @@ const ProjectDetails = () => {
       );
       console.log(response.data.message);
       toast.success(response.data.message);
-      fetchEpics(); // Refresh the epics list after editing
+      fetchTasks();
     } catch (error) {
-      console.error("Failed to update epic:", error.response?.data?.message || error.message);
-      toast.error("Failed to update epic");
+      console.error("Failed to update Task:", error.response?.data?.message || error.message);
+      toast.error("Failed to update Task");
     }
   };
 
   const handleDeleteTask = async(id) => {
     console.log("Deleting Task with ID:", id);
-    // toast(
-    //   <ConfirmToast
-    //     message="Are you sure you want to delete this Epic? This action cannot be undone."
-    //     onConfirm={ async() => {
-    //       try {
-    //        const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/productowner/projects/${projectId}/epics`, {
-    //           data: { epicId: id },
-    //           headers: {
-    //             Authorization: token
-    //           }
-    //         });
+    toast(
+      <ConfirmToast
+        message="Are you sure you want to delete this Task? This action cannot be undone."
+        onConfirm={ async() => {
+          try {
+           const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${id}/tasks`, {
+              data: { taskId: id },
+              headers: {
+                Authorization: token
+              }
+            });
 
-    //         if (response.status === 200) {
-    //           toast.success(response.data.message);
-    //           fetchEpics();
-    //         }
-    //       } catch (error) {
-    //         console.error("Failed to delete Epic:", error);
-    //         toast.error("Failed to delete Epic");
-    //       }
-    //       //setProjects(prev => prev.filter(p => p.id !== projectId));
-    //       //toast.success("Project deleted successfully!✅");
-    //     }}
-    //   />,
-    //   { autoClose: false }
-    // );
-    setTask(prev => prev.filter(p => p.id !== id));
-    toast.success("Task deleted successfully! temp only ✅");
+            if (response.status === 200) {
+              fetchTasks();
+              toast.success(response.data.message);
+            }
+          } catch (error) {
+            console.error("Failed to delete Task:", error);
+            toast.error("Failed to delete Task");
+          }
+        }}
+      />,
+      { autoClose: false }
+    );
   };
 
   return (
@@ -798,12 +904,12 @@ const ProjectDetails = () => {
         </div>
         <SortDropdown
           sortType={sortType}
-          sortByProjects={sortByProjects}
+          sortBySprints={sortBySprints}
           sortByDate={sortByDate}
           clearSort={clearSort}
         />
         {/* <SortDropdown
-                sortByProjects={sortByProjects}
+                sortBySprints={sortBySprints}
                 sortByDate={sortByDate}
                 sortType={sortType}
                 clearSort={clearSort}
@@ -846,13 +952,13 @@ const ProjectDetails = () => {
           </div>
           {/* <SortDropdown
             sortType={sortOption}
-            sortByProjects={() => setSortOption('Sprints')}
+            sortBySprints={() => setSortOption('Sprints')}
             sortByDate={() => setSortOption('Date')}
             clearSort={clearSort}
           /> */}
           <SortDropdown
           sortType={sortType}
-          sortByProjects={sortByProjects}
+          sortBySprints={sortBySprints}
           sortByDate={sortByDate}
           clearSort={clearSort}
         />
@@ -879,7 +985,7 @@ const ProjectDetails = () => {
             {isScrumMaster && (
               <div className="p-0 m-0 text-sm absolute top-3 right-3">
                 <div className="flex items-center gap-3 text-gray-600">
-                  <button onClick={() => { handleSprintEditClick(sprint); setSprintAction('Edit sprint') }} className="cursor-pointer text-gray-800 hover:text-gray-600">
+                  <button onClick={() => {setEditStatus(true) ;handleSprintEditClick(sprint); setSprintAction('Edit sprint') }} className="cursor-pointer text-gray-800 hover:text-gray-600">
                     <Pencil size={18} />
                   </button>
                   <div className="h-5 w-px bg-gray-300" />
@@ -959,6 +1065,17 @@ const ProjectDetails = () => {
               value={sprintToEdit.deadline}
               onChange={(e) => setSprintToEdit({ ...sprintToEdit, deadline: e.target.value })}
             />
+            {editStatus && (
+              <select
+                className="w-full border rounded px-3 py-2"
+                placeholder="update status"
+                onChange={(e) => setSprintToEdit({ ...sprintToEdit, status: e.target.value })}
+                value={sprintToEdit.status}
+              >
+                <option value="Active">Active</option>
+                <option value="Completed">Completed</option>
+              </select>
+            )}
           </div>
           <div className="flex justify-end mt-5 gap-3">
           <button
@@ -966,6 +1083,7 @@ const ProjectDetails = () => {
             onClick={() => {
               setShowModal(false);
               setIsSprintCreating(false);
+              setSprintToEdit(null);
             }}>
               Cancel
           </button>
@@ -1373,6 +1491,7 @@ const ProjectDetails = () => {
                 onClick={() => {
                   setShowUserStoryModal(false);
                   setIsUserStoryCreating(false);
+                  setSelectedUserStory(null);
                 }}>
                 Cancel
               </button>
@@ -1472,10 +1591,10 @@ const ProjectDetails = () => {
                     )}
                   </tr>
               ))
-            ): error ? (
+            ): taskError ? (
               <tr>
                   <td colSpan={4} className="text-center py-4 text-purple-400">
-                    {error}
+                    {taskError}
                   </td>
                 </tr>
             ) : (
@@ -1565,6 +1684,24 @@ const ProjectDetails = () => {
                 value={taskToEdit.deadline}
                 onChange={(e) => setTaskToEdit({ ...taskToEdit, deadline: e.target.value })}
               />
+
+              <Select
+                options={USOptions}
+                value={selectedUS}
+                onChange={(selected) => setSelectedUS(selected)}
+                placeholder="Select an Userstory..."
+                className="w-full"
+                styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+              />
+
+              <Select
+                options={TMOptions}
+                value={selectedTM}
+                onChange={(selected) => setSelectedTM(selected)}
+                placeholder="Select a Team member..."
+                className="w-full"
+                styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+              />
             </div>
             <div className="flex justify-end mt-5 gap-3">
               <button
@@ -1572,6 +1709,8 @@ const ProjectDetails = () => {
                 onClick={() => {
                   setShowTaskModal(false);
                   setIsTaskCreating(false);
+                  setSelectedTM(null);
+                  setSelectedUS(null);
                 }}>
                 Cancel
               </button>
@@ -1618,7 +1757,8 @@ const ProjectDetails = () => {
 
 export default ProjectDetails;
 
-function SortDropdown({ sortType, sortByProjects, sortByDate, clearSort }) {
+function SortDropdown({ sortType, sortBySprints, sortByDate, clearSort }) {
+  const [clear, setClear] = useState(false);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -1648,7 +1788,8 @@ function SortDropdown({ sortType, sortByProjects, sortByDate, clearSort }) {
             <div className="py-1">
               <button
                 onClick={() => {
-                  sortByProjects();
+                  setClear(true);
+                  sortBySprints();
                   setOpen(false);
                 }}
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-[#a40ff3] hover:text-white"
@@ -1657,6 +1798,7 @@ function SortDropdown({ sortType, sortByProjects, sortByDate, clearSort }) {
               </button>
               <button
                 onClick={() => {
+                  setClear(true);
                   sortByDate();
                   setOpen(false);
                 }}
@@ -1669,9 +1811,13 @@ function SortDropdown({ sortType, sortByProjects, sortByDate, clearSort }) {
         )}
       </div>
 
-      {sortType && (
+      {clear && (
         <button
-          onClick={clearSort}
+          onClick={() => {
+            clearSort();
+            setClear(false);
+            setOpen(false);
+          }}
           className="bg-red-500 hover:bg-red-600 text-white w-30 px-3 py-2 rounded text-sm flex items-center gap-1 shadow"
         >
           <X size={16} />
