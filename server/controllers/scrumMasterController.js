@@ -330,8 +330,8 @@ const createTaskHandler = async(req,res)=>{
             return res.status(400).json({message: "Project Id is required."});
         }
 
-        const {title, description, priority, deadline, userStoryId, teamMemberId} = req.body;
-        if(!title.trim() || !description.trim() || !priority || !deadline || !userStoryId || !teamMemberId){
+        const {title, description, priority, deadline, sprintId, userStoryId, teamMemberId} = req.body;
+        if(!title.trim() || !description.trim() || !sprintId || !priority || !deadline || !userStoryId || !teamMemberId){
             return res.status(400).json({message: "All fields are required."});
         }
         const allowedPriority = ["High", "Medium", "Low"];
@@ -345,6 +345,7 @@ const createTaskHandler = async(req,res)=>{
             priority,
             deadline,
             projectId,
+            sprintId,
             userStoryId,
             teamMemberId
         });
