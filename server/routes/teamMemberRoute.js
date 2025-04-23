@@ -13,7 +13,7 @@ teamMemberRouter.use(roleHandler(['Team member']));
 teamMemberRouter.get("/home", homePageHandler);
 
 teamMemberRouter.get("/projects", projectsPageHandler);
-teamMemberRouter.get("/projects/:id", readProjectHandler);
+teamMemberRouter.get("/projects/:projectId", readProjectHandler);
 
 teamMemberRouter.get("/projects/:id/sprints/:sprintId", readSprintHandler); 
 
