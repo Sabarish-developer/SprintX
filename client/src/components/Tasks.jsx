@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     DndContext,
     closestCenter,
@@ -11,8 +11,57 @@ import {
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import ColumnContainer from "./ColumnContainer";
 import TaskCard from "./TaskCard"; 
+import axios from "axios";
+import useAuth from "../hooks/useAuth";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Tasks = () => {
+    const user = useAuth();
+      const whoIsLoggedIn = user?.getWhoIsLoggedIn(); // Get the role of the logged-in user
+      if (user) {
+        // whoIsLoggedIn = user.getWhoIsLoggedIn();
+        console.log("who is logged in", whoIsLoggedIn);
+        console.log("user", user);
+      }
+      else {
+        console.log("unAuthenticated user");
+        toast.error("No user found, please login again.");
+        navigate("/login"); // Redirect to login if not authenticated
+      }
+    
+      //const tr = true;
+        
+        const isProductOwner = user?.role === "Product owner";
+        const isScrumMaster = user?.role === "Scrum master";
+        const isTeamMember = user?.role === "Team member";
+        const { projectId, sprintId } = useParams();
+        const navigate = useNavigate();
+        console.log("Project ID:", projectId);
+        console.log("Sprint ID:", sprintId);
+        console.log("User Role:", user?.role);
+        const token = localStorage.getItem("token");
+
+        const fetchTasks = async () => {
+            console.log("Fetching tasks...");
+            let id = projectId;
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${id}/sprints/${sprintId}`, {
+                    headers: {
+                        Authorization: token
+                    }
+                });
+        
+                console.log('Fetched Tasks:', response.data);
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            }
+        };
+
+        useEffect(() => {
+            fetchTasks();
+        }, []);
+
+
     const initialColumns = ["To Do", "In Progress", "Testing", "Completed", "Need Review"];
     const [columns, setColumns] = useState(initialColumns); 
 

@@ -16,6 +16,7 @@ import ErrorPage from './components/ErrorPage.jsx'
 import Projects from './components/Projects.jsx';
 import Tasks from './components/Tasks.jsx';
 import ProjectDetails from './components/ProjectDetails.jsx';
+import Reports from './components/Reports.jsx';
 
 const router = createBrowserRouter([
   {
@@ -56,13 +57,17 @@ const router = createBrowserRouter([
         element: <Projects/>
       },
       {
+        path: '/home/reports',
+        element: <Reports/>
+      },
+      {
         path: '/home/projects/:projectId',
         element: <ProjectDetails/>
       },
       {
-        path: '/home/tasks',
+        path: '/home/projects/:projectId/:sprintId',
         element: <Tasks/>
-      }
+      },
     ]
   }
 

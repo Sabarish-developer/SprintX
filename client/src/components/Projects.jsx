@@ -166,7 +166,7 @@ export default function Projects() {
           return {
             id: p._id,
             name: p.title,
-            owner: p.description,
+            owner: p.productOwner,
             scrumMaster: "SEENU",
             start: new Date(p.start).toISOString().slice(0, 10), // ✅ good for <input type="date" />
             deadline: new Date(p.deadline).toISOString().slice(0, 10), // ✅ good for <input type="date" />

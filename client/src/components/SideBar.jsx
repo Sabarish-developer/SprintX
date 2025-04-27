@@ -37,7 +37,7 @@ export default function SideBar({ children }) {
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        // localStorage.removeItem("username");
+        localStorage.removeItem("username");
         localStorage.removeItem("email");
         navigate("/"); // Navigate to home page
       };

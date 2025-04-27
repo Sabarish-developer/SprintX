@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, SortAsc, X, Plus, Pencil, Trash2, FolderPlus, User } from 'lucide-react';
+import { Menu, SortAsc, X, Plus, Pencil, Trash2, FolderPlus, User, ListTodo } from 'lucide-react';
 import '../SignUp.css';
 import useAuth from "../hooks/useAuth";
 import { useNavigate, useParams } from 'react-router-dom';
@@ -65,6 +65,9 @@ const ProjectDetails = () => {
   const [epicOptions, setEpicOptions] = useState([]);
   const [selecteddEpic, setSelecteddEpic] = useState(null);
   const selectedEpicId = selecteddEpic?.value;
+  const [sprintOptions, setSprintOptions] = useState([]);
+  const [selectedSprint, setSelectedSprint] = useState(null);
+  const selectedSprintId = selectedSprint?.value;
   const [userStoryError, setUserStoryError] = useState(null);
 
 
@@ -247,6 +250,12 @@ useEffect(() => {
   
         setSprints(fetchedSprints);
         setSprintsData(fetchedSprints);
+
+        const optionsSP = res.data.sprints.map((p) => ({
+          value: p._id,
+          label: p.title,
+        }));
+        setSprintOptions(optionsSP);
       }
     } catch (err) {
       console.error("Error fetching Sprints data:", err);
@@ -284,6 +293,7 @@ useEffect(() => {
             priority: p.priority,
             deadline: new Date(p.deadline).toISOString().slice(0, 10), // ✅ good for <input type="date" />
             epicId: p.epicId,
+            sprintId: p.sprintId,
           };
         });
   
@@ -713,6 +723,8 @@ useEffect(() => {
     setUserStoryToEdit(userstory);
     const tempEpic = epicOptions.find(epic => epic.value === userstory.epicId);
     setSelecteddEpic(tempEpic);
+    const tempSprint = sprintOptions.find(sprint => sprint.value === userstory.sprintId);
+    setSelectedSprint(tempSprint); 
     setShowUserStoryModal(true);
   };
 
@@ -1003,6 +1015,9 @@ useEffect(() => {
             <span className={`inline-block mt-2 px-3 py-1 text-xs font-medium rounded-full ${sprint.status === 'Active' ? 'bg-orange-100 text-orange-800' : 'bg-green-200 text-green-700'}`}>
               {sprint.status}
             </span>
+            <button onClick={() => {navigate(`/home/projects/${projectId}/${sprint.id}`)}} className={`cursor-pointer text-gray-800 hover:text-gray-600 hover:bg-gray-100 hover:border-0 hover:rounded-md hover:p-1 ${isProductOwner ? 'hidden' : isScrumMaster ? 'absolute bottom-4 right-4' : 'absolute top-4 right-4'}`}>
+                    <ListTodo size={18} />
+                  </button>
             {isScrumMaster && (
               <div className="p-0 m-0 text-sm absolute top-3 right-3">
                 <div className="flex items-center gap-3 text-gray-600">
@@ -1500,6 +1515,14 @@ useEffect(() => {
                 className="w-full border rounded px-3 py-2"
                 value={userStoryToEdit.deadline}
                 onChange={(e) => setUserStoryToEdit({ ...userStoryToEdit, deadline: e.target.value })}
+              />
+              <Select
+                options={sprintOptions}
+                value={selectedSprint}
+                onChange={(selected) => setSelectedSprint(selected)}
+                placeholder="Select a Sprint..."
+                className="w-full"
+                styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }} // optional fix for modal overlap
               />
               <Select
                 options={epicOptions}

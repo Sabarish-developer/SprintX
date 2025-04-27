@@ -1,10 +1,30 @@
 import React, { useEffect, useState } from "react";
 import clsx from 'clsx'
 import axios from "axios";
+import useAuth from "../hooks/useAuth";
 
 const Home = () => {
+  const user = useAuth();
+    const whoIsLoggedIn = user?.getWhoIsLoggedIn(); // Get the role of the logged-in user
+    if (user) {
+      // whoIsLoggedIn = user.getWhoIsLoggedIn();
+      console.log("who is logged in", whoIsLoggedIn);
+      console.log("user", user);
+    }
+    else {
+      console.log("unAuthenticated user");
+      toast.error("No user found, please login again.");
+      navigate("/login"); // Redirect to login if not authenticated
+    }
+
+    //name
+    const username = user.username;
+    
+    const isProductOwner = user?.role === "Product owner";
+    const isScrumMaster = user?.role === "Scrum master";
+    const isTeamMember = user?.role === "Team member";
   // Dummy data have to replace with DB.
-  const userRole = "ProductOwner"; // Change this to "ProductOwner" or "TeamMember" also upadte this from db
+  //const userRole = "ProductOwner"; // Change this to "ProductOwner" or "TeamMember" also upadte this from db
   //const activeProject = { name: "Project Alpha", from: "Mar 10", to: "Apr 20" };
   const activeSprint = { name: "Sprint 3", from: "Mar 15", to: "Apr 10" };
   const stats = { assigned: 5, completed: 12, pending: 3 };
@@ -23,7 +43,13 @@ const Home = () => {
   const [tasks, setTasks] = useState([]);
 
   const [mes, setMes] = useState("");
+  //active project error area
   const [error, setError] = useState("");
+  //table error area
+  const [errorTable, setErrorTable] = useState("");
+
+  //common data for all roles
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -31,26 +57,30 @@ const Home = () => {
       try {
         const token = localStorage.getItem("token");
         console.log(token);
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/productowner/home`, {
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/home`, {
           headers: {
             Authorization: token,
           }
         });
-        if(res.status == 200){
-          const { message, project, epics } = res.data;
+          console.log("fetching home data...");
+          console.log(res.data);
+          const { message, project, epics, userStories} = res.data;
           console.log("after fetch");
+          console.log("project : ",project);
+          setMes(message);
+          console.log("message : ", message);
 
-          if (!project) {
+          if (!project || project.length === 0) {
             console.log("No projects yet.");
-            setMes(message); // "No projects found."
-            setError(message); // Optional: use this to conditionally render error state
+            setError("No projects yet.");
+            setMes("Welcome");
             return;
           }
 
         //const {project, epics} = res.data;
         setActiveProject({
-          name: project.name,
-          from: new Date(project.createdAt).toLocaleDateString("en-US", {
+          name: project.title,
+          from: new Date(project.start).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
           }),
@@ -60,6 +90,23 @@ const Home = () => {
           }),
         });
 
+        if(isProductOwner){
+          setData(epics);
+        }
+        else if(isScrumMaster){
+          setData(userStories);
+        }
+        else{
+          setData(tasks);
+        }
+
+        if(!data || data.length === 0) {
+          console.log("Not found, start by creating.");
+          setErrorTable("Not found, start by creating.");
+          return;
+        }
+
+        if(isProductOwner){
         const formattedEpics = epics.map((epic, index) => ({
           id: index + 1,
           name: epic.name,
@@ -71,10 +118,37 @@ const Home = () => {
         }));
 
         setEpics(formattedEpics);
-        }
+      }
+      else if(isScrumMaster){
+        const formattedUserStories = userStories.map((userStory, index) => ({
+          id: index + 1,
+          name: userStory.name,
+          deadline: new Date(userStory.deadline).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
+          status: userStory.status,
+        }));
+
+        setUserStories(formattedUserStories); 
+      }
+      else{
+        const formattedTasks = tasks.map((task, index) => ({
+          id: index + 1,
+          name: task.name,
+          deadline: new Date(task.deadline).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
+          status: task.status,
+        }));
+
+        setTasks(formattedTasks);
+      }
       } catch (error) {
         console.error("Error fetching home data:", error);
-        setError("Failed to fetch data. Please try again later.");
+        setError(error.response?.data?.message || "An error occurred while fetching data.");
+        setErrorTable(error.response?.data?.message || "An error occurred while fetching data.");
       }
     };
 
@@ -95,8 +169,8 @@ const Home = () => {
   // ];
 
   let listItems = [];
-  if (userRole === "ProductOwner") listItems = epics;
-  else if (userRole === "ScrumMaster") listItems = userStories;
+  if (isProductOwner) listItems = epics;
+  else if (isScrumMaster) listItems = userStories;
   else listItems = tasks;
 
   return (
@@ -104,8 +178,8 @@ const Home = () => {
         <div className="flex flex-col lg:flex-row gap-6 p-6 bg-purple-200 border-0 rounded-lg">
           {/* Welcome Card */}
           <div className="bg-purple-200 p-3 lg:p-6 rounded-xl w-auto shadow-sm">
-            <h2 className="text-2xl lg:text-3xl font-semibold text-[#a40ff3]">Welcome</h2>
-            <h3 className="text-2xl lg:text-3xl font-bold text-[#a40ff3]">{localStorage.getItem("username")} 👋</h3>
+            <h2 className="text-1xl lg:text-2xl font-semibold text-[#a40ff3] italic">{mes}</h2>
+            <h3 className="text-2xl lg:text-3xl font-semibold text-[#a40ff3] italic">{username} 👋</h3>
           </div>
 
           {/* Inbox Card */}
@@ -146,7 +220,7 @@ const Home = () => {
 
       {/* Table Section */}
       <div className="mt-9 p-6">
-        <h3 className="text-lg font-semibold text-[#a40ff3]">My {userRole === "ProductOwner" ? "Epics" : userRole === "ScrumMaster" ? "User Stories" : "Tasks"}:</h3>
+        <h3 className="text-lg font-semibold text-[#a40ff3]">My {isProductOwner ? "Epics" : isScrumMaster ? "User Stories" : "Tasks"}:</h3>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full border-separate border-spacing-0 border-0 rounded-lg">
             <thead>
@@ -172,11 +246,13 @@ const Home = () => {
                     </td>
                   </tr>
                 ))
+              ) : errorTable ? (
+                <tr>
+                  <td colSpan="4" className="text-center text-red-500">{errorTable}</td>
+                </tr>
               ) : (
                 <tr>
-                  <td colSpan={4} className="text-center py-4 text-purple-400">
-                    {error ? error : "Loading..."}
-                  </td>
+                  <td colSpan="4" className="text-center text-purple-500">Loading...</td>
                 </tr>
               )}
             </tbody>
