@@ -195,7 +195,7 @@ useEffect(() => {
   };
   
   useEffect(() => {
-    if (isProductOwner) {
+    if (isProductOwner || isScrumMaster) {
     fetchEpics();
     }
   }, []);
@@ -285,7 +285,7 @@ useEffect(() => {
         }
         
         const fetchedUserStories = res.data.userStories.map((p) => {
-          console.log(p);
+          console.log("user-stories",p);
           return {
             id: p._id,
             title: p.title,
