@@ -1372,6 +1372,7 @@ useEffect(() => {
           setUserStoryToEdit({ title: "", description: "", deadline: "", priority: "High", id: Date.now() });
           setShowUserStoryModal(true);
           setIsUserStoryCreating(true);
+          setSelecteddEpic(null);
           setUserStoryAction('Create Userstory');
         }}
         className="flex items-center gap-2 px-4 py-2 border-0 rounded-lg bg-[#a40ff3] text-white cursor-pointer hover:bg-white hover:text-[#a40ff3] transition-colors duration-200 group hover:border-b-2 border-[#a40ff3]"
