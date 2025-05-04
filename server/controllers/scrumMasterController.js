@@ -564,38 +564,119 @@ const reportPageHandler = async(req,res)=>{
         const scrumMasterId = req.user.id;
             
         const userStories = await userStoryModel.find({scrumMasterId});
-    
-        //Fetching in hierarchy {{project,sprint,epic},....}
-        const userProjects = await projectModel.aggregate([
-            {
-                $match: {
-                    scrumMasterId: new mongoose.Types.ObjectId(scrumMasterId)
-                }
-            },
-            {
-                $lookup: {
-                    from: 'sprints',
-                    localField: '_id',
-                    foreignField: 'projectId',
-                    as: 'sprints'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'userStories',
-                    localField: '_id',
-                    foreignField: 'projectId',
-                    as: 'userStories'
-                }
-            }
-        ]);
-    
-        return res.status(200).json({
-            message: "Reports fetched successfully.", 
-            projects: userProjects, 
-            userStories
+        const sprints = await sprintModel.find({scrumMasterId});
+
+        //Total userStories and completed userStories
+        const totalUserStories = userStories.length;
+        let completedUserStories = 0;
+        userStories.forEach(u => {
+            if(u.status === "Completed")
+                completedUserStories++;
         });
+
+        //User story completion rate and current project user story completion rate
+        const userStoryCompletionRate = (completedUserStories/totalUserStories)*100;
+        const projects = await projectModel.find({scrumMasterId, status: "Active"});
+        let currentProjectUserStoryCompletionRate = 0;
+        let currentProject;
+        if(projects.length != 0){
+            const sortedProjects = projects.sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+            currentProject = sortedProjects[0];
+            let currentProjectTotalUserStories = 0, currentProjectCompletedUserStories = 0;
+            userStories.forEach(u => {
+                if(u.projectId===currentProject._id)
+                    currentProjectTotalUserStories++;
+                if(u.projectId===currentProject._id && u.status==="Completed")
+                    currentProjectCompletedUserStories++;
+            })
+            currentProjectUserStoryCompletionRate = (currentProjectCompletedUserStories/currentProjectTotalUserStories)*100;
+        }
+
+        //Average user Story Completion Time
+        let totalCompletionTime = 0;
+        userStories.forEach(u => {
+            totalCompletionTime += (u.end - u.start);
+        })
+        const averageUserStoryCompletionTime = totalCompletionTime/completedUserStories;
+
+        //Total successful userStories -> completed on time
+        let successfulUserStories = 0;
+        userStories.forEach(u => {
+            if(u.status==="Completed" && (u.end < u.deadline) )
+                successfulUserStories++;
+        })
+        const userStorySuccessRate = (successfulUserStories/totalUserStories)*100;
+
+        //UserStory spill over rate -> not completed on time
+        let spillOverUserStories = 0;
+        userStories.forEach(u => {
+            if(u.status!=="Completed" && (new Date(u.deadline) < new Date()) )
+                spillOverUserStories++;
+        })
+        const userStoriesSpillOverRate = (spillOverUserStories/totalUserStories)*100;
+
+        //Total sprints and completed sprints
+        const totalSprints = sprints.length;
+        let completedSprints = 0;
+        sprints.forEach(s => {
+            if(s.status === "Completed")
+                completedSprints++;
+        })
+        
+        //sprint completion rate and current project sprint completion rate
+        const sprintCompletionRate = (completedSprints/totalSprints)*100;
+        let currentProjectSprintCompletionRate = 0;
+        let currentProjectSprints = 0, currentProjectCompletedSprints = 0;
+        sprints.forEach(s => {
+            if(s.projectId === currentProject._id)
+                currentProjectSprints++;
+            if(s.projectId===currentProject._id && s.status==="Completed")
+                currentProjectCompletedSprints++;
+        })
+        currentProjectSprintCompletionRate = (currentProjectCompletedSprints/currentProjectSprints)*100;
+
+        //Average sprint Completion Time
+        let totalSprintCompletionTime = 0;
+        sprints.forEach(s => {
+            totalSprintCompletionTime += (new Date(s.end) - new Date(s.start));
+        })
+        const averageSprintCompletionTime = totalSprintCompletionTime/completedSprints;
+
+        //Total successful userStories -> completed on time
+        let successfulSprints = 0;
+        sprints.forEach(s => {
+            if(s.status==="Completed" && (new Date(s.end) < new Date(s.deadline)))
+                successfulSprints++;
+        })
+        const sprintSuccessRate = (successfulSprints/totalSprints)*100;
+
+        //UserStory spill over rate -> not completed on time
+        let spillOverSprints = 0;
+        sprints.forEach(s => {
+            if(s.status!=="Completed" && (new Date(s.deadline) < new Date()))
+                spillOverSprints++;
+        })
+        const sprintSpillOverRate = (spillOverSprints/totalSprints)*100;
+
+        return res.status(200).json({
+            message: "Reports fetched successfully",
+            totalUserStories,
+            completedUserStories,
+            userStoryCompletionRate,
+            currentProjectUserStoryCompletionRate,
+            userStorySuccessRate,
+            userStoriesSpillOverRate,
+            averageUserStoryCompletionTime,
+            totalSprints,
+            completedSprints,
+            sprintCompletionRate,
+            currentProjectSprintCompletionRate,
+            sprintSuccessRate,
+            sprintSpillOverRate,
+            averageSprintCompletionTime
+        })
     
+
     }catch(e){
         console.log("Error in report block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});
