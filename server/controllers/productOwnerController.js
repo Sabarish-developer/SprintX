@@ -36,11 +36,17 @@ const projectsPageHandler = async (req, res) => {
     try {
       const productOwnerId = req.user.id;
       
-      //Total userStories and completed userStories
-      //User story completion rate and current project user story completion rate
-      //Average user Story Completion Time
-      //Total successful userStories -> completed on time
-      //UserStory spill over rate -> not completed on time
+      let totalEpics = 0, completedEpics = 0;
+      let epicCompletionRate = 0, currentProjectEpicCompletionRate = 0;
+      let epicSuccessRate = 0, epicSpillOverRate = 0;
+      let averageEpicCompletionTime = 0;
+
+
+
+      let totalProjects = 0, completedProjects = 0;
+      let projectCompletionRate = 0;
+      let projectSuccessRate = 0, projectSpillOverRate = 0;
+      let averageProjectCompletionTime = 0;
   
     } catch (e) {
       console.log("Error in projects page Handler block : ", e);

@@ -670,20 +670,21 @@ const reportPageHandler = async(req,res)=>{
 
         return res.status(200).json({
             message: "Reports fetched successfully",
-            totalUserStories,
-            completedUserStories,
-            userStoryCompletionRate,
-            currentProjectUserStoryCompletionRate,
-            userStorySuccessRate,
-            userStoriesSpillOverRate,
-            averageUserStoryCompletionTime,
-            totalSprints,
-            completedSprints,
-            sprintCompletionRate,
-            currentProjectSprintCompletionRate,
-            sprintSuccessRate,
-            sprintSpillOverRate,
-            averageSprintCompletionTime
+            totalUserStories: totalUserStories || 0,
+            completedUserStories: completedUserStories || 0,
+            userStoryCompletionRate: userStoryCompletionRate || 0,
+            currentProjectUserStoryCompletionRate: currentProjectUserStoryCompletionRate || 0,
+            userStorySuccessRate: userStorySuccessRate || 0,
+            userStoriesSpillOverRate: userStoriesSpillOverRate || 0,
+            averageUserStoryCompletionTime: averageUserStoryCompletionTime || 0,
+
+            totalSprints: totalSprints || 0,
+            completedSprints: completedSprints || 0,
+            sprintCompletionRate: sprintCompletionRate || 0,
+            currentProjectSprintCompletionRate: currentProjectSprintCompletionRate || 0,
+            sprintSuccessRate: sprintSuccessRate || 0,
+            sprintSpillOverRate: sprintSpillOverRate || 0,
+            averageSprintCompletionTime: averageSprintCompletionTime || 0
         })
     
 
