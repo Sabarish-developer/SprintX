@@ -604,6 +604,7 @@ const reportPageHandler = async(req,res)=>{
         //Average user Story Completion Time
         let totalCompletionTime = 0;
         userStories.forEach(u => {
+            if(u.status === "Completed")
             totalCompletionTime += (u.end - u.start);
         })
         let averageUserStoryCompletionTime = 0;
@@ -652,6 +653,7 @@ const reportPageHandler = async(req,res)=>{
         //Average sprint Completion Time
         let totalSprintCompletionTime = 0;
         sprints.forEach(s => {
+            if(s.status === "Completed")
             totalSprintCompletionTime += (new Date(s.end) - new Date(s.start));
         })
         let averageSprintCompletionTime = 0;

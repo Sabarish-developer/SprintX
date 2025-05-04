@@ -244,30 +244,59 @@ const teamMembersHandler = async(req,res)=>{
 const reportPageHandler = async(req,res)=>{
     
     try{
-        const userId = req.user.id;
-        
-        const tasks = await taskModel.find({teamMemberId: userId});
+        const teamMemberId = req.user.id;
+        const tasks = await taskModel.find({teamMemberId});
+        const projects = await projectModel.find({teamMembersId: teamMemberId});
 
-        const userProjects = await project.aggregate([
-            {
-                $match: {
-                    teamMembersId: new mongoose.Types.ObjectId(userId)
-                }
-            },
-            {
-                $lookup: {
-                    from: "tasks",
-                    localField: "_id",
-                    foreignField: "projectId",
-                    as: "tasks"
-                }
-            }
-        ]);
+        if(tasks.length == 0){
+          return res.status(200).json({message: "You have no task to show in report"});
+        }
+        if(projects.length == 0){
+          return res.status(200).json({message: "You are not part of any project to show in report"});
+        }
+
+        const sortedProjects = projects.sort((a,b) => new Date(a.deadline)-new Date(b.deadline));
+        const currentProject = sortedProjects[0];
+
+        let totalTasks = tasks.length, completedTasks = 0;
+        let taskCompletionRate = 0, currentProjectTaskCompletionRate = 0;
+        let taskSuccessRate = 0, taskSpillOverRate = 0;
+        let averageTaskCompletionTime = 0;
+
+        let currentProjectTotalTasks = 0, currentProjectCompletedTasks = 0, successFulTasks = 0, spillOverTasks = 0, totalTaskCompletionTime = 0;
+        tasks.forEach(t => {
+          if(t.status === "Completed"){
+            completedTasks++;
+            totalTaskCompletionTime += new Date(t.end) - new Date(t.start);
+          }
+          if(currentProject && currentProject._id===t.projectId)
+            currentProjectTotalTasks++;
+          if(currentProject && currentProject._id===t.projectId && t.status==="Completed")
+            currentProjectCompletedTasks++;
+          if(t.status==="Completed" && (new Date(t.end) < new Date(t.deadline)))
+            successFulTasks++;
+          if(t.status!=="Completed" && (new Date(t.deadline) < new Date()))
+            spillOverTasks++;
+        })
+
+        taskCompletionRate = (completedTasks/totalTasks)*100;
+        currentProjectTaskCompletionRate = (currentProjectCompletedTasks/currentProjectTotalTasks)*100;
+        taskSuccessRate = (successFulTasks/totalTasks)*100;
+        taskSpillOverRate = (spillOverTasks/totalTasks)*100;
+        averageTaskCompletionTime = totalTaskCompletionTime/completedTasks;
+
         return res.status(200).json({
-            message: "Report retrieved successfully.",
-            projects: userProjects,
-            tasks
-         });
+          message: "Reports fetched successfully",
+          totalTasks,
+          completedTasks,
+          taskCompletionRate: taskCompletionRate || 0,
+          currentProjectTaskCompletionRate: currentProjectTaskCompletionRate || 0,
+          taskSuccessRate: taskSuccessRate || 0,
+          taskSpillOverRate: taskSpillOverRate || 0,
+          averageTaskCompletionTime: averageTaskCompletionTime || 0
+        });
+        
+        
     }catch(e){
         console.log("Error in report block: ",e);
         return res.status(500).json({message: "Internal server error. Please try again later."});

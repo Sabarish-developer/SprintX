@@ -391,8 +391,10 @@ const reportPageHandler = async(req,res)=>{
       totalEpics = epics.length;
       let currentProjectTotalEpics = 0, currentProjectCompletedEpics = 0, spillOverEpics = 0, successfulEpics = 0, totalEpicCompletionTime = 0;
       epics.forEach(e => {
-        if(e.status === "Completed")
+        if(e.status === "Completed"){
             completedEpics++;
+            totalEpicCompletionTime += (new Date(e.end) - new Date(e.start));
+        }
         if(currentProject && e.projectId===currentProject._id)
             currentProjectTotalEpics++;
         if(currentProject && e.projectId===currentProject._id && e.status==="Completed")
@@ -401,7 +403,6 @@ const reportPageHandler = async(req,res)=>{
             spillOverEpics++;
         if(e.status==="Completed" && (new Date(e.end) < new Date(e.deadline)))
             successfulEpics++;
-        totalEpicCompletionTime += (new Date(e.end) - new Date(e.start));
       })
       epicCompletionRate = (completedEpics/totalEpics)*100;
       currentProjectEpicCompletionRate = (currentProjectCompletedEpics/currentProjectTotalEpics)*100;
@@ -418,13 +419,14 @@ const reportPageHandler = async(req,res)=>{
       totalProjects = projects.length;
       let successfulProjects = 0, spillOverProjects = 0, totalProjectsCompletionTime = 0;
       projects.forEach(p => {
-        if(p.status === "Completed")
+        if(p.status === "Completed"){
             completedProjects++;
+            totalProjectsCompletionTime += (new Date(p.end) - new Date(p.start));
+        }
         if(p.status==="Completed" && (new Date(p.end) < new Date(p.deadline)))
             successfulProjects++;
         if(p.status!=="Completed" && (new Date(p.deadline) < new Date()))
             spillOverProjects++;
-        totalProjectsCompletionTime += (new Date(p.end) - new Date(p.start));
       })
       projectCompletionRate = (completedProjects/totalProjects)*100;
       projectSuccessRate = (successfulProjects/totalProjects)*100;
