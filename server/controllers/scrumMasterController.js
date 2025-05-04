@@ -197,8 +197,8 @@ const createUserStoriesHandler = async(req,res)=>{
         }
 
         const scrumMasterId = req.user.id;
-        const {title, description, priority, deadline, epicId} = req.body;
-        if(!title.trim() || !description.trim() || !priority || !deadline || !epicId){
+        const {title, description, priority, deadline, epicId, sprintId} = req.body;
+        if(!title.trim() || !description.trim() || !priority || !deadline || !epicId || !sprintId){
             return res.status(400).json({message: "All fields are required."});
         }
         if(priority!="High" && priority!="Medium" && priority!="Low"){
@@ -212,7 +212,8 @@ const createUserStoriesHandler = async(req,res)=>{
             deadline,
             scrumMasterId,
             projectId,
-            epicId
+            epicId,
+            sprintId
         });
         return res.status(201).json({message: "User story created successfully."});
     }catch(e){
