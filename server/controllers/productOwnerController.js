@@ -34,19 +34,73 @@ const homePageHandler = async(req,res)=>{
 
 const projectsPageHandler = async (req, res) => {
     try {
-      const productOwnerId = req.user.id;
-      
-      let totalEpics = 0, completedEpics = 0;
-      let epicCompletionRate = 0, currentProjectEpicCompletionRate = 0;
-      let epicSuccessRate = 0, epicSpillOverRate = 0;
-      let averageEpicCompletionTime = 0;
-
-
-
-      let totalProjects = 0, completedProjects = 0;
-      let projectCompletionRate = 0;
-      let projectSuccessRate = 0, projectSpillOverRate = 0;
-      let averageProjectCompletionTime = 0;
+      const userId = req.user.id;
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+  
+      const projects = await projectModel.aggregate([
+        {
+          $match: { productOwnerId: userObjectId }
+        },
+        {
+          $lookup: {
+            from: "epics",
+            localField: "_id",
+            foreignField: "projectId",
+            as: "epics"
+          }
+        },
+        {
+          $lookup: {
+            from: "users", // Assuming users collection
+            localField: "scrumMasterId",
+            foreignField: "_id",
+            as: "scrumMasterInfo"
+          }
+        },
+        {
+          $unwind: {
+            path: "$scrumMasterInfo",
+            preserveNullAndEmptyArrays: true // In case scrumMaster is not assigned yet
+          }
+        },
+        {
+          $project: {
+            title: 1,
+            description: 1,
+            start: 1,
+            deadline: 1,
+            status: 1,
+            epics: 1,
+            scrumMaster: "$scrumMasterInfo.username", // You can use .fullName if that's the field
+          }
+        }
+      ]);
+  
+      if (projects.length === 0) {
+        return res.status(200).json({
+          message: "No projects found. Start by creating a project.",
+          projects: []
+        });
+      }
+  
+      const projectsWithCompletion = projects.map(project => {
+        const totalEpics = project.epics.length;
+        const completedEpics = project.epics.filter(epic => epic.status === "Completed").length;
+  
+        const completionPercentage = totalEpics === 0
+          ? 0
+          : Math.round((completedEpics / totalEpics) * 100);
+  
+        return {
+          ...project,
+          completionPercentage
+        };
+      });
+      console.log(projectsWithCompletion);
+      return res.status(200).json({
+        message: "Projects retrieved successfully.",
+        projects: projectsWithCompletion
+      });
   
     } catch (e) {
       console.log("Error in projects page Handler block : ", e);
@@ -314,40 +368,78 @@ const teamMembersHandler = async(req,res)=>{
 const reportPageHandler = async(req,res)=>{
 
     try{
-        const productOwnerId = req.user.id;
-        
-        const userEpics = await epicModel.find({productOwnerId});
+    const productOwnerId = req.user.id;
 
-        //Fetching in hierarchy {{project,sprint,epic},....}
-        const userProjects = await projectModel.aggregate([
-            {
-                $match: {
-                    productOwnerId: new mongoose.Types.ObjectId(productOwnerId)
-                }
-            },
-            {
-                $lookup: {
-                    from: 'sprints',
-                    localField: '_id',
-                    foreignField: 'projectId',
-                    as: 'sprints'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'epics',
-                    localField: '_id',
-                    foreignField: 'projectId',
-                    as: 'epics'
-                }
-            }
-        ]);
+      const epics = await epicModel.find({productOwnerId});
+      const projects = await projectModel.find({productOwnerId});
+      const sortedProjects = projects.sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+      const currentProject = sortedProjects[0];
+      
+      let totalEpics = 0, completedEpics = 0;
+      let epicCompletionRate = 0, currentProjectEpicCompletionRate = 0;
+      let epicSuccessRate = 0, epicSpillOverRate = 0;
+      let averageEpicCompletionTime = 0;
+      
+      totalEpics = epics.length;
+      let currentProjectTotalEpics = 0, currentProjectCompletedEpics = 0, spillOverEpics = 0, successfulEpics = 0, totalEpicCompletionTime = 0;
+      epics.forEach(e => {
+        if(e.status === "Completed")
+            completedEpics++;
+        if(currentProject && e.projectId===currentProject._id)
+            currentProjectTotalEpics++;
+        if(currentProject && e.projectId===currentProject._id && e.status==="Completed")
+            currentProjectCompletedEpics++;
+        if(e.status!=="Completed" && (new Date(e.deadline) < new Date()))
+            spillOverEpics++;
+        if(e.status==="Completed" && (new Date(e.end) < new Date(e.deadline)))
+            successfulEpics++;
+        totalEpicCompletionTime += (new Date(e.end) - new Date(e.start));
+      })
+      epicCompletionRate = (completedEpics/totalEpics)*100;
+      currentProjectEpicCompletionRate = (currentProjectCompletedEpics/currentProjectTotalEpics)*100;
+      epicSuccessRate = (successfulEpics/totalEpics)*100;
+      epicSpillOverRate = (spillOverEpics/totalEpics)*100;
+      averageEpicCompletionTime = (totalEpicCompletionTime/completedEpics);
 
-        return res.status(200).json({
-            message: "Reports fetched successfully.", 
-            projects: userProjects, 
-            epics: userEpics
-        });
+
+      let totalProjects = 0, completedProjects = 0;
+      let projectCompletionRate = 0;
+      let projectSuccessRate = 0, projectSpillOverRate = 0;
+      let averageProjectCompletionTime = 0;
+
+      totalProjects = projects.length;
+      let successfulProjects = 0, spillOverProjects = 0, totalProjectsCompletionTime = 0;
+      projects.forEach(p => {
+        if(p.status === "Completed")
+            completedProjects++;
+        if(p.status==="Completed" && (new Date(p.end) < new Date(p.deadline)))
+            successfulProjects++;
+        if(p.status!=="Completed" && (new Date(p.deadline) < new Date()))
+            spillOverProjects++;
+        totalProjectsCompletionTime += (new Date(p.end) - new Date(p.start));
+      })
+      projectCompletionRate = (completedProjects/totalProjects)*100;
+      projectSuccessRate = (successfulProjects/totalProjects)*100;
+      projectSpillOverRate = (spillOverProjects/totalProjects)*100;
+      averageProjectCompletionTime = totalProjectsCompletionTime/completedProjects;
+
+      return res.status(200).json({
+        message: "Reports fetched successfully",
+        totalEpics: totalEpics || 0,
+        completedEpics: completedEpics || 0,
+        epicCompletionRate: epicCompletionRate || 0,
+        currentProjectEpicCompletionRate: currentProjectEpicCompletionRate || 0,
+        epicSuccessRate: epicSuccessRate || 0,
+        epicSpillOverRate: epicSpillOverRate || 0,
+        averageEpicCompletionTime: averageEpicCompletionTime || 0,
+
+        totalProjects: totalProjects || 0,
+        completedProjects: completedProjects || 0,
+        projectCompletionRate: projectCompletionRate || 0,
+        projectSuccessRate: projectSuccessRate || 0,
+        projectSpillOverRate: projectSpillOverRate || 0,
+        averageProjectCompletionTime: averageProjectCompletionTime || 0
+      })
 
     }catch(e){
         console.log("Error in report block: ",e);
