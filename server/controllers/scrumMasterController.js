@@ -567,7 +567,8 @@ const reportPageHandler = async(req,res)=>{
         const sprints = await sprintModel.find({scrumMasterId});
 
         //Total userStories and completed userStories
-        const totalUserStories = userStories.length;
+        let totalUserStories = 0; 
+        totalUserStories = userStories.length;
         let completedUserStories = 0;
         userStories.forEach(u => {
             if(u.status === "Completed")
@@ -575,7 +576,8 @@ const reportPageHandler = async(req,res)=>{
         });
 
         //User story completion rate and current project user story completion rate
-        const userStoryCompletionRate = (completedUserStories/totalUserStories)*100;
+        let userStoryCompletionRate = 0;
+        userStoryCompletionRate = (completedUserStories/totalUserStories)*100;
         const projects = await projectModel.find({scrumMasterId, status: "Active"});
         let currentProjectUserStoryCompletionRate = 0;
         let currentProject;
@@ -597,7 +599,8 @@ const reportPageHandler = async(req,res)=>{
         userStories.forEach(u => {
             totalCompletionTime += (u.end - u.start);
         })
-        const averageUserStoryCompletionTime = totalCompletionTime/completedUserStories;
+        let averageUserStoryCompletionTime = 0;
+        averageUserStoryCompletionTime = totalCompletionTime/completedUserStories;
 
         //Total successful userStories -> completed on time
         let successfulUserStories = 0;
@@ -605,7 +608,8 @@ const reportPageHandler = async(req,res)=>{
             if(u.status==="Completed" && (u.end < u.deadline) )
                 successfulUserStories++;
         })
-        const userStorySuccessRate = (successfulUserStories/totalUserStories)*100;
+        let userStorySuccessRate = 0;
+        userStorySuccessRate = (successfulUserStories/totalUserStories)*100;
 
         //UserStory spill over rate -> not completed on time
         let spillOverUserStories = 0;
@@ -613,10 +617,12 @@ const reportPageHandler = async(req,res)=>{
             if(u.status!=="Completed" && (new Date(u.deadline) < new Date()) )
                 spillOverUserStories++;
         })
-        const userStoriesSpillOverRate = (spillOverUserStories/totalUserStories)*100;
+        let userStoriesSpillOverRate = 0;
+        userStoriesSpillOverRate = (spillOverUserStories/totalUserStories)*100;
 
         //Total sprints and completed sprints
-        const totalSprints = sprints.length;
+        let totalSprints = 0;
+        totalSprints = sprints.length;
         let completedSprints = 0;
         sprints.forEach(s => {
             if(s.status === "Completed")
@@ -624,7 +630,8 @@ const reportPageHandler = async(req,res)=>{
         })
         
         //sprint completion rate and current project sprint completion rate
-        const sprintCompletionRate = (completedSprints/totalSprints)*100;
+        let sprintCompletionRate = 0;
+        sprintCompletionRate = (completedSprints/totalSprints)*100;
         let currentProjectSprintCompletionRate = 0;
         let currentProjectSprints = 0, currentProjectCompletedSprints = 0;
         sprints.forEach(s => {
@@ -640,7 +647,8 @@ const reportPageHandler = async(req,res)=>{
         sprints.forEach(s => {
             totalSprintCompletionTime += (new Date(s.end) - new Date(s.start));
         })
-        const averageSprintCompletionTime = totalSprintCompletionTime/completedSprints;
+        let averageSprintCompletionTime = 0;
+        averageSprintCompletionTime = totalSprintCompletionTime/completedSprints;
 
         //Total successful userStories -> completed on time
         let successfulSprints = 0;
@@ -648,7 +656,8 @@ const reportPageHandler = async(req,res)=>{
             if(s.status==="Completed" && (new Date(s.end) < new Date(s.deadline)))
                 successfulSprints++;
         })
-        const sprintSuccessRate = (successfulSprints/totalSprints)*100;
+        let sprintSuccessRate = 0;
+        sprintSuccessRate = (successfulSprints/totalSprints)*100;
 
         //UserStory spill over rate -> not completed on time
         let spillOverSprints = 0;
@@ -656,7 +665,8 @@ const reportPageHandler = async(req,res)=>{
             if(s.status!=="Completed" && (new Date(s.deadline) < new Date()))
                 spillOverSprints++;
         })
-        const sprintSpillOverRate = (spillOverSprints/totalSprints)*100;
+        let sprintSpillOverRate = 0;
+        sprintSpillOverRate = (spillOverSprints/totalSprints)*100;
 
         return res.status(200).json({
             message: "Reports fetched successfully",
