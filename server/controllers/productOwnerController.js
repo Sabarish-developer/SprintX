@@ -372,6 +372,14 @@ const reportPageHandler = async(req,res)=>{
 
       const epics = await epicModel.find({productOwnerId});
       const projects = await projectModel.find({productOwnerId});
+
+      if(projects.length==0){
+        return res.status(200).json({message: "Start any project to view your report"});
+      }
+      if(epics.length == 0){
+        return res.status(200).json({message: "Create any epic to view your report"});
+      }
+
       const sortedProjects = projects.sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
       const currentProject = sortedProjects[0];
       

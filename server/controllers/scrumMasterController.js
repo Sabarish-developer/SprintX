@@ -566,6 +566,13 @@ const reportPageHandler = async(req,res)=>{
         const userStories = await userStoryModel.find({scrumMasterId});
         const sprints = await sprintModel.find({scrumMasterId});
 
+        if(userStories.length == 0){
+            return res.status(200).json({message: "Create a user story to view your report"});
+        }
+        if(sprints.length == 0){
+            return res.status(200).json({message: "Create a sprint to view your report"});
+        }
+
         //Total userStories and completed userStories
         let totalUserStories = 0; 
         totalUserStories = userStories.length;
