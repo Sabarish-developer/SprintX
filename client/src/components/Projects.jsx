@@ -41,7 +41,7 @@ export default function Projects() {
   }
   
   const isProductOwner = user?.role === "Product owner";
-  const isScrumMaster = user?.role === "Scrum master";
+  const isScrumMaster = user?.role === "Scrum master";3
   const isTeamMember = user?.role === "Team member";
 
   const token = localStorage.getItem("token");

@@ -1,8 +1,32 @@
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Trophy, BarChart3, CheckCircle2 } from 'lucide-react';
+import React, {useState ,useEffect } from "react";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell
+} from "recharts";
+import { PieChart as PieIcon, BarChart3 } from "lucide-react";
 import useAuth from '../hooks/useAuth';
+import axios from "axios";
+import { toast } from "react-toastify";
+import "../Signup.css";
 
-const COLORS = ['#a40ff3', '#f3e8ff', '#d9b4ff'];
+const dataFromBackend = {
+  totalUserStories: 0,
+  completedUserStories: 0,
+  userStoryCompletionRate: 0,
+  currentProjectUserStoryCompletionRate: 0,
+  userStorySuccessRate: 0,
+  userStoriesSpillOverRate: 0,
+  averageUserStoryCompletionTime: 0,
+  totalSprints: 0,
+  completedSprints: 0,
+  sprintCompletionRate: 0,
+  currentProjectSprintCompletionRate: 0,
+  sprintSuccessRate: 0,
+  sprintSpillOverRate: 0,
+  averageSprintCompletionTime: 0,
+};
+
+const COLORS = ["#a40ff3", "#f3e8ff", "#6b21a8"];
 
 const Reports = () => {
     const user = useAuth();
@@ -18,6 +42,7 @@ const Reports = () => {
           navigate("/login"); // Redirect to login if not authenticated
         }
     
+        const token = localStorage.getItem("token");
         //name
         const username = user.username;
         
@@ -28,112 +53,194 @@ const Reports = () => {
         // const isScrumMaster = false;
         // const isTeamMember = false;
 
+        const [reportData, setReportData] = useState(null);
+        const [error, setError] = useState(null);
+
+  const reportFetchSM = async () => {
+    try {
+      console.log("Fetching Reports...");
+
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/report`, {
+        headers: {
+          Authorization: token
+        }
+      });
+
+      if (res.status === 200) {
+        console.log("Reports fetched successfully");
+        setReportData(res.data);
+        };
+      }catch (error) {
+      if (error.res) {
+            console.log("Error:", error.res.data.message); // This will log "Internal server error. Please try again later."
+            toast.error(error.res.data.message); // Show the error message to the user
+            setError(error.res.data.message);
+        } else {
+            console.log("Error:", error.message);
+            toast.error("An error occurred while fetching reports. Please try again later.");
+            setError("An error occurred while fetching reports. Please try again later.");
+        }
+      //setError("Error fetching report data");
+    }
+  }
+
+  useEffect(() => {
+    if (isProductOwner) {
+      //reportFetchPO();
+    } else if (isScrumMaster) {
+      reportFetchSM();
+    } else if (isTeamMember) {
+      // Fetch reports for Team Member
+    }
+  },[]);
+
   // Dummy Data
-  const sprintProgressData = [
-    { name: 'Completed', value: 70 },
-    { name: 'Remaining', value: 30 },
+  console.log("Report Data:", reportData);
+  if(reportData){
+    dataFromBackend.totalUserStories = reportData.totalUserStories;
+    dataFromBackend.completedUserStories = reportData.completedUserStories;
+    dataFromBackend.userStoryCompletionRate = reportData.userStoryCompletionRate;
+    dataFromBackend.currentProjectUserStoryCompletionRate = reportData.currentProjectUserStoryCompletionRate;
+    dataFromBackend.userStorySuccessRate = reportData.userStorySuccessRate;
+    dataFromBackend.userStoriesSpillOverRate = reportData.userStoriesSpillOverRate;
+    dataFromBackend.averageUserStoryCompletionTime = reportData.averageUserStoryCompletionTime;
+    dataFromBackend.totalSprints = reportData.totalSprints;
+    dataFromBackend.completedSprints = reportData.completedSprints;
+    dataFromBackend.sprintCompletionRate = reportData.sprintCompletionRate;
+    dataFromBackend.currentProjectSprintCompletionRate = reportData.currentProjectSprintCompletionRate;
+    dataFromBackend.sprintSuccessRate = reportData.sprintSuccessRate;
+    dataFromBackend.sprintSpillOverRate = reportData.sprintSpillOverRate;
+    dataFromBackend.averageSprintCompletionTime = reportData.averageSprintCompletionTime;
+  }  
+
+     const {
+    userStoryCompletionRate,
+    userStorySuccessRate,
+    userStoriesSpillOverRate,
+    sprintCompletionRate,
+    sprintSuccessRate,
+    sprintSpillOverRate,
+  } = dataFromBackend;
+
+  const userStoryPieData = [
+    { name: "Completed", value: userStoryCompletionRate },
+    { name: "Spill Over", value: userStoriesSpillOverRate },
+    { name: "Success", value: userStorySuccessRate },
   ];
 
-  const projectProgressData = [
-    { name: 'Project A', completed: 80 },
-    { name: 'Project B', completed: 60 },
-    { name: 'Project C', completed: 90 },
+  const sprintBarData = [
+    { name: "Completion", value: sprintCompletionRate },
+    { name: "Success", value: sprintSuccessRate },
+    { name: "Spill Over", value: sprintSpillOverRate },
   ];
 
-  const teamTasksData = [
-    { name: 'Sprint 1', tasksDone: 8, tasksPending: 2 },
-    { name: 'Sprint 2', tasksDone: 5, tasksPending: 5 },
-  ];
-
-  const myTasksData = [
-    { name: 'Completed', value: 5 },
-    { name: 'Pending', value: 3 },
-  ];
+  const StatCard = ({ title, value }) => (
+    <div className="bg-white rounded-2xl shadow p-4 w-60 text-center border border-gray-200">
+      <h3 className="text-sm font-medium text-gray-500">{title}</h3>
+      <p className="text-xl font-bold text-purple-700">{value}</p>
+    </div>
+  );
 
   return (
-    <div className="flex-1 overflow-x-auto p-6">
-      <h1 className="text-2xl font-bold text-[#a40ff3] mb-6">Reports</h1>
-
-      {isProductOwner && (
-        <div className="grid gap-8 md:grid-cols-2">
-          {/* Overall Project Progress */}
-          <div className="bg-white shadow rounded-2xl p-6">
-            <div className="flex items-center mb-4">
-              <Trophy className="text-[#a40ff3] mr-2" />
-              <h2 className="text-xl font-semibold">Overall Project Progress</h2>
+    <div className="overflow-x-auto p-4">
+      <div className="min-w-[800px]">
+        <h2 className="text-2xl font-bold mb-4 text-purple-700">Reports Overview</h2>
+        {isScrumMaster && reportData ? (
+          <>
+            {/* Stat Cards */}
+            <div className="flex gap-4 flex-wrap mb-6">
+              <StatCard title="Total User Stories" value={dataFromBackend.totalUserStories} />
+              <StatCard title="Completed User Stories" value={dataFromBackend.completedUserStories} />
+              <StatCard title="Avg. User Story Time (days)" value={dataFromBackend.averageUserStoryCompletionTime} />
+              <StatCard title="Total Sprints" value={dataFromBackend.totalSprints} />
+              <StatCard title="Completed Sprints" value={dataFromBackend.completedSprints} />
+              <StatCard title="Avg. Sprint Time (days)" value={dataFromBackend.averageSprintCompletionTime} />
             </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={projectProgressData}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="completed" fill="#a40ff3" radius={[10, 10, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
 
-          {/* Burndown Sprint Progress */}
-          <div className="bg-white shadow rounded-2xl p-6">
-            <div className="flex items-center mb-4">
-              <BarChart3 className="text-[#a40ff3] mr-2" />
-              <h2 className="text-xl font-semibold">Sprint Burndown</h2>
+            {/* Pie Chart */}
+            <div className="bg-white p-4 rounded-2xl shadow border border-gray-200 mb-6">
+              <div className="flex items-center mb-4">
+                <PieIcon className="text-purple-700 mr-2" />
+                <h3 className="text-lg font-semibold text-purple-700">User Story Distribution</h3>
+              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={userStoryPieData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    label
+                  >
+                    {userStoryPieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center mt-4 gap-4">
+                {userStoryPieData.map((item, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <div
+                      className="w-4 h-4 rounded"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    />
+                    <span className="text-sm text-gray-700">
+                      {item.name}: <span className="font-medium">{item.value}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie data={sprintProgressData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                  {sprintProgressData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
 
-      {/* Scrum Master View */}
-      {isScrumMaster && (
-        <div className="grid gap-8 md:grid-cols-2">
-          <div className="bg-white shadow rounded-2xl p-6">
-            <div className="flex items-center mb-4">
-              <CheckCircle2 className="text-[#a40ff3] mr-2" />
-              <h2 className="text-xl font-semibold">Team Sprint Progress</h2>
+            {/* Bar Chart */}
+            <div className="bg-white p-4 rounded-2xl shadow border border-gray-200">
+              <div className="flex items-center mb-4">
+                <BarChart3 className="text-purple-700 mr-2" />
+                <h3 className="text-lg font-semibold text-purple-700">Sprint Metrics</h3>
+              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={sprintBarData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#a40ff3" radius={[10, 10, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center mt-4 gap-4">
+                {sprintBarData.map((item, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <div
+                      className="w-4 h-4 rounded"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    />
+                    <span className="text-sm text-gray-700">
+                      {item.name}: <span className="font-medium">{item.value}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={teamTasksData}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="tasksDone" fill="#a40ff3" radius={[10, 10, 0, 0]} />
-                <Bar dataKey="tasksPending" fill="#f3e8ff" radius={[10, 10, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          </>
+        ) : error ? (
+          <div className="bg-red-100 text-red-700 p-4 rounded-md">
+            <p>{error}</p>
           </div>
-        </div>
-      )}
-
-      {/* Team Member View */}
-      {isTeamMember && (
-        <div className="grid gap-8 md:grid-cols-1">
-          <div className="bg-white shadow rounded-2xl p-6">
-            <div className="flex items-center mb-4">
-              <CheckCircle2 className="text-[#a40ff3] mr-2" />
-              <h2 className="text-xl font-semibold">My Task Completion</h2>
-            </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie data={myTasksData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                  {myTasksData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
+        ) : (
+              <div className="flex justify-center items-center h-32">
+                <div className="relative w-10 h-10 animate-[spin-dots_1.2s_linear_infinite]">
+                  <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full transform -translate-x-1/2"></div>
+                  <div className="absolute top-1/2 left-0 w-2 h-2 bg-purple-400 rounded-full transform -translate-y-1/2"></div>
+                  <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-purple-300 rounded-full transform -translate-x-1/2"></div>
+                  <div className="absolute top-1/2 right-0 w-2 h-2 bg-purple-200 rounded-full transform -translate-y-1/2"></div>
+                </div>
+              </div>
+        )}
+      </div>
     </div>
   );
 };
