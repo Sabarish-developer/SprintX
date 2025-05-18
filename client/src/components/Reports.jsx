@@ -1,9 +1,9 @@
 import React, {useState ,useEffect } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend
+  PieChart, Pie, Cell
 } from "recharts";
-import { PieChart as PieIcon, BarChart3, ClipboardList, FileText } from "lucide-react";
+import { PieChart as PieIcon, BarChart3, ClipboardList, FileText, PercentCircle, TimerReset } from "lucide-react";
 import useAuth from '../hooks/useAuth';
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -43,8 +43,18 @@ const data = {
     averageProjectCompletionTime: 0
   };
 
+  const taskData = {
+  totalTasks: 0,
+  completedTasks: 0,
+  taskCompletionRate: 0,
+  currentProjectTaskCompletionRate: 0,
+  taskSuccessRate: 0,
+  taskSpillOverRate: 0,
+  averageTaskCompletionTime: 0, // in days
+};
+
 const COLORS = ["#a40ff3", "#f3e8ff", "#6b21a8"];
-const COLORSS = ['#a40ff3', '#e0e0e0'];
+//const COLORS = ['#a40ff3', '#e0e0e0'];
 
 const Reports = () => {
     const user = useAuth();
@@ -73,8 +83,10 @@ const Reports = () => {
 
         const [reportData, setReportData] = useState(null);
         const [reportDataPO, setReportDataPO] = useState(null);
+        const [reportDataTM, setReportDataTM] = useState(null);
         const [error, setError] = useState(null);
         const [errorPO, setErrorPO] = useState(null); 
+        const [errorTM, setErrorTM] = useState(null);
 
   const reportFetchSM = async () => {
     try {
@@ -132,13 +144,41 @@ const Reports = () => {
     }
   }
 
+  const reportFetchTM = async () => {
+    try {
+      console.log("Fetching Reports...");
+
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/report`, {
+        headers: {
+          Authorization: token
+        }
+      });
+
+      if (res.status === 200) {
+        console.log("Reports fetched successfully");
+        setReportDataTM(res.data);
+        };
+      }catch (error) {
+      if (error.res) {
+            console.log("Error:", error.res.data.message); // This will log "Internal server error. Please try again later."
+            toast.error(error.res.data.message); // Show the error message to the user
+            setErrorTM(error.res.data.message);
+        } else {
+            console.log("Error:", error.message);
+            toast.error("An error occurred while fetching reports. Please try again later.");
+            setErrorTM("An error occurred while fetching reports. Please try again later.");
+        }
+      //setError("Error fetching report data");
+    }
+  }
+
   useEffect(() => {
     if (isProductOwner) {
       reportFetchPO();
     } else if (isScrumMaster) {
       reportFetchSM();
     } else if (isTeamMember) {
-      // Fetch reports for Team Member
+      reportFetchTM();
     }
   },[]);
 
@@ -186,6 +226,17 @@ const Reports = () => {
     data.averageProjectCompletionTime = reportDataPO.averageProjectCompletionTime;
   }
 
+  if(reportDataTM){
+    console.log("Report Data TM:", reportDataTM);
+    taskData.totalTasks = reportDataTM.totalTasks;
+    taskData.completedTasks = reportDataTM.completedTasks;
+    taskData.taskCompletionRate = reportDataTM.taskCompletionRate;
+    taskData.currentProjectTaskCompletionRate = reportDataTM.currentProjectTaskCompletionRate;
+    taskData.taskSuccessRate = reportDataTM.taskSuccessRate;
+    taskData.taskSpillOverRate = reportDataTM.taskSpillOverRate;
+    taskData.averageTaskCompletionTime = reportDataTM.averageTaskCompletionTime;
+  }
+
   const userStoryPieData = [
     { name: "Completed", value: userStoryCompletionRate },
     { name: "Spill Over", value: userStoriesSpillOverRate },
@@ -223,6 +274,11 @@ const Reports = () => {
     { name: 'Success Rate', value: data.projectSuccessRate },
     { name: 'Spillover Rate', value: data.projectSpillOverRate }
   ];
+
+  const pieChartData = [
+  { name: 'Completed', value: taskData.completedTasks },
+  { name: 'Remaining', value: taskData.totalTasks - taskData.completedTasks },
+];
 
   return (
     <div className="overflow-x-auto p-4">
@@ -358,7 +414,7 @@ const Reports = () => {
                     label
                   >
                     {epicDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORSS[index % COLORS.length]} />
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -371,7 +427,7 @@ const Reports = () => {
                   <div key={index} className="flex items-center space-x-2">
                     <div
                       className="w-4 h-4 rounded"
-                      style={{ backgroundColor: COLORSS[index % COLORSS.length] }}
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     />
                     <span className="text-sm text-gray-700">
                       {entry.name}: <span className="font-medium">{entry.value}</span>
@@ -440,10 +496,80 @@ const Reports = () => {
           </>
         ) : errorPO ? (
           <div className="bg-red-100 text-red-700 p-4 rounded-md">
-            <p>{error}</p>
+            <p>{errorPO}</p>
           </div>
         ) : (
           isProductOwner && (
+            <div className="flex justify-center items-center h-32">
+              <div className="relative w-10 h-10 animate-[spin-dots_1.2s_linear_infinite]">
+                <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full transform -translate-x-1/2"></div>
+                <div className="absolute top-1/2 left-0 w-2 h-2 bg-purple-400 rounded-full transform -translate-y-1/2"></div>
+                <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-purple-300 rounded-full transform -translate-x-1/2"></div>
+                <div className="absolute top-1/2 right-0 w-2 h-2 bg-purple-200 rounded-full transform -translate-y-1/2"></div>
+              </div>
+            </div>
+          )
+        )}
+
+        {/*TM*/}
+        {isTeamMember && reportDataTM ?(
+          <>
+          {/* <h2 className="text-2xl font-bold mb-4 text-purple-700">Reports Overview</h2> */}
+            <h2 className="text-xl font-bold text-[#a40ff3] flex items-center gap-2 m-2 mb-4 p-1">
+             Team Member Reports
+            </h2>
+            <div className="w-full md:w-1/2 lg:w-1/3 mx-auto mb-8">
+        <div className="bg-white shadow-md rounded-2xl p-4 m-3">
+          <h3 className="text-lg font-medium mb-2 text-center text-purple-700">Task Distribution</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={pieChartData}
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                dataKey="value"
+                label
+              >
+                {pieChartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+
+          {/* Mobile Indicators */}
+          <div className="flex justify-center gap-4 mt-4 text-sm">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-[#a40ff3] rounded"></div>
+              <span>Completed</span>
+              <span className="font-medium text-purple-700">{taskData.completedTasks}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-[#d6b5f9] rounded"></div>
+              <span>Remaining</span>
+              <span className="font-medium text-purple-700">{taskData.totalTasks - taskData.completedTasks}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-2">
+        <MetricCard label="Task Completion Rate" value={`${taskData.taskCompletionRate}%`} icon={<PercentCircle className="text-purple-600" />} />
+        <MetricCard label="Current Project Task Completion Rate" value={`${taskData.currentProjectTaskCompletionRate}%`} icon={<PercentCircle className="text-purple-600" />} />
+        <MetricCard label="Task Success Rate" value={`${taskData.taskSuccessRate}%`} icon={<PercentCircle className="text-purple-600" />} />
+        <MetricCard label="Task Spill Over Rate" value={`${taskData.taskSpillOverRate}%`} icon={<PercentCircle className="text-purple-600" />} />
+        <MetricCard label="Avg. Task Completion Time" value={`${taskData.averageTaskCompletionTime} days`} icon={<TimerReset className="text-purple-600" />} />
+      </div>
+          </>
+        ) : errorTM ? (
+          <div className="bg-red-100 text-red-700 p-4 rounded-md">
+            <p>{errorTM}</p>
+          </div>
+        ) : (
+          isTeamMember && (
             <div className="flex justify-center items-center h-32">
               <div className="relative w-10 h-10 animate-[spin-dots_1.2s_linear_infinite]">
                 <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full transform -translate-x-1/2"></div>
@@ -460,3 +586,18 @@ const Reports = () => {
 };
 
 export default Reports;
+
+
+function MetricCard({ label, value, icon }) {
+  return (
+    <div className="bg-white shadow-md rounded-2xl p-4 flex items-center gap-4">
+      <div className="bg-purple-100 p-2 rounded-xl">
+        {icon}
+      </div>
+      <div>
+        <p className="text-sm text-gray-600">{label}</p>
+        <p className="text-xl font-semibold text-purple-700">{value}</p>
+      </div>
+    </div>
+  );
+}
