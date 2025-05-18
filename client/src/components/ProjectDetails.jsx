@@ -663,6 +663,7 @@ useEffect(() => {
         priority: userStoryToEdit.priority,
         deadline: userStoryToEdit.deadline,
         epicId: selectedEpicId,
+        sprintId: selectedSprintId,
       };
       setIsLoading(true);
       await createUserstory(projectId, formData);
