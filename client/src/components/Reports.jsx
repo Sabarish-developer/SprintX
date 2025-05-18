@@ -1,9 +1,9 @@
 import React, {useState ,useEffect } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell
+  PieChart, Pie, Cell, Legend
 } from "recharts";
-import { PieChart as PieIcon, BarChart3 } from "lucide-react";
+import { PieChart as PieIcon, BarChart3, ClipboardList, FileText } from "lucide-react";
 import useAuth from '../hooks/useAuth';
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -26,7 +26,25 @@ const dataFromBackend = {
   averageSprintCompletionTime: 0,
 };
 
+const data = {
+    totalEpics: 0,
+    completedEpics: 0,
+    epicCompletionRate: 0,
+    currentProjectEpicCompletionRate: 0,
+    epicSuccessRate: 0,
+    epicSpillOverRate: 0,
+    averageEpicCompletionTime: 0,
+
+    totalProjects: 0,
+    completedProjects: 0,
+    projectCompletionRate: 0,
+    projectSuccessRate: 0,
+    projectSpillOverRate: 0,
+    averageProjectCompletionTime: 0
+  };
+
 const COLORS = ["#a40ff3", "#f3e8ff", "#6b21a8"];
+const COLORSS = ['#a40ff3', '#e0e0e0'];
 
 const Reports = () => {
     const user = useAuth();
@@ -54,7 +72,9 @@ const Reports = () => {
         // const isTeamMember = false;
 
         const [reportData, setReportData] = useState(null);
+        const [reportDataPO, setReportDataPO] = useState(null);
         const [error, setError] = useState(null);
+        const [errorPO, setErrorPO] = useState(null); 
 
   const reportFetchSM = async () => {
     try {
@@ -84,9 +104,37 @@ const Reports = () => {
     }
   }
 
+  const reportFetchPO = async () => {
+    try {
+      console.log("Fetching Reports...");
+
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/report`, {
+        headers: {
+          Authorization: token
+        }
+      });
+
+      if (res.status === 200) {
+        console.log("Reports fetched successfully");
+        setReportDataPO(res.data);
+        };
+      }catch (error) {
+      if (error.res) {
+            console.log("Error:", error.res.data.message); // This will log "Internal server error. Please try again later."
+            toast.error(error.res.data.message); // Show the error message to the user
+            setErrorPO(error.res.data.message);
+        } else {
+            console.log("Error:", error.message);
+            toast.error("An error occurred while fetching reports. Please try again later.");
+            setErrorPO("An error occurred while fetching reports. Please try again later.");
+        }
+      //setError("Error fetching report data");
+    }
+  }
+
   useEffect(() => {
     if (isProductOwner) {
-      //reportFetchPO();
+      reportFetchPO();
     } else if (isScrumMaster) {
       reportFetchSM();
     } else if (isTeamMember) {
@@ -94,9 +142,8 @@ const Reports = () => {
     }
   },[]);
 
-  // Dummy Data
-  console.log("Report Data:", reportData);
   if(reportData){
+    console.log("Report Data:", reportData);
     dataFromBackend.totalUserStories = reportData.totalUserStories;
     dataFromBackend.completedUserStories = reportData.completedUserStories;
     dataFromBackend.userStoryCompletionRate = reportData.userStoryCompletionRate;
@@ -122,6 +169,23 @@ const Reports = () => {
     sprintSpillOverRate,
   } = dataFromBackend;
 
+  if(reportDataPO){
+    console.log("Report Data PO:", reportDataPO);
+    data.totalEpics = reportDataPO.totalEpics;
+    data.completedEpics = reportDataPO.completedEpics;
+    data.epicCompletionRate = reportDataPO.epicCompletionRate;
+    data.currentProjectEpicCompletionRate = reportDataPO.currentProjectEpicCompletionRate;
+    data.epicSuccessRate = reportDataPO.epicSuccessRate;
+    data.epicSpillOverRate = reportDataPO.epicSpillOverRate;
+    data.averageEpicCompletionTime = reportDataPO.averageEpicCompletionTime;
+    data.totalProjects = reportDataPO.totalProjects;
+    data.completedProjects = reportDataPO.completedProjects;
+    data.projectCompletionRate = reportDataPO.projectCompletionRate;
+    data.projectSuccessRate = reportDataPO.projectSuccessRate;
+    data.projectSpillOverRate = reportDataPO.projectSpillOverRate;
+    data.averageProjectCompletionTime = reportDataPO.averageProjectCompletionTime;
+  }
+
   const userStoryPieData = [
     { name: "Completed", value: userStoryCompletionRate },
     { name: "Spill Over", value: userStoriesSpillOverRate },
@@ -141,12 +205,31 @@ const Reports = () => {
     </div>
   );
 
+  const epicDistribution = [
+    { name: 'Completed', value: data.completedEpics },
+    { name: 'Pending', value: data.totalEpics - data.completedEpics },
+  ];
+
+  const COLORSP = ['#a40ff3', '#e0e0e0'];
+
+  const epicMetrics = [
+    { name: 'Completion Rate', value: data.epicCompletionRate },
+    { name: 'Success Rate', value: data.epicSuccessRate },
+    { name: 'Spillover Rate', value: data.epicSpillOverRate }
+  ];
+
+  const projectMetrics = [
+    { name: 'Completion Rate', value: data.projectCompletionRate },
+    { name: 'Success Rate', value: data.projectSuccessRate },
+    { name: 'Spillover Rate', value: data.projectSpillOverRate }
+  ];
+
   return (
     <div className="overflow-x-auto p-4">
       <div className="min-w-[800px]">
-        <h2 className="text-2xl font-bold mb-4 text-purple-700">Reports Overview</h2>
         {isScrumMaster && reportData ? (
           <>
+          <h2 className="text-2xl font-bold mb-4 text-purple-700">Reports Overview</h2>
             {/* Stat Cards */}
             <div className="flex gap-4 flex-wrap mb-6">
               <StatCard title="Total User Stories" value={dataFromBackend.totalUserStories} />
@@ -231,14 +314,145 @@ const Reports = () => {
             <p>{error}</p>
           </div>
         ) : (
-              <div className="flex justify-center items-center h-32">
-                <div className="relative w-10 h-10 animate-[spin-dots_1.2s_linear_infinite]">
-                  <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full transform -translate-x-1/2"></div>
-                  <div className="absolute top-1/2 left-0 w-2 h-2 bg-purple-400 rounded-full transform -translate-y-1/2"></div>
-                  <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-purple-300 rounded-full transform -translate-x-1/2"></div>
-                  <div className="absolute top-1/2 right-0 w-2 h-2 bg-purple-200 rounded-full transform -translate-y-1/2"></div>
-                </div>
+          isScrumMaster && (
+            <div className="flex justify-center items-center h-32">
+              <div className="relative w-10 h-10 animate-[spin-dots_1.2s_linear_infinite]">
+                <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full transform -translate-x-1/2"></div>
+                <div className="absolute top-1/2 left-0 w-2 h-2 bg-purple-400 rounded-full transform -translate-y-1/2"></div>
+                <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-purple-300 rounded-full transform -translate-x-1/2"></div>
+                <div className="absolute top-1/2 right-0 w-2 h-2 bg-purple-200 rounded-full transform -translate-y-1/2"></div>
               </div>
+            </div>
+          )
+        )}
+
+        {/*PO*/}
+        {isProductOwner && reportDataPO ? (
+          <>
+          {/* <h2 className="text-2xl font-bold mb-4 text-purple-700">Reports Overview</h2> */}
+            <h2 className="text-xl font-bold text-[#a40ff3] flex items-center gap-2">
+              <ClipboardList size={20} /> Epic Distribution
+            </h2>
+            {/* Stat Cards */}
+            <div className="flex gap-4 flex-wrap mb-6">
+              <StatCard title="Total User Stories" value={data.totalEpics} />
+              <StatCard title="Completed User Stories" value={data.completedEpics} />
+              <StatCard title="Avg. User Story Time (days)" value={data.averageEpicCompletionTime} />
+              <StatCard title="Total Sprints" value={data.totalProjects} />
+              <StatCard title="Completed Sprints" value={data.completedProjects} />
+              <StatCard title="Avg. Sprint Time (days)" value={data.averageProjectCompletionTime} />
+            </div>
+
+            {/* Pie Chart */}
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+          {/* Pie Chart */}
+          <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={epicDistribution}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    label
+                  >
+                    {epicDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORSS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              </div>
+          {/* Indicators */}
+              <div className="flex flex-wrap justify-center mt-4 gap-4">
+                {epicDistribution.map((entry, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <div
+                      className="w-4 h-4 rounded"
+                      style={{ backgroundColor: COLORSS[index % COLORSS.length] }}
+                    />
+                    <span className="text-sm text-gray-700">
+                      {entry.name}: <span className="font-medium">{entry.value}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+        {/* Epic Metrics */}
+        <div>
+          <h2 className="text-xl font-bold text-[#a40ff3] flex items-center gap-2">
+            <FileText size={20} /> Epic Metrics
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={epicMetrics}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis unit="%" />
+              <Tooltip />
+              <Bar dataKey="value" fill="#a40ff3" />
+            </BarChart>
+          </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center mt-4 gap-4">
+                {epicMetrics.map((item, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <div
+                      className="w-4 h-4 rounded"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    />
+                    <span className="text-sm text-gray-700">
+                      {item.name}: <span className="font-medium">{item.value}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+        </div>
+
+        {/* Project Metrics */}
+        <div>
+          <h2 className="text-xl font-bold text-[#a40ff3] flex items-center gap-2">
+            <ClipboardList size={20} /> Project Metrics
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={projectMetrics}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis unit="%" />
+              <Tooltip />
+              <Bar dataKey="value" fill="#a40ff3" />
+            </BarChart>
+          </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center mt-4 gap-4">
+                {projectMetrics.map((item, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <div
+                      className="w-4 h-4 rounded"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    />
+                    <span className="text-sm text-gray-700">
+                      {item.name}: <span className="font-medium">{item.value}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+        </div>
+          </>
+        ) : errorPO ? (
+          <div className="bg-red-100 text-red-700 p-4 rounded-md">
+            <p>{error}</p>
+          </div>
+        ) : (
+          isProductOwner && (
+            <div className="flex justify-center items-center h-32">
+              <div className="relative w-10 h-10 animate-[spin-dots_1.2s_linear_infinite]">
+                <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full transform -translate-x-1/2"></div>
+                <div className="absolute top-1/2 left-0 w-2 h-2 bg-purple-400 rounded-full transform -translate-y-1/2"></div>
+                <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-purple-300 rounded-full transform -translate-x-1/2"></div>
+                <div className="absolute top-1/2 right-0 w-2 h-2 bg-purple-200 rounded-full transform -translate-y-1/2"></div>
+              </div>
+            </div>
+          )
         )}
       </div>
     </div>
