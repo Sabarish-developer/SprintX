@@ -386,7 +386,7 @@ const Reports = () => {
         {isProductOwner && reportDataPO ? (
           <>
           {/* <h2 className="text-2xl font-bold mb-4 text-purple-700">Reports Overview</h2> */}
-            <h2 className="text-xl font-bold text-[#a40ff3] flex items-center gap-2">
+            <h2 className="text-xl font-bold text-[#a40ff3] flex items-center gap-2 m-2 mb-4 p-1"> 
               <ClipboardList size={20} /> Epic Distribution
             </h2>
             {/* Stat Cards */}
@@ -400,7 +400,7 @@ const Reports = () => {
             </div>
 
             {/* Pie Chart */}
-            <div className="flex flex-col md:flex-row gap-8 items-start">
+            <div className="flex flex-col md:flex-row gap-4 items-start">
           {/* Pie Chart */}
           <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -422,7 +422,7 @@ const Reports = () => {
               </ResponsiveContainer>
               </div>
           {/* Indicators */}
-              <div className="flex flex-wrap justify-center mt-4 gap-4">
+              <div className="flex flex-wrap justify-center gap-4 mb-4">
                 {epicDistribution.map((entry, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <div
@@ -437,8 +437,8 @@ const Reports = () => {
               </div>
 
         {/* Epic Metrics */}
-        <div>
-          <h2 className="text-xl font-bold text-[#a40ff3] flex items-center gap-2">
+        <div className="mt-8">
+          <h2 className="text-xl font-bold text-[#a40ff3] flex items-center gap-2 m-2 mb-4 p-1">
             <FileText size={20} /> Epic Metrics
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -450,7 +450,7 @@ const Reports = () => {
               <Bar dataKey="value" fill="#a40ff3" />
             </BarChart>
           </ResponsiveContainer>
-              <div className="flex flex-wrap justify-center mt-4 gap-4">
+              <div className="flex flex-wrap justify-center mt-8 gap-4 mb-8">
                 {epicMetrics.map((item, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <div
@@ -467,7 +467,7 @@ const Reports = () => {
 
         {/* Project Metrics */}
         <div>
-          <h2 className="text-xl font-bold text-[#a40ff3] flex items-center gap-2">
+          <h2 className="text-xl font-bold text-[#a40ff3] flex items-center gap-2 m-2 mb-4 p-1">
             <ClipboardList size={20} /> Project Metrics
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -479,7 +479,7 @@ const Reports = () => {
               <Bar dataKey="value" fill="#a40ff3" />
             </BarChart>
           </ResponsiveContainer>
-              <div className="flex flex-wrap justify-center mt-4 gap-4">
+              <div className="flex flex-wrap justify-center mt-8 gap-4">
                 {projectMetrics.map((item, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <div
