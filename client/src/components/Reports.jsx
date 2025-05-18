@@ -1,4 +1,5 @@
 import React, {useState ,useEffect } from "react";
+import '../SignUp.css';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell
@@ -7,7 +8,6 @@ import { PieChart as PieIcon, BarChart3, ClipboardList, FileText, PercentCircle,
 import useAuth from '../hooks/useAuth';
 import axios from "axios";
 import { toast } from "react-toastify";
-import "../Signup.css";
 
 const dataFromBackend = {
   totalUserStories: 0,
