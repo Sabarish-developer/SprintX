@@ -4,6 +4,7 @@ import sprintModel from "../models/sprint.js";
 import taskModel from "../models/task.js";
 import mongoose from "mongoose";
 import progressUpdater from "../utils/progressUpdater.js";
+import userStoryModel from "../models/userStory.js";
 
 
 const homePageHandler = async(req,res)=>{
@@ -157,7 +158,12 @@ const readSprintHandler = async(req,res)=>{
             return res.status(400).json({message: "User Id is required."});
         }
 
-        const assignedTasks = await taskModel.find({sprintId, teamMemberId: userId});
+        const sprintUserStories = await userStoryModel.find({sprintId});
+        const sprintUserStoryIds = sprintUserStories.map(u => u._id);
+        const assignedTasks = await taskModel.find({
+          userStoryId: {$in: sprintUserStoryIds},
+          teamMemberId: userId
+        });
         if(assignedTasks.length == 0)
             return res.status(200).json({message: "No tasks found.", assignedTasks: []});
         else
