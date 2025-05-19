@@ -9,6 +9,7 @@ const progressUpdater = async(taskId)=>{
     const task = await taskModel.findById(taskId);
     if(!task) return;
     task.end = new Date();
+    task.status = "Completed";
     await task.save();
 
     const userStoryId = task.userStoryId;
