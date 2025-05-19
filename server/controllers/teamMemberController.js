@@ -202,7 +202,18 @@ const taskUpdateHandler = async(req,res)=>{
         const taskId = req.params.id;
         const {status} = req.body;
 
-        const task = await taskModel.findByIdAndUpdate(taskId, {status});
+        const availableStatus = ["Todo", "In Progress", "Testing", "Completed", "Need Review"];
+        if(!availableStatus.includes(status))
+          return res.status(400).json({message: "Check the status field"});
+
+        const task = await taskModel.findById(taskId);
+        if(!task){
+          return res.status(404).json({message: "Task doesn't exist"});
+        }
+
+        task.status = status;
+        await task.save();
+
         if(status === "Completed"){
             await progressUpdater(taskId);
         }
