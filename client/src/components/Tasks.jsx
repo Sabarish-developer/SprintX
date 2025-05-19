@@ -14,6 +14,7 @@ import TaskCard from "./TaskCard";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Tasks = () => {
     const user = useAuth();
@@ -40,6 +41,24 @@ const Tasks = () => {
         console.log("Sprint ID:", sprintId);
         console.log("User Role:", user?.role);
         const token = localStorage.getItem("token");
+        const [isLoading, setIsLoading] = useState(true);
+
+        const [tasks, setTasks] = useState([
+        { id: "14", title: "Hide", dueDate: "April 12", columnId: "Todo" },
+        { id: "15", title: "Hide", dueDate: "April 15", columnId: "In Progress" },
+        { id: "16", title: "Hide", dueDate: "April 18", columnId: "Testing" },
+        { id: "17", title: "Hide", dueDate: "April 20", columnId: "Completed" },
+        { id: "18", title: "Hide", dueDate: "April 22", columnId: "Need Review" },
+    ]);
+
+    const staticData = [
+        { id: "14", title: "Hide", dueDate: "April 12", columnId: "Todo" },
+        { id: "15", title: "Hide", dueDate: "April 15", columnId: "In Progress" },
+        { id: "16", title: "Hide", dueDate: "April 18", columnId: "Testing" },
+        { id: "17", title: "Hide", dueDate: "April 20", columnId: "Completed" },
+        { id: "18", title: "Hide", dueDate: "April 22", columnId: "Need Review" },
+    ];
+
 
         const fetchTasks = async () => {
             console.log("Fetching tasks...");
@@ -52,6 +71,14 @@ const Tasks = () => {
                 });
         
                 console.log('Fetched Tasks:', response.data);
+                const taskdata = response.data.assignedTasks.map((task) => ({
+                    id: task._id,
+                    title: task.title,
+                    dueDate: new Date(task.deadline).toLocaleDateString("en-US"),
+                    columnId: task.status,
+                }));
+                setTasks([...taskdata, ...tasks]); // Append the fetched tasks to the existing tasks
+                setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching tasks:', error);
             }
@@ -61,35 +88,35 @@ const Tasks = () => {
             fetchTasks();
         }, []);
 
+        const updateTasks = async(taskId, status) => {
+            setIsLoading(true);
+            setTasks(staticData);
+            console.log("Updating task status...:", taskId, status);
+            let id = projectId;
+            try {
+                const response = await axios.patch(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${id}/tasks/${taskId}`, {
+                    status: status
+                }, {
+                    headers: {
+                        Authorization: token
+                    }
+                });
+                console.log('Updated Task:', response.data);
+                window.location.reload();
+                toast.success(response.data.message);
+            } catch (error) {
+                toast.error(response.data.message || "Error updating task");
+                console.error('Error updating task:', error);
+            }
+        }
 
-    const initialColumns = ["To Do", "In Progress", "Testing", "Completed", "Need Review"];
+
+    const initialColumns = ["Todo", "In Progress", "Testing", "Completed", "Need Review"];
     const [columns, setColumns] = useState(initialColumns); 
-
-   
-    const [tasks, setTasks] = useState([
-        { id: "1", title: "Design HomePage", dueDate: "April 12", columnId: "To Do" },
-        { id: "2", title: "Write Tests", dueDate: "April 15", columnId: "In Progress" },
-        { id: "3", title: "Fix Login Bug", dueDate: "April 18", columnId: "Testing" },
-        { id: "4", title: "Code Review", dueDate: "April 20", columnId: "Completed" },
-        { id: "5", title: "Deploy App", dueDate: "April 22", columnId: "Need Review" },
-        { id: "6", title: "Setup CI/CD", dueDate: "April 12", columnId: "To Do" },
-        { id: "7", title: "User Authentication", dueDate: "April 12", columnId: "To Do" },
-        { id: "8", title: "Database Schema", dueDate: "April 12", columnId: "To Do" },
-        { id: "9", title: "Hello1", dueDate: "April 12", columnId: "To Do" },
-        { id: "10", title: "Hello2", dueDate: "April 15", columnId: "In Progress" },
-        { id: "11", title: "Hello3", dueDate: "April 18", columnId: "In Progress" },
-        { id: "12", title: "Hello4", dueDate: "April 20", columnId: "Completed" },
-        { id: "13", title: "Hellow5", dueDate: "April 22", columnId: "Need Review" },
-        { id: "14", title: "Hide", dueDate: "April 12", columnId: "To Do" },
-        { id: "15", title: "Hide", dueDate: "April 15", columnId: "In Progress" },
-        { id: "16", title: "Hide", dueDate: "April 18", columnId: "Testing" },
-        { id: "17", title: "Hide", dueDate: "April 20", columnId: "Completed" },
-        { id: "18", title: "Hide", dueDate: "April 22", columnId: "Need Review" },
-    ]);
 
     const getTextColor = (columnId) => {
         switch (columnId) {
-            case "To Do":
+            case "Todo":
                 return "text-[#2E67F8]";
             case "In Progress":
                 return "text-orange-400";
@@ -121,7 +148,8 @@ const Tasks = () => {
         if (event.active.data.current?.type === "Task") {
             setActiveTask(event.active.data.current.task);
         }
-        
+        console.log("Drag started", event.active.data.current?.task);
+        console.log("Active task:", activeTask);
     }
 
 
@@ -130,6 +158,17 @@ const Tasks = () => {
         //setActiveColumn(null);
         setActiveTask(null); // Clear the active task after drop
         const { active, over } = event;
+        console.log("updated columnId:", active.data.current?.columnId);
+        console.log("Drag ended", event);
+        console.log("over", over);
+        console.log("active", active); //mukkiyam
+        let taskId = active.id;
+        //active.data.current.task.columnId
+        let status = active.data.current.task.columnId;
+        console.log("taskId:", taskId);
+        console.log("status:", status);
+        updateTasks(taskId, status); // Update the task status in the backend
+        return;
 
        
         if (!over) return;
@@ -195,6 +234,7 @@ const Tasks = () => {
     }
 
     function onDragOver(DragOverEvent) {
+        console.log("onDragOver", DragOverEvent);
         const { active, over } = DragOverEvent;
     
   
@@ -223,73 +263,83 @@ const Tasks = () => {
                 // }
     
                 return arrayMove(tasks, activeIndex, overIndex);
+                //return;
             });
         }
     
         const isOverAColumn = over.data.current && over.data.current.type === "Column";
     
         // Dropping a task over a column
-        if (isActiveATask && isOverAColumn) {
-            setTasks((tasks) => {
-                const activeIndex = tasks.findIndex((t) => t.id === activeId);
-                // Uncomment if columnId change condition is required:
-                // if (tasks[activeIndex].columnId !== overId) {
-                tasks[activeIndex].columnId = overId;
-                // }
+        // if (isActiveATask && isOverAColumn) {
+        //     setTasks((tasks) => {
+        //         const activeIndex = tasks.findIndex((t) => t.id === activeId);
+        //         // Uncomment if columnId change condition is required:
+        //         // if (tasks[activeIndex].columnId !== overId) {
+        //         tasks[activeIndex].columnId = overId;
+        //         // }
     
                 
-                return arrayMove(tasks, activeIndex, activeIndex);
-            });
-        }
+        //         return arrayMove(tasks, activeIndex, activeIndex);
+        //     });
+        // }
     }
     
 
 
     return (
-     
-        <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            onDragOver={onDragOver}
-        >
-            
-            <div className="overflow-x-auto w-screen lg:w-auto h-screen">
-                <div className="min-w-[900px] md:min-w-full">
-                   
-                    <div className="grid grid-cols-5 sticky top-0 z-10">
-                        {columns.map((columnId) => ( 
-                            <div key={columnId} className={`p-3 ${getTextColor(columnId)} bg-white font-semibold ${columnId==='Need Review' ? '' : 'border-r'} border-b border-black flex justify-between`}>
-                            <span>{columnId}</span>  
-                            <span>({tasks.filter((task) => task.columnId === columnId).length-1})</span>
-                          </div>
-                          
-                        ))}
-                    </div>
+        !isLoading ? (
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={onDragStart}
+                onDragEnd={onDragEnd}
+                onDragOver={onDragOver}
+            >
+                <div className="overflow-x-auto w-screen lg:w-auto h-screen">
+                    <div className="min-w-[900px] md:min-w-full">
+                        <div className="grid grid-cols-5 sticky top-0 z-10">
+                            {columns.map((columnId) => (
+                                <div key={columnId} className={`p-3 ${getTextColor(columnId)} bg-white font-semibold ${columnId === 'Need Review' ? '' : 'border-r'} border-b border-black flex justify-between`}>
+                                    <span>{columnId}</span>
+                                    {/* <span>({tasks.filter((task) => task.columnId === columnId).length - 1})</span> */}
+                                    <span>({Array.isArray(tasks) ? tasks.filter((task) => task?.columnId === columnId).length - 1 : 0})</span>
+                                </div>
+                            ))}
+                        </div>
 
-                    {/* Task Columns Grid */}
-                    <div className="grid grid-cols-5 h-full">
-                        {/* REMOVED the single SortableContext wrapper */}
-                        {columns.map((columnId) => (
-                            <ColumnContainer
-                                key={columnId}
-                                columnId={columnId} // Pass the name/ID (e.g., "To Do")
-                                tasks={tasks}      // Pass the entire tasks list
-                            />
-                        ))}
+                        {/* Task Columns Grid */}
+                        <div className="grid grid-cols-5 h-full">
+                            {columns.map((columnId) => (
+                                <ColumnContainer
+                                    key={columnId}
+                                    columnId={columnId}
+                                    tasks={tasks}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
+
+                <DragOverlay>
+                    {activeTask && <TaskCard task={activeTask} />}
+                </DragOverlay>
+            </DndContext>
+        ) : (
+            <div className="flex items-center justify-center h-screen">
+                <svg
+                    className="animate-spin h-10 w-10 text-blue-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        fill="currentColor"
+                        d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8.009,8.009,0,0,1,12,20Z"
+                    />
+                </svg>
             </div>
-
-            <DragOverlay>
-                {activeTask ? (
-                    <TaskCard task={activeTask} /> // Render the captured task
-                ) : null}
-            </DragOverlay>
-
-        </DndContext>
+        )
     );
+
 };
 
 export default Tasks;
