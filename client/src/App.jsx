@@ -28,7 +28,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-cover bg-fixed bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
+    <div className="min-h-screen min-w-screen bg-cover bg-fixed bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
       <Navbar navItems={navItems} handleScroll={handleScroll} />
       <div className="max-w-7xl mx-auto px-6 pt-17">
         <HeroSection />

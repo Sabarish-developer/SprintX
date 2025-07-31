@@ -69,10 +69,7 @@ const SliderSlick = forwardRef((props, ref) => {
         SprintX is project + knowledge management software that's a <br />
         force multiplier for your existing workflows, methodologies, and best practices.
       </p>
-      <div className="flex justify-end w-full px-10 gap-4">
-        <PrevArrow />
-        <NextArrow />
-      </div>
+    
 
       <div className="w-full h-fit p-8">
         <Slider {...settings} className="max-w-4xl mx-auto rounded-2xl lg:shadow-lg md:shadow-lg">
