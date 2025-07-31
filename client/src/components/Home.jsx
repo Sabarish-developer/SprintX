@@ -27,12 +27,14 @@ const Home = () => {
   //const userRole = "ProductOwner"; // Change this to "ProductOwner" or "TeamMember" also upadte this from db
   //const activeProject = { name: "Project Alpha", from: "Mar 10", to: "Apr 20" };
   const activeSprint = { name: "Sprint 3", from: "Mar 15", to: "Apr 10" };
-  const [stats, setStats] = useState({ ToDo: 0, InProgress: 0, Completed: 0 });
+  const [stats, setStats] = useState({ ToDo: 0, InProgress: 0, Completed: 0, NeedReview: 0, Testing: 0 });
 
   const statusData = [
     { key: "ToDo", label: "Assigned", color: "text-blue-500" },
     { key: "InProgress", label: "In Progress", color: "text-orange-500" },
     { key: "Completed", label: "Completed", color: "text-green-500" },
+    { key: "NeedReview", label: "Need Review", color: "text-purple-500" },
+    { key: "Testing", label: "Testing", color: "text-yellow-500" },
   ];
 
   // Data to display based on role
@@ -165,6 +167,8 @@ const Home = () => {
           ToDo: formattedTasks.filter((task, index) => task.status === "Todo").length,
           InProgress: formattedTasks.filter((task, index) => task.status === "In Progress").length,
           Completed: formattedTasks.filter((task, index) => task.status === "Completed").length,
+          NeedReview: formattedTasks.filter((task, index) => task.status === "Need Review").length,
+          Testing: formattedTasks.filter((task, index) => task.status === "Testing").length,
         });
         console.log("statusDataUpdated:", stats);
         // Update stats state
