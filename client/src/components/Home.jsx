@@ -27,12 +27,12 @@ const Home = () => {
   //const userRole = "ProductOwner"; // Change this to "ProductOwner" or "TeamMember" also upadte this from db
   //const activeProject = { name: "Project Alpha", from: "Mar 10", to: "Apr 20" };
   const activeSprint = { name: "Sprint 3", from: "Mar 15", to: "Apr 10" };
-  const stats = { assigned: 5, completed: 12, pending: 3 };
+  const [stats, setStats] = useState({ ToDo: 0, InProgress: 0, Completed: 0 });
 
   const statusData = [
-    { key: "assigned", label: "Assigned", color: "text-blue-500" },
-    { key: "completed", label: "Completed", color: "text-green-500" },
-    { key: "pending", label: "Pending", color: "text-orange-500" },
+    { key: "ToDo", label: "Assigned", color: "text-blue-500" },
+    { key: "InProgress", label: "In Progress", color: "text-orange-500" },
+    { key: "Completed", label: "Completed", color: "text-green-500" },
   ];
 
   // Data to display based on role
@@ -159,6 +159,21 @@ const Home = () => {
           status: task.status,
         }));
 
+        console.log("formattedTasks:", formattedTasks);
+
+        setStats({
+          ToDo: formattedTasks.filter((task, index) => task.status === "Todo").length,
+          InProgress: formattedTasks.filter((task, index) => task.status === "In Progress").length,
+          Completed: formattedTasks.filter((task, index) => task.status === "Completed").length,
+        });
+        console.log("statusDataUpdated:", stats);
+        // Update stats state
+        // statusData.forEach(status => {
+        //   setStats(prevStats => ({
+        //     ...prevStats,
+        //     [status.key]: statusDataUpdated[status.key] || 0,
+        //   }));
+        // });
         setTasks(formattedTasks);
       }
       } catch (error) {
