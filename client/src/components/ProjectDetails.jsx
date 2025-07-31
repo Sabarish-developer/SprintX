@@ -1017,7 +1017,7 @@ useEffect(() => {
             <span className={`inline-block mt-2 px-3 py-1 text-xs font-medium rounded-full ${sprint.status === 'Active' ? 'bg-orange-100 text-orange-800' : 'bg-green-200 text-green-700'}`}>
               {sprint.status}
             </span>
-            <button onClick={() => {navigate(`/home/projects/${projectId}/${sprint.id}`)}} className={`cursor-pointer text-gray-800 hover:text-gray-600 hover:bg-gray-100 hover:border-0 hover:rounded-md hover:p-1 ${isProductOwner ? 'hidden' : isScrumMaster ? 'absolute bottom-4 right-4' : 'absolute top-4 right-4'}`}>
+            <button onClick={() => {navigate(`/home/projects/${projectId}/${sprint.id}`)}} className={`cursor-pointer text-gray-800 hover:text-gray-600 hover:bg-gray-100 hover:border-0 hover:rounded-md hover:p-1 ${isProductOwner ? 'hidden' : isScrumMaster ? 'hidden' : 'absolute top-4 right-4'}`}>
                     <ListTodo size={18} />
                   </button>
             {isScrumMaster && (
