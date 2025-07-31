@@ -148,7 +148,7 @@ const Home = () => {
           console.log("epics:", epics);
         const formattedEpics = epics.map((epic, index) => ({
           id: index + 1,
-          name: epic.name,
+          name: epic.title,
           deadline: new Date(epic.deadline).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
@@ -162,6 +162,10 @@ const Home = () => {
           setErrorTable("No epics found.");
           return;
         }
+        setStats({
+          Active: formattedEpics.filter(item => item.status === "Active").length,
+          Completed: formattedEpics.filter(item => item.status === "Completed").length
+        })
         setEpics(formattedEpics);
       }
       else if(isScrumMaster){

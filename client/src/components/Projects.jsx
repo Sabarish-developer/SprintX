@@ -40,6 +40,7 @@ export default function Projects() {
     navigate("/login"); // Redirect to login if not authenticated
   }
   
+  const [isLoading, setIsLoading] = useState(false);
   const isProductOwner = user?.role === "Product owner";
   const isScrumMaster = user?.role === "Scrum master";3
   const isTeamMember = user?.role === "Team member";
@@ -122,8 +123,7 @@ export default function Projects() {
         //   label: member.username,
         // }));
         // setTeamMembers(formattedOptions);
-        
-        toast.info(res.data.message);
+        //toast.info(res.data.message);
       } catch (err) {
         toast.error("Failed to load members");
       }
@@ -146,6 +146,7 @@ export default function Projects() {
   }));
 
   const fetchProjects = async () => {
+    console.log("inside fetchProjects");
     try {
       console.log("Fetching projects...");
   
@@ -156,6 +157,7 @@ export default function Projects() {
       });
   
       if (res.status === 200) {
+        console.log("Projects fetched successfully:", res.data.projects);
         if (res.data.projects.length === 0) {
           setError(res.data.message);
           return;
@@ -191,6 +193,7 @@ export default function Projects() {
   
         setProjects(fetchedProjects);
         setProjectsData(fetchedProjects);
+        console.log("fetchedProjects:", fetchedProjects);
       }
     } catch (err) {
       console.error("Error fetching project data:", err);
@@ -297,6 +300,7 @@ export default function Projects() {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
+    setIsLoading(true); // Set loading state
   
     const formData = new FormData(e.target); // Get data from form fields
   
@@ -335,6 +339,9 @@ export default function Projects() {
     } catch (error) {
       console.error("Failed to update:", error);
       toast.error("Failed to update project");
+    }
+    finally{
+      setIsLoading(false);  // Reset loading state
     }
   };
   
@@ -429,8 +436,8 @@ export default function Projects() {
           onClick={() => {setShowModal(true); setProjectToEdit(null); setSelectedScrumMaster(null); setSelectedTeamMembers([]);}}
           className="bg-[#a40ff3] hover:bg-white cursor-pointer hover:text-[#a40ff3] text-white px-4 py-2 rounded shadow hover:shadow-md text-sm flex items-center gap-2 w-40"
           >
-            <FolderPlus size={18} />
-            Create project
+            <FolderPlus size={18} /> 
+            create project
           </button>
           }
           {showModal && (
@@ -440,6 +447,7 @@ export default function Projects() {
                   <form
                     onSubmit={async(e) => {
                       e.preventDefault();
+                      setIsLoading(true); // Set loading state
 
                       const formData = new FormData(e.target);
                       const newProject = {
@@ -473,10 +481,16 @@ export default function Projects() {
                           }
                         });
                         toast.success(res1.data.message);
+                        console.log("going to fetch projects");
+                        setError(""); // Clear any previous error
                         await fetchProjects(); // refresh UI after DB update
+                        
                       } catch (error) {
                         toast.error("Failed to create project");
                         //console.log(res1.data.message?res1.data.message:error);
+                      }
+                      finally{
+                        setIsLoading(false); // Reset loading state
                       }
 
                       //setProjects((prev) => [...prev, newProject]);
@@ -578,9 +592,34 @@ export default function Projects() {
                       <button
                         type="submit"
                         className="px-4 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 cursor-pointer"
+                        disabled={isLoading}
                       >
-                        Create
-                      </button>
+                      {isLoading ? (
+                        <svg
+                          className="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5h-3z"
+                          ></path>
+                        </svg>
+                      ) : (
+                        "Create"
+                      )
+                      }
+                    </button>
                     </div>
                   </form>
                 </div>
@@ -610,11 +649,11 @@ export default function Projects() {
                     <input
                       type="text"
                       name="desc"
-                      value={projectToEdit.owner}
+                      value={projectToEdit.description}
                       onChange={(e) =>
                         setProjectToEdit({ ...projectToEdit, description: e.target.value })
                       }
-                      placeholder="Owner"
+                      placeholder="Description"
                       className="border border-gray-300 rounded w-full px-3 py-2 input-field"
                       required
                     />
@@ -727,8 +766,33 @@ export default function Projects() {
                       <button
                         type="submit"
                         className="bg-purple-600 text-white px-4 py-1 rounded-md cursor-pointer"
+                        disabled={isLoading}
                       >
-                        Save
+                        {isLoading ? (
+                <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5h-3z"
+                ></path>
+              </svg>
+              ) : (
+                "Save"
+              )
+            }
                       </button>
                     </div>
                   </form>
@@ -817,9 +881,9 @@ export default function Projects() {
                   }
                 </div>
                 <hr />
-                <p className="p-1 text-gray-500">
+                {/* <p className="p-1 text-gray-500">
                   <strong className="text-gray-600">Product Owner:</strong> {project.owner}
-                </p>
+                </p> */}
                 <p className="p-1 text-gray-500">
                   <strong className="text-gray-600">Scrum Master:</strong> {project.scrumMaster}
                 </p>

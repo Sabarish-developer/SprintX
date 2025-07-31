@@ -140,7 +140,7 @@ const ProjectDetails = () => {
   
 
 useEffect(() => {
-  (!isTeamMember && 
+  (isScrumMaster && 
     fetchTeamMembers(projectId)); // Fetch team members only if the user is not a Team Member
 }, []);
 
@@ -383,6 +383,7 @@ useEffect(() => {
   };
   
   useEffect(() => {
+    if(!isProductOwner)
     fetchTasks();
   }, []);
 
@@ -1587,7 +1588,9 @@ useEffect(() => {
       {/* {isScrumMaster && (
         <h2 className="text-lg font-semibold mt-8 mb-2">Tasks</h2>
       )} */}
-      <h2 className="text-lg font-semibold mt-8 mb-2">Tasks</h2>
+      {!isProductOwner && (
+        <h2 className="text-lg font-semibold mt-8 mb-2">Tasks</h2>
+      )}
       {isScrumMaster && (
         <button
         onClick={() => {
