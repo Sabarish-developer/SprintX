@@ -24,6 +24,7 @@ const Home = () => {
     const isProductOwner = user?.role === "Product owner";
     const isScrumMaster = user?.role === "Scrum master";
     const isTeamMember = user?.role === "Team member";
+    console.log(user.role, isProductOwner, isScrumMaster, isTeamMember);
   // Dummy data have to replace with DB.
   //const userRole = "ProductOwner"; // Change this to "ProductOwner" or "TeamMember" also upadte this from db
   //const activeProject = { name: "Project Alpha", from: "Mar 10", to: "Apr 20" };
@@ -97,6 +98,7 @@ const Home = () => {
             console.log("No projects yet.");
             setError("No projects yet.");
             setMes("Welcome");
+            setErrorTable("No epics, user stories or tasks found. Start by creating a project.");
             return;
           }
 
@@ -114,10 +116,10 @@ const Home = () => {
         });
 
         if(isProductOwner){
-          setData(epics);
+          // setData(epics);
         }
         else if(isScrumMaster){
-          setData(userStories);
+          // setData(userStories);
         }
         else {
           // useEffect(() => {
@@ -143,6 +145,7 @@ const Home = () => {
         // }
 
         if(isProductOwner){
+          console.log("epics:", epics);
         const formattedEpics = epics.map((epic, index) => ({
           id: index + 1,
           name: epic.name,
@@ -153,6 +156,12 @@ const Home = () => {
           status: epic.status,
         }));
 
+        console.log("formattedEpics:", formattedEpics);
+        if(formattedEpics.length === 0) {
+          console.log("No epics found.");
+          setErrorTable("No epics found.");
+          return;
+        }
         setEpics(formattedEpics);
       }
       else if(isScrumMaster){
