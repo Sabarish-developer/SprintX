@@ -199,7 +199,7 @@ const tasksPageHandler = async(req,res)=>{
 const taskUpdateHandler = async(req,res)=>{
     //when one task is completed -> check userstory completed -> check epic completed -> check project completed.
     try{
-        const taskId = req.params.id;
+        const taskId = req.params.taskId;
         const {status} = req.body;
 
         const availableStatus = ["Todo", "In Progress", "Testing", "Completed", "Need Review"];
