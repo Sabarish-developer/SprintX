@@ -140,7 +140,8 @@ const ProjectDetails = () => {
   
 
 useEffect(() => {
-    fetchTeamMembers(projectId);
+  (!isTeamMember && 
+    fetchTeamMembers(projectId)); // Fetch team members only if the user is not a Team Member
 }, []);
 
   // useEffect(() => {

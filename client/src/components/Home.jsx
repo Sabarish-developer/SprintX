@@ -50,6 +50,7 @@ const Home = () => {
 
   //common data for all roles
   const [data, setData] = useState([]);
+  const [taskBro, setTaskBro] = useState([{}]);
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -63,9 +64,9 @@ const Home = () => {
           }
         });
           console.log("fetching home data...");
-          console.log(res.data);
-          const { message, project, epics, userStories} = res.data;
-          console.log("after fetch");
+          console.log("full res:",res.data);
+          const { message, project, epics, userStories, tasks} = res.data;
+          console.log("after fetch :" , tasks);
           console.log("project : ",project);
           setMes(message);
           console.log("message : ", message);
@@ -96,15 +97,28 @@ const Home = () => {
         else if(isScrumMaster){
           setData(userStories);
         }
-        else{
+        else {
+          // useEffect(() => {
+          //     console.log("Setting data:", tasks);
+          //     setData(tasks);
+          // }, [isTeamMember, tasks]);
+
+          // useEffect(() => {
+          //   console.log("Data after state update:", data);
+          // }, [data]);
+
+          console.log("inside else tasks:", tasks);
+          //setTaskBro(tasks);
+          //console.log("task bro:", taskBro);
           setData(tasks);
         }
+        console.log("data:", data);
 
-        if(!data || data.length === 0) {
-          console.log("Not found, start by creating.");
-          setErrorTable("Not found, start by creating.");
-          return;
-        }
+        // if(!data || data.length === 0) {
+        //   console.log("Not found, start by creating.");
+        //   setErrorTable("Not found, start by creating.");
+        //   return;
+        // }
 
         if(isProductOwner){
         const formattedEpics = epics.map((epic, index) => ({
@@ -133,9 +147,11 @@ const Home = () => {
         setUserStories(formattedUserStories); 
       }
       else{
-        const formattedTasks = tasks.map((task, index) => ({
+        const userTasks = tasks.filter(task => task.teamMemberId === user.id);
+        const formattedTasks = userTasks.map((task, index) => ({
           id: index + 1,
-          name: task.name,
+          name: task.title,
+          myId : task.teamMemberId, 
           deadline: new Date(task.deadline).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",

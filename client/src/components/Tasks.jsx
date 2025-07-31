@@ -91,7 +91,7 @@ const Tasks = () => {
         const updateTasks = async(taskId, status) => {
             setIsLoading(true);
             setTasks(staticData);
-            console.log("Updating task status...:", taskId, status);
+            console.log("Updating task status:", taskId, status);
             let id = projectId;
             try {
                 const response = await axios.patch(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/projects/${id}/tasks/${taskId}`, {
@@ -101,11 +101,19 @@ const Tasks = () => {
                         Authorization: token
                     }
                 });
+                if(response.status === 200) {
                 console.log('Updated Task:', response.data);
                 window.location.reload();
+                
+                //setIsLoading(false);
                 toast.success(response.data.message);
+                }
+                else{
+                    toast.error("Error updating taskk");
+                    console.error('Error updating task:', response.data.message);
+                }
             } catch (error) {
-                toast.error(response.data.message || "Error updating task");
+                toast.error("Error updating task");
                 console.error('Error updating task:', error);
             }
         }
