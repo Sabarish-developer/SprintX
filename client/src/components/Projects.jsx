@@ -110,6 +110,7 @@ export default function Projects() {
 
   useEffect(() => {
     const fetchMembers = async () => {
+      console.log("fetching members");
       try {
         const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/${whoIsLoggedIn}/companymembers`, {
                    headers: {
@@ -118,6 +119,8 @@ export default function Projects() {
                  }); // adjust endpoint if needed
         setScrumMasters(res.data.scrumMasters);
         setTeamMembers(res.data.teamMembers);
+        // console.log("scrumMasters:", res.data.scrumMasters);
+        // console.log("teamMembers:", res.data.teamMembers);
         // const formattedOptions = res.data.teamMembers.map(member => ({
         //   value: member._id,
         //   label: member.username,
@@ -169,7 +172,6 @@ export default function Projects() {
             id: p._id,
             name: p.title,
             owner: p.productOwner,
-            scrumMaster: "SEENU",
             start: new Date(p.start).toISOString().slice(0, 10), // ✅ good for <input type="date" />
             deadline: new Date(p.deadline).toISOString().slice(0, 10), // ✅ good for <input type="date" />
             from: new Date(p.start).toLocaleDateString("en-US", {

@@ -169,6 +169,12 @@ const Home = () => {
         setEpics(formattedEpics);
       }
       else if(isScrumMaster){
+        if(userStories.length === 0) {
+          console.log("No user stories found.");
+          setErrorTable("No user stories found.");
+          return;
+        }
+        console.log("userStories:", userStories);
         const formattedUserStories = userStories.map((userStory, index) => ({
           id: index + 1,
           name: userStory.title,
