@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import clsx from 'clsx'
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
+import { color } from "framer-motion";
 
 const Home = () => {
   const user = useAuth();
@@ -27,15 +28,34 @@ const Home = () => {
   //const userRole = "ProductOwner"; // Change this to "ProductOwner" or "TeamMember" also upadte this from db
   //const activeProject = { name: "Project Alpha", from: "Mar 10", to: "Apr 20" };
   const activeSprint = { name: "Sprint 3", from: "Mar 15", to: "Apr 10" };
-  const [stats, setStats] = useState({ ToDo: 0, InProgress: 0, Completed: 0, NeedReview: 0, Testing: 0 });
-
-  const statusData = [
+  //const [stats, setStats] = useState({ ToDo: 0, InProgress: 0, Completed: 0, NeedReview: 0, Testing: 0 });
+  let statusData, initialStats;
+  if(isTeamMember){
+    statusData = [
     { key: "ToDo", label: "Assigned", color: "text-blue-500" },
     { key: "InProgress", label: "In Progress", color: "text-orange-500" },
     { key: "Completed", label: "Completed", color: "text-green-500" },
     { key: "NeedReview", label: "Need Review", color: "text-purple-500" },
     { key: "Testing", label: "Testing", color: "text-yellow-500" },
   ];
+  initialStats = {ToDo: 0, InProgress: 0, Completed: 0, NeedReview: 0, Testing: 0 };
+  }
+  else{
+    statusData = [
+      {key: "Active", label: "Active", color: "text-blue-500"},
+      {key: "Completed", label: "Completed", color: "text-green-500"},
+    ];
+    initialStats = {Active: 0, Completed: 0};
+  }
+  const [stats, setStats] = useState(initialStats);
+
+  // const statusData = [
+  //   { key: "ToDo", label: "Assigned", color: "text-blue-500" },
+  //   { key: "InProgress", label: "In Progress", color: "text-orange-500" },
+  //   { key: "Completed", label: "Completed", color: "text-green-500" },
+  //   { key: "NeedReview", label: "Need Review", color: "text-purple-500" },
+  //   { key: "Testing", label: "Testing", color: "text-yellow-500" },
+  // ];
 
   // Data to display based on role
 
@@ -138,7 +158,7 @@ const Home = () => {
       else if(isScrumMaster){
         const formattedUserStories = userStories.map((userStory, index) => ({
           id: index + 1,
-          name: userStory.name,
+          name: userStory.title,
           deadline: new Date(userStory.deadline).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
@@ -146,6 +166,10 @@ const Home = () => {
           status: userStory.status,
         }));
 
+        setStats({
+          Active: formattedUserStories.filter(item => item.status === "Active").length,
+          Completed: formattedUserStories.filter(item => item.status === "Completed").length
+        })
         setUserStories(formattedUserStories); 
       }
       else{
@@ -261,7 +285,7 @@ const Home = () => {
             <thead>
               <tr className="bg-[#a40ff3]">
                 <th className="border-r border-b border-gray-300 text-purple-200 px-4 py-2">S.No</th>
-                <th className="border-b border-r border-gray-300 text-purple-200 px-4 py-2">Name</th>
+                <th className="border-b border-r border-gray-300 text-purple-200 px-4 py-2">Title</th>
                 <th className="border-b border-r border-gray-300 text-purple-200 px-4 py-2">Deadline</th>
                 <th className="border-b border-r border-gray-300 text-purple-200 px-4 py-2">Status</th>
               </tr>
@@ -276,6 +300,7 @@ const Home = () => {
                     <td className={`border-b border-gray-300 px-4 py-2 font-semibold 
                       ${item.status === "In Progress" ? "text-orange-500" :
                         item.status === "Completed" ? "text-green-500" :
+                        item.status === "Active" ? "text-blue-500" :
                         "text-gray-600"}`}>
                       {item.status}
                     </td>
