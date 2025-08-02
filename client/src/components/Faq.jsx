@@ -3,21 +3,29 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
-    question: "What is the purpose of this Contact Us form?",
-    answer: "This form allows users to send queries or support requests directly to our team, and we will respond via email shortly.",
+    question: "What is SprintX?",
+    answer: "SprintX is a lightweight, cloud-based Agile project management tool designed to help software teams plan, track, and deliver projects efficiently using sprints, epics, and tasks.",
   },
   {
-    question: "Will I get a confirmation after submitting the form?",
-    answer: "Yes, after submitting the form, you will see a success message on the screen and receive an email confirmation if needed.",
+    question: "Who can use SprintX?",
+    answer: "Anyone! Whether you're a student team, a startup, or just exploring Agile, SprintX is beginner-friendly and easy to use.",
   },
   {
-    question: "Is my data safe when I fill out the form?",
-    answer: "Absolutely. We use secure services to handle your data and do not share your information with third parties.",
+    question: "Is SprintX free to use?",
+    answer: "Yes! SprintX is a student-built project and completely free to use. Just sign up and start managing your projects.",
   },
   {
-    question: "Can I submit multiple queries?",
-    answer: "Yes, you can click on 'Submit Another Response' after your first query to send more messages.",
+    question: "Can I manage multiple projects with SprintX?",
+    answer: "Absolutely. You can create and manage multiple projects, assign team members, and track progress through sprints and tasks.",
   },
+  {
+    question: "Is my data safe?",
+    answer: "We take basic data security seriously. While SprintX is a student project, it follows good practices like authentication and role-based access."
+  },
+  {
+    question: "Can I contribute or suggest improvements?",
+    answer: "We’d love that! You can reach out to us through the contact section or our GitHub repo.",
+  }
 ];
 
 const Faq = forwardRef((props, ref) => {

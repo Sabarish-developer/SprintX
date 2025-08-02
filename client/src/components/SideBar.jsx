@@ -72,7 +72,7 @@ export default function SideBar({ children }) {
                         </div>
                         <button
                             onClick={toggleSidebar}
-                            className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-50"
+                            className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                         >
                             {expanded ? <ChevronFirst /> : <ChevronLast />}
                         </button>

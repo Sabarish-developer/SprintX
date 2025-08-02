@@ -5,6 +5,9 @@ import { ShieldHalf } from "lucide-react";
 import { PlugZap } from "lucide-react";
 import { GlobeLock } from "lucide-react";
 import { SearchCheck } from "lucide-react";
+import { CloudSunRain } from "lucide-react";
+import { CircleArrowOutUpLeftIcon } from "lucide-react";
+import { IdCard } from "lucide-react";
 import { Puzzle } from "lucide-react";
 import { CloudUpload } from "lucide-react";
 
@@ -17,21 +20,21 @@ import { CloudUpload } from "lucide-react";
 
 export const data = [
   {
-    icon: Puzzle,
-    title: "Adaptable and Simple",
-    para: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio, tenetur! Nesciunt hic fugiat, blanditiis impedit modi odio asperiores.",
+    icon: CloudSunRain,
+    title: "Cloud-Powered Agile Simplicity",
+    para: "SprintX simplifies agile project management with a cloud-based platform that integrates seamlessly with your existing workflows.",
     label: "1",
   },
   {
-    icon: SearchCheck,
-    title: "Zero-learning Curve",
-    para: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio, tenetur! Nesciunt hic fugiat, blanditiis impedit modi odio asperiores.",
+    icon: IdCard,
+    title: "Role-Based Dashboards",
+    para: "Get insights tailored to your role with customizable dashboards that highlight the metrics that matter most to you.",
     label: "2",
   },
   {
-    icon: CloudUpload,
-    title: "Cloud + self-hosted",
-    para: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio, tenetur! Nesciunt hic fugiat, blanditiis impedit modi odio asperiores.",
+    icon: CircleArrowOutUpLeftIcon,
+    title: "Drag-and-Drop Task Boards",
+    para: "Stay organized with intuitive kanban boards that allow you to easily move tasks between different stages of your workflow.",
     label: "3",
   },
 ];
