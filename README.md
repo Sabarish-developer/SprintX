@@ -1,4 +1,4 @@
-# 🏃‍♂️ SprintX – Agile Project Management Tool
+# 👨‍💻 SprintX – Agile Project Management Tool
 
 **SprintX** is a **MERN-based project management tool** built to help teams **track, monitor, and manage software projects efficiently**.  
 It is designed with **role-based access**, clear task workflows, individual & team progress tracking, and a **fully responsive design** for all screen sizes.  
