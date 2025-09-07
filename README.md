@@ -56,7 +56,26 @@ This hybrid approach ensures **Agile compliance while remaining practical** for 
 ---
 
 ## 📸 Screenshots
-*(Add screenshots of the Kanban board, drag-and-drop tasks, and report charts here)*
+### Landing Page
+![Landing Page](screenshots/landing-page.png)
+
+### Home Page
+![Home Page](screenshots/home-page.png)
+
+### Sprint and Tasks
+![Sprint and Tasks](screenshots/sprint-and-tasks.png)
+
+### Creating userstory
+![Creating userstory](screenshots/user-story-form.png)
+
+### Kanban Board
+![Kanban Board](screenshots/kanban-board.png)
+
+### Report Page
+![Report Page](screenshots/report-page.png)
+
+### Settings Page
+![Settings Page](screenshots/settings-page.png)
 
 ---
 
